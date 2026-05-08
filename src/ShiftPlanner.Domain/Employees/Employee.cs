@@ -13,6 +13,18 @@ public class Employee
         Skills = skills;
     }
 
+    private Employee(Guid id, string name, List<string> skills)
+    {
+        Id = id;
+        Name = name;
+        Skills = skills;
+    }
+
+    public static Employee FromPersistence(Guid id, string name, List<string> skills)
+    {
+        return new Employee(id, name, skills);
+    }
+
     public bool HasSkill(string skill)
     {
         return Skills.Contains(skill);
