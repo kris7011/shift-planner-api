@@ -1,11 +1,13 @@
 using ShiftPlanner.Api.LoadAnalysis;
 using ShiftPlanner.Api.Health;
 using ShiftPlanner.Application;
+using ShiftPlanner.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddApplication();
+builder.Services.AddInfrastructure();
 
 var app = builder.Build();
 
