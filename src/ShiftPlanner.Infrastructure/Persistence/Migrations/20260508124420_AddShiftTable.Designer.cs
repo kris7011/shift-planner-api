@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShiftPlanner.Infrastructure.Persistence;
 
@@ -10,9 +11,11 @@ using ShiftPlanner.Infrastructure.Persistence;
 namespace ShiftPlanner.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ShiftPlannerDbContext))]
-    partial class ShiftPlannerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260508124420_AddShiftTable")]
+    partial class AddShiftTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.7");
