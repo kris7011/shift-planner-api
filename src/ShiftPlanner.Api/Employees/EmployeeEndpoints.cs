@@ -11,6 +11,22 @@ public static class EmployeeEndpoints
             CreateEmployeeRequest request,
             IEmployeeRepository employeeRepository) =>
         {
+            if (string.IsNullOrWhiteSpace(request.Name))
+            {
+                return Results.BadRequest(new
+                {
+                    error = "Employee name is required."
+                });
+            }
+
+            if (request.Skills.Count == 0)
+            {
+                return Results.BadRequest(new
+                {
+                    error = "At least one skill is required."
+                });
+            }
+
             var employee = new Employee(request.Name, request.Skills);
 
             var createdEmployee = await employeeRepository.AddAsync(employee);
