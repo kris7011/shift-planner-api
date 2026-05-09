@@ -26,4 +26,16 @@ public class EmployeeLoadService : IEmployeeLoadService
 
         return total;
     }
+
+    public int CalculateLoad(List<Shift> shifts)
+    {
+        var total = 0;
+
+        foreach (var shift in shifts)
+        {
+            total += _shiftLoadCalculator.Calculate(shift);
+        }
+
+        return total;
+    }
 }
