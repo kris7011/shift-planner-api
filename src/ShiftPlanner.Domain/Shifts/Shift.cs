@@ -21,6 +21,31 @@ public class Shift
         AssignedEmployees = new List<Employee>();
     }
 
+    private Shift(
+    Guid id,
+    DateOnly date,
+    ShiftType shiftType,
+    string requiredSkill,
+    int requiredStaff)
+    {
+        Id = id;
+        Date = date;
+        ShiftType = shiftType;
+        RequiredSkill = requiredSkill;
+        RequiredStaff = requiredStaff;
+        AssignedEmployees = new List<Employee>();
+    }
+
+    public static Shift FromPersistence(
+        Guid id,
+        DateOnly date,
+        ShiftType shiftType,
+        string requiredSkill,
+        int requiredStaff)
+    {
+        return new Shift(id, date, shiftType, requiredSkill, requiredStaff);
+    }
+
     public bool IsFullyStaffed()
     {
         return AssignedEmployees.Count >= RequiredStaff;
