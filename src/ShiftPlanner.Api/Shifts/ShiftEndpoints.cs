@@ -15,7 +15,8 @@ public static class ShiftEndpoints
                 request.Date,
                 request.ShiftType,
                 request.RequiredSkill,
-                request.RequiredStaff
+                request.RequiredStaff,
+                request.EmployeeId
             );
 
             var createdShift = await repository.CreateAsync(shift);
@@ -23,6 +24,7 @@ public static class ShiftEndpoints
             return Results.Ok(new
             {
                 createdShift.Id,
+                createdShift.EmployeeId,
                 createdShift.Date,
                 createdShift.ShiftType,
                 createdShift.RequiredSkill,
@@ -38,6 +40,7 @@ public static class ShiftEndpoints
             return Results.Ok(shifts.Select(shift => new
             {
                 shift.Id,
+                shift.EmployeeId,
                 shift.Date,
                 shift.ShiftType,
                 shift.RequiredSkill,
@@ -53,5 +56,6 @@ public record CreateShiftRequest(
     DateOnly Date,
     ShiftType ShiftType,
     string RequiredSkill,
-    int RequiredStaff
+    int RequiredStaff,
+    Guid? EmployeeId
 );

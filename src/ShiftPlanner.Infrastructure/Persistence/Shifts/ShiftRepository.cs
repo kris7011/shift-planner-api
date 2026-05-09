@@ -19,7 +19,7 @@ public class ShiftRepository : IShiftRepository
         var entity = new ShiftEntity
         {
             Id = shift.Id,
-            EmployeeId = Guid.Empty,
+            EmployeeId = shift.EmployeeId ?? Guid.Empty,
             Date = shift.Date,
             ShiftType = shift.ShiftType,
             RequiredSkill = shift.RequiredSkill
@@ -44,7 +44,9 @@ public class ShiftRepository : IShiftRepository
             entity.Date,
             entity.ShiftType,
             entity.RequiredSkill,
-            requiredStaff: 1))
+            requiredStaff: 1,
+            employeeId: entity.EmployeeId == Guid.Empty ? null : entity.EmployeeId
+        ))
         .ToList();
     }
 }
