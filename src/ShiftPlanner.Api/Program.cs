@@ -4,6 +4,7 @@ using ShiftPlanner.Api.Employees;
 using ShiftPlanner.Api.Middleware;
 using ShiftPlanner.Application;
 using ShiftPlanner.Infrastructure;
+using ShiftPlanner.Api.Shifts;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,5 +26,6 @@ app.UseHttpsRedirection();
 app.MapLoadAnalysisEndpoints();
 app.MapHealthEndpoints();
 app.MapEmployeeEndpoints();
+app.MapShiftEndpoints();
 
 app.Run();
