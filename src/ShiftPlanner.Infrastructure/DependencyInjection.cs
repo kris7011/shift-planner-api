@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using ShiftPlanner.Infrastructure.Persistence;
 using ShiftPlanner.Application.Employees;
 using ShiftPlanner.Infrastructure.Persistence.Employees;
 using ShiftPlanner.Application.Shifts;
+using ShiftPlanner.Infrastructure.Persistence;
+using ShiftPlanner.Infrastructure.Persistence.Shifts;
 
 namespace ShiftPlanner.Infrastructure;
 
@@ -18,6 +19,7 @@ public static class DependencyInjection
 
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IShiftRepository, ShiftRepository>();
+
 
         return services;
     }

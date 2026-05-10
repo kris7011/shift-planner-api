@@ -1,4 +1,5 @@
 using ShiftPlanner.Application.Employees;
+using ShiftPlanner.Application.Shifts;
 using ShiftPlanner.Domain.Employees;
 
 namespace ShiftPlanner.Api.Employees;
@@ -50,6 +51,23 @@ public static class EmployeeEndpoints
                 employee.Name,
                 employee.Skills
             }));
+        });
+
+        app.MapGet("/api/employees/{id:guid}/load", async (
+            Guid id,
+            IShiftRepository shiftRepository,
+            IEmployeeLoadService employeeLoadService) =>
+        {
+            var shifts = await shiftRepository.GetByEmployeeIdAsync(id);
+
+            var totalLoad = employeeLoadService.CalculateLoad(shifts);
+
+            return Results.Ok(new
+            {
+                employeeId = id,
+                shiftCount = shifts.Count,
+                totalLoad
+            });
         });
     }
 }

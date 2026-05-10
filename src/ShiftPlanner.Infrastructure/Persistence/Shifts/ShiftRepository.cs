@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using ShiftPlanner.Application.Shifts;
 using ShiftPlanner.Domain.Shifts;
-using ShiftPlanner.Infrastructure.Persistence.Shifts;
 
-namespace ShiftPlanner.Infrastructure.Persistence;
+namespace ShiftPlanner.Infrastructure.Persistence.Shifts;
 
 public class ShiftRepository : IShiftRepository
 {
@@ -48,5 +47,23 @@ public class ShiftRepository : IShiftRepository
             employeeId: entity.EmployeeId == Guid.Empty ? null : entity.EmployeeId
         ))
         .ToList();
+    }
+
+    public async Task<List<Shift>> GetByEmployeeIdAsync(Guid employeeId)
+    {
+        var entities = await _dbContext.Shifts
+            .AsNoTracking()
+            .Where(entity => entity.EmployeeId == employeeId)
+            .ToListAsync();
+
+        return entities
+            .Select(entity => Shift.FromPersistence(
+                entity.Id,
+                entity.Date,
+                entity.ShiftType,
+                entity.RequiredSkill,
+                requiredStaff: 1,
+                employeeId: entity.EmployeeId == Guid.Empty ? null : entity.EmployeeId))
+            .ToList();
     }
 }
