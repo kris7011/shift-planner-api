@@ -69,6 +69,26 @@ public static class EmployeeEndpoints
                 totalLoad
             });
         });
+
+        app.MapGet("/api/employees/{id:guid}/overload-status", async (
+            Guid id,
+            IShiftRepository shiftRepository,
+            IEmployeeLoadService employeeLoadService,
+            IEmployeeLoadStatusService statusService) =>
+        {
+            var shifts = await shiftRepository.GetByEmployeeIdAsync(id);
+
+            var totalLoad = employeeLoadService.CalculateLoad(shifts);
+            var status = statusService.CalculateStatus(totalLoad);
+
+            return Results.Ok(new
+            {
+                employeeId = id,
+                shiftCount = shifts.Count,
+                totalLoad,
+                status = status.ToString()
+            });
+        });
     }
 }
 

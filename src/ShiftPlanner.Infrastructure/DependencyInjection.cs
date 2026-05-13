@@ -19,6 +19,7 @@ public static class DependencyInjection
 
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IShiftRepository, ShiftRepository>();
+        services.AddScoped<IEmployeeLoadStatusService, EmployeeLoadStatusService>();
 
 
         return services;
