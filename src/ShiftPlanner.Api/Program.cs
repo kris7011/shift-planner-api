@@ -2,9 +2,10 @@ using ShiftPlanner.Api.LoadAnalysis;
 using ShiftPlanner.Api.Health;
 using ShiftPlanner.Api.Employees;
 using ShiftPlanner.Api.Middleware;
+using ShiftPlanner.Api.Shifts;
+using ShiftPlanner.Api.Scheduling;
 using ShiftPlanner.Application;
 using ShiftPlanner.Infrastructure;
-using ShiftPlanner.Api.Shifts;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,5 +28,6 @@ app.MapLoadAnalysisEndpoints();
 app.MapHealthEndpoints();
 app.MapEmployeeEndpoints();
 app.MapShiftEndpoints();
+app.MapSchedulingEndpoints();
 
 app.Run();
