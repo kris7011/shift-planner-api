@@ -17,13 +17,14 @@ public static class SchedulingEndpoints
             var employees = await employeeRepository.GetAllAsync();
             var shifts = await shiftRepository.GetAllAsync();
 
-            await scheduleGeneratorService.GenerateAsync();
+            var schedule = scheduleGeneratorService.Generate(employees, shifts);
 
             return Results.Ok(new
             {
                 message = "Schedule generation completed.",
                 employeeCount = employees.Count,
-                shiftCount = shifts.Count
+                shiftCount = shifts.Count,
+                assignments = schedule
             });
         });
     }

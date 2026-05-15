@@ -1,6 +1,11 @@
+using ShiftPlanner.Domain.Employees;
+using ShiftPlanner.Domain.Shifts;
+
 namespace ShiftPlanner.Application.Scheduling;
 
 public interface IScheduleGeneratorService
 {
-    Task GenerateAsync();
+    List<ScheduleAssignmentResult> Generate(
+        List<Employee> employees,
+        List<Shift> shifts);
 }
