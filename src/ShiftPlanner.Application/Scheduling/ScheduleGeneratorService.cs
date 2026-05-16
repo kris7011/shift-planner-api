@@ -7,10 +7,14 @@ namespace ShiftPlanner.Application.Scheduling;
 public class ScheduleGeneratorService : IScheduleGeneratorService
 {
     private readonly IEmployeeLoadService _employeeLoadService;
+    private readonly IEmployeeLoadStatusService _loadStatusService;
 
-    public ScheduleGeneratorService(IEmployeeLoadService employeeLoadService)
+    public ScheduleGeneratorService(
+        IEmployeeLoadService employeeLoadService,
+        IEmployeeLoadStatusService loadStatusService)
     {
         _employeeLoadService = employeeLoadService;
+        _loadStatusService = loadStatusService;
     }
 
     public List<ScheduleAssignmentResult> Generate(
@@ -23,6 +27,20 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
         {
             var matchingEmployee = employees
                 .Where(employee => employee.HasSkill(shift.RequiredSkill))
+                .Where(employee =>
+                {
+                    var employeeShifts = shifts
+                        .Where(existingShift => existingShift.EmployeeId == employee.Id)
+                        .ToList();
+
+                    var currentLoad = _employeeLoadService.CalculateLoad(employeeShifts);
+                    var newShiftLoad = _employeeLoadService.CalculateLoad(new List<Shift> { shift });
+                    var projectedLoad = currentLoad + newShiftLoad;
+
+                    var projectedStatus = _loadStatusService.CalculateStatus(projectedLoad);
+
+                    return projectedStatus != LoadStatus.High;
+                })
                 .OrderBy(employee =>
                 {
                     var employeeShifts = shifts

@@ -22,7 +22,8 @@ public class ScheduleGeneratorServiceTests
         var shifts = new List<Shift> { shift };
 
         var loadService = new EmployeeLoadService();
-        var service = new ScheduleGeneratorService(loadService);
+        var statusService = new EmployeeLoadStatusService();
+        var service = new ScheduleGeneratorService(loadService, statusService);
 
         var result = service.Generate(employees, shifts);
 
@@ -47,7 +48,8 @@ public class ScheduleGeneratorServiceTests
         var shifts = new List<Shift> { shift };
 
         var loadService = new EmployeeLoadService();
-        var service = new ScheduleGeneratorService(loadService);
+        var statusService = new EmployeeLoadStatusService();
+        var service = new ScheduleGeneratorService(loadService, statusService);
 
         var result = service.Generate(employees, shifts);
 
@@ -89,7 +91,8 @@ public class ScheduleGeneratorServiceTests
     };
 
         var loadService = new EmployeeLoadService();
-        var service = new ScheduleGeneratorService(loadService);
+        var statusService = new EmployeeLoadStatusService();
+        var service = new ScheduleGeneratorService(loadService, statusService);
 
         var result = service.Generate(employees, shifts);
 
@@ -97,5 +100,38 @@ public class ScheduleGeneratorServiceTests
 
         Assert.True(assignment.WasAssigned);
         Assert.Equal(lowLoadEmployee.Id, assignment.EmployeeId);
+    }
+
+    [Fact]
+    public void Generate_DoesNotAssignEmployee_WhenProjectedLoadWouldBeHigh()
+    {
+        var employee = new Employee("Kris", new List<string> { "CT" });
+
+        var existingNightShift = new Shift(
+            new DateOnly(2026, 5, 18),
+            ShiftType.Night,
+            "CT",
+            1,
+            employee.Id);
+
+        var newNightShift = new Shift(
+            new DateOnly(2026, 5, 20),
+            ShiftType.Night,
+            "CT",
+            1);
+
+        var employees = new List<Employee> { employee };
+        var shifts = new List<Shift> { existingNightShift, newNightShift };
+
+        var loadService = new EmployeeLoadService();
+        var statusService = new EmployeeLoadStatusService();
+        var service = new ScheduleGeneratorService(loadService, statusService);
+
+        var result = service.Generate(employees, shifts);
+
+        var assignment = result.First(x => x.ShiftId == newNightShift.Id);
+
+        Assert.False(assignment.WasAssigned);
+        Assert.Null(assignment.EmployeeId);
     }
 }
