@@ -32,11 +32,16 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Skill-based automatic assignment
 - Lowest-load employee selection
 - High-load prevention during schedule generation
+- Maximum assignments per employee
+- Prevention of multiple shifts on the same day
+- Prevention of day shifts after night shifts
 - Persisted generated assignments
 - REST API endpoints
+- Swagger / OpenAPI documentation
 - Dependency Injection
-- OpenAPI support
+- Clean Architecture separation
 - Unit tested business logic
+- GitHub Actions CI pipeline
 
 ---
 
@@ -49,7 +54,8 @@ The solution is built using Clean Architecture principles with strong focus on:
 - SQLite
 - xUnit
 - Dependency Injection
-- OpenAPI
+- Swagger / OpenAPI
+- GitHub Actions
 - Clean Architecture
 
 ---
@@ -89,6 +95,8 @@ Contains:
 - scheduling services
 - workload calculation services
 - overload detection services
+- scheduling rules
+- request/response models
 
 ---
 
@@ -110,6 +118,7 @@ Contains:
 - request/response contracts
 - dependency injection setup
 - middleware configuration
+- Swagger configuration
 
 ---
 
@@ -178,6 +187,17 @@ Generates schedule assignments based on:
 - employee skills
 - current employee workload
 - overload prevention
+- maximum assignments
+- same-day assignment prevention
+- night-to-day scheduling prevention
+
+### Example Request
+
+```json
+{
+  "maxAssignmentsPerEmployee": 5
+}
+```
 
 ### Example Response
 
@@ -197,6 +217,21 @@ Generates schedule assignments based on:
   ]
 }
 ```
+
+---
+
+# Scheduling Rules
+
+The scheduling engine currently supports several automatic scheduling constraints:
+
+- Employees must have the required shift skill
+- Employees with the lowest current workload are prioritized
+- Employees cannot exceed configured assignment limits
+- Employees cannot be assigned multiple shifts on the same day
+- Employees cannot be assigned a day shift directly after a night shift
+- High projected workload assignments are automatically prevented
+
+The scheduling engine is designed for future extension through isolated scheduling rules and services.
 
 ---
 
@@ -222,9 +257,39 @@ dotnet run --project src/ShiftPlanner.Api
 
 ---
 
+# Swagger UI
+
+After starting the API, Swagger UI is available at:
+
+```text
+http://localhost:5026/swagger
+```
+
+Swagger provides interactive API documentation and endpoint testing.
+
+---
+
+# CI Pipeline
+
+The project includes a GitHub Actions workflow that automatically:
+
+- restores dependencies
+- builds the solution
+- runs unit tests
+
+on every push and pull request.
+
+Workflow file:
+
+```text
+.github/workflows/dotnet.yml
+```
+
+---
+
 # Test Status
 
-The solution currently includes 27 unit tests covering:
+The solution currently includes unit tests covering:
 
 - Shift staffing rules
 - Skill validation
@@ -236,6 +301,9 @@ The solution currently includes 27 unit tests covering:
 - Skill-based assignment
 - Lowest-load employee selection
 - High-load assignment prevention
+- Maximum assignment rules
+- Same-day assignment prevention
+- Night-to-day scheduling prevention
 
 ---
 
@@ -250,6 +318,8 @@ Skill matching
 ↓
 Load balancing
 ↓
+Scheduling rules validation
+↓
 Overload prevention
 ↓
 Persist assignments
@@ -261,14 +331,32 @@ Updated database state
 
 # Future Improvements
 
+- Rule-based scheduling engine
+- Dedicated scheduling rule classes
 - Weekly scheduling windows
 - Fairness balancing across departments
-- Rest-time validation rules
+- EU rest-time compliance validation
 - Maximum shifts per week
+- Weekend distribution balancing
 - Employee preference profiles
-- CSV shift import/export
+- CSV/Excel shift import/export
 - Authentication and authorization
 - Advanced healthcare scheduling rules
-- Frontend dashboard
-- Docker support
-- CI/CD pipeline with GitHub Actions
+- React or Blazor frontend dashboard
+- Docker container support
+- CI/CD deployment pipeline
+- AI-assisted scheduling recommendations
+- Scheduling analytics and reporting
+
+---
+
+# Project Goals
+
+This project is designed as a backend architecture and scheduling engine portfolio project focused on:
+
+- scalable API design
+- healthcare-oriented scheduling logic
+- clean separation of responsibilities
+- maintainable business rules
+- extensible scheduling architecture
+- automated testing and validation
