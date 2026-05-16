@@ -146,4 +146,41 @@ public class ScheduleGeneratorServiceTests
         Assert.False(assignment.WasAssigned);
         Assert.Null(assignment.EmployeeId);
     }
+
+    [Fact]
+    public void Generate_DoesNotAssignEmployee_ToMultipleShiftsSameDay()
+    {
+        var employee = new Employee("Kris", new List<string> { "CT" });
+
+        var existingShift = new Shift(
+            new DateOnly(2026, 5, 20),
+            ShiftType.Day,
+            "CT",
+            1,
+            employee.Id);
+
+        var openShift = new Shift(
+            new DateOnly(2026, 5, 20),
+            ShiftType.Evening,
+            "CT",
+            1);
+
+        var employees = new List<Employee> { employee };
+        var openShifts = new List<Shift> { openShift };
+        var existingShifts = new List<Shift> { existingShift };
+
+        var loadService = new EmployeeLoadService();
+        var statusService = new EmployeeLoadStatusService();
+        var service = new ScheduleGeneratorService(loadService, statusService);
+
+        var result = service.Generate(
+            employees,
+            openShifts,
+            existingShifts,
+            maxAssignmentsPerEmployee: 5);
+
+        Assert.Single(result);
+        Assert.False(result[0].WasAssigned);
+        Assert.Null(result[0].EmployeeId);
+    }
 }

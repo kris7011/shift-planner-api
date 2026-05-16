@@ -33,9 +33,18 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
                 .Where(employee =>
                 {
                     var currentAssignmentCount = plannedShifts
-                        .Count(existingShift => existingShift.EmployeeId == employee.Id);
+        .Count(existingShift => existingShift.EmployeeId == employee.Id);
 
                     if (currentAssignmentCount >= maxAssignmentsPerEmployee)
+                    {
+                        return false;
+                    }
+
+                    var alreadyAssignedSameDay = plannedShifts.Any(existingShift =>
+                        existingShift.EmployeeId == employee.Id &&
+                        existingShift.Date == shift.Date);
+
+                    if (alreadyAssignedSameDay)
                     {
                         return false;
                     }
