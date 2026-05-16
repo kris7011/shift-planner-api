@@ -21,7 +21,8 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
 
         _rules =
         [
-            new SameDayShiftRule()
+            new SameDayShiftRule(),
+            new NightToDayRule()
         ];
     }
 
@@ -56,17 +57,6 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
                             maxAssignmentsPerEmployee));
 
                     if (!passesRules)
-                    {
-                        return false;
-                    }
-
-                    var hasNightShiftBefore = plannedShifts.Any(existingShift =>
-                        existingShift.EmployeeId == employee.Id &&
-                        existingShift.ShiftType == ShiftType.Night &&
-                        existingShift.Date.AddDays(1) == shift.Date &&
-                        shift.ShiftType == ShiftType.Day);
-
-                    if (hasNightShiftBefore)
                     {
                         return false;
                     }
