@@ -15,13 +15,20 @@ public static class SchedulingEndpoints
             IEmployeeRepository employeeRepository,
             IShiftRepository shiftRepository) =>
         {
+            if (request.MaxAssignmentsPerEmployee <= 0)
+            {
+                return Results.BadRequest(
+                    "MaxAssignmentsPerEmployee must be greater than 0.");
+            }
+
             var employees = await employeeRepository.GetAllAsync();
             var shifts = await shiftRepository.GetAllAsync();
 
             var schedule = scheduleGeneratorService.Generate(
                 employees,
                 openShifts: shifts.Where(shift => shift.EmployeeId == null).ToList(),
-                existingShifts: shifts.Where(shift => shift.EmployeeId != null).ToList());
+                existingShifts: shifts.Where(shift => shift.EmployeeId != null).ToList(),
+                maxAssignmentsPerEmployee: request.MaxAssignmentsPerEmployee);
 
             foreach (var assignment in schedule.Where(x => x.WasAssigned && x.EmployeeId.HasValue))
             {
@@ -54,8 +61,4 @@ public static class SchedulingEndpoints
             return Results.Ok(response);
         });
     }
-}
-
-public class GenerateScheduleRequest
-{
 }

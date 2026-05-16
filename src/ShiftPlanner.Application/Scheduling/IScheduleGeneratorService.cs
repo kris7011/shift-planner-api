@@ -8,5 +8,6 @@ public interface IScheduleGeneratorService
     List<ScheduleAssignmentResult> Generate(
         List<Employee> employees,
         List<Shift> openShifts,
-        List<Shift> existingShifts);
+        List<Shift> existingShifts,
+        int maxAssignmentsPerEmployee);
 }

@@ -18,9 +18,10 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
     }
 
     public List<ScheduleAssignmentResult> Generate(
-    List<Employee> employees,
-    List<Shift> openShifts,
-    List<Shift> existingShifts)
+        List<Employee> employees,
+        List<Shift> openShifts,
+        List<Shift> existingShifts,
+        int maxAssignmentsPerEmployee)
     {
         var results = new List<ScheduleAssignmentResult>();
         var plannedShifts = new List<Shift>(existingShifts);
@@ -31,6 +32,14 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
                 .Where(employee => employee.HasSkill(shift.RequiredSkill))
                 .Where(employee =>
                 {
+                    var currentAssignmentCount = plannedShifts
+                        .Count(existingShift => existingShift.EmployeeId == employee.Id);
+
+                    if (currentAssignmentCount >= maxAssignmentsPerEmployee)
+                    {
+                        return false;
+                    }
+
                     var employeeShifts = plannedShifts
                         .Where(existingShift => existingShift.EmployeeId == employee.Id)
                         .ToList();

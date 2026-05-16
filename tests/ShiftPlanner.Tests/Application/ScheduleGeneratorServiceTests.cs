@@ -25,7 +25,11 @@ public class ScheduleGeneratorServiceTests
         var statusService = new EmployeeLoadStatusService();
         var service = new ScheduleGeneratorService(loadService, statusService);
 
-        var result = service.Generate(employees, openShifts: shifts, existingShifts: new List<Shift>());
+        var result = service.Generate(
+            employees,
+            openShifts: shifts,
+            existingShifts: new List<Shift>(),
+            maxAssignmentsPerEmployee: 5);
 
         Assert.Single(result);
 
@@ -51,7 +55,11 @@ public class ScheduleGeneratorServiceTests
         var statusService = new EmployeeLoadStatusService();
         var service = new ScheduleGeneratorService(loadService, statusService);
 
-        var result = service.Generate(employees, openShifts: shifts, existingShifts: new List<Shift>());
+        var result = service.Generate(
+            employees,
+            openShifts: shifts,
+            existingShifts: new List<Shift>(),
+            maxAssignmentsPerEmployee: 5);
 
         Assert.Single(result);
 
@@ -91,7 +99,11 @@ public class ScheduleGeneratorServiceTests
         var statusService = new EmployeeLoadStatusService();
         var service = new ScheduleGeneratorService(loadService, statusService);
 
-        var result = service.Generate(employees, openShifts, existingShifts);
+        var result = service.Generate(
+            employees,
+            openShifts,
+            existingShifts,
+            maxAssignmentsPerEmployee: 5);
 
         Assert.Single(result);
         Assert.True(result[0].WasAssigned);
@@ -123,7 +135,11 @@ public class ScheduleGeneratorServiceTests
         var statusService = new EmployeeLoadStatusService();
         var service = new ScheduleGeneratorService(loadService, statusService);
 
-        var result = service.Generate(employees, openShifts: shifts, existingShifts: new List<Shift>());
+        var result = service.Generate(
+            employees,
+            openShifts: shifts,
+            existingShifts: new List<Shift>(),
+            maxAssignmentsPerEmployee: 5);
 
         var assignment = result.First(x => x.ShiftId == newNightShift.Id);
 
