@@ -5,7 +5,7 @@ namespace ShiftPlanner.Application.Scheduling.Rules;
 
 public class MaxAssignmentsRule : ISchedulingRule
 {
-    public bool CanAssign(
+    public SchedulingRuleResult Evaluate(
         Employee employee,
         Shift shift,
         List<Shift> plannedShifts,
@@ -14,6 +14,12 @@ public class MaxAssignmentsRule : ISchedulingRule
         var currentAssignmentCount = plannedShifts
             .Count(existingShift => existingShift.EmployeeId == employee.Id);
 
-        return currentAssignmentCount < maxAssignmentsPerEmployee;
+        if (currentAssignmentCount >= maxAssignmentsPerEmployee)
+        {
+            return SchedulingRuleResult.Failed(
+                "Employee has reached the maximum number of assignments.");
+        }
+
+        return SchedulingRuleResult.Passed();
     }
 }

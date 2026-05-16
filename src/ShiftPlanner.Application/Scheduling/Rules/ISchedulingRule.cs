@@ -5,7 +5,7 @@ namespace ShiftPlanner.Application.Scheduling.Rules;
 
 public interface ISchedulingRule
 {
-    bool CanAssign(
+    SchedulingRuleResult Evaluate(
         Employee employee,
         Shift shift,
         List<Shift> plannedShifts,

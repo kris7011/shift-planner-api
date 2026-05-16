@@ -5,7 +5,7 @@ namespace ShiftPlanner.Application.Scheduling.Rules;
 
 public class SameDayShiftRule : ISchedulingRule
 {
-    public bool CanAssign(
+    public SchedulingRuleResult Evaluate(
         Employee employee,
         Shift shift,
         List<Shift> plannedShifts,
@@ -15,6 +15,12 @@ public class SameDayShiftRule : ISchedulingRule
             existingShift.EmployeeId == employee.Id &&
             existingShift.Date == shift.Date);
 
-        return !alreadyAssignedSameDay;
+        if (alreadyAssignedSameDay)
+        {
+            return SchedulingRuleResult.Failed(
+                "Employee is already assigned to a shift on the same day.");
+        }
+
+        return SchedulingRuleResult.Passed();
     }
 }

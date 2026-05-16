@@ -5,7 +5,7 @@ namespace ShiftPlanner.Application.Scheduling.Rules;
 
 public class NightToDayRule : ISchedulingRule
 {
-    public bool CanAssign(
+    public SchedulingRuleResult Evaluate(
         Employee employee,
         Shift shift,
         List<Shift> plannedShifts,
@@ -17,6 +17,12 @@ public class NightToDayRule : ISchedulingRule
             existingShift.Date.AddDays(1) == shift.Date &&
             shift.ShiftType == ShiftType.Day);
 
-        return !hasNightShiftBefore;
+        if (hasNightShiftBefore)
+        {
+            return SchedulingRuleResult.Failed(
+                "Employee cannot be assigned to a day shift directly after a night shift.");
+        }
+
+        return SchedulingRuleResult.Passed();
     }
 }

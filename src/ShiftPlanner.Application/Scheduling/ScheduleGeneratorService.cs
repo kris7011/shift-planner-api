@@ -32,12 +32,24 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
         {
             var matchingEmployee = employees
                 .Where(employee => employee.HasSkill(shift.RequiredSkill))
-                .Where(employee => _rules.All(rule =>
-                    rule.CanAssign(
-                        employee,
-                        shift,
-                        plannedShifts,
-                        maxAssignmentsPerEmployee)))
+                .Where(employee =>
+                {
+                    foreach (var rule in _rules)
+                    {
+                        var ruleResult = rule.Evaluate(
+                            employee,
+                            shift,
+                            plannedShifts,
+                            maxAssignmentsPerEmployee);
+
+                        if (!ruleResult.Success)
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                })
                 .OrderBy(employee =>
                 {
                     var employeeShifts = plannedShifts

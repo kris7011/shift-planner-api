@@ -17,7 +17,7 @@ public class HighLoadRule : ISchedulingRule
         _loadStatusService = loadStatusService;
     }
 
-    public bool CanAssign(
+    public SchedulingRuleResult Evaluate(
         Employee employee,
         Shift shift,
         List<Shift> plannedShifts,
@@ -28,15 +28,17 @@ public class HighLoadRule : ISchedulingRule
             .ToList();
 
         var currentLoad = _employeeLoadService.CalculateLoad(employeeShifts);
-
-        var newShiftLoad = _employeeLoadService.CalculateLoad(
-            new List<Shift> { shift });
-
+        var newShiftLoad = _employeeLoadService.CalculateLoad(new List<Shift> { shift });
         var projectedLoad = currentLoad + newShiftLoad;
 
-        var projectedStatus =
-            _loadStatusService.CalculateStatus(projectedLoad);
+        var projectedStatus = _loadStatusService.CalculateStatus(projectedLoad);
 
-        return projectedStatus != LoadStatus.High;
+        if (projectedStatus == LoadStatus.High)
+        {
+            return SchedulingRuleResult.Failed(
+                "Employee projected workload would be too high.");
+        }
+
+        return SchedulingRuleResult.Passed();
     }
 }
