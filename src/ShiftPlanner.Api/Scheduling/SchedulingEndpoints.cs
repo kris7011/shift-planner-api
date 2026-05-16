@@ -22,6 +22,17 @@ public static class SchedulingEndpoints
                 openShifts: shifts.Where(shift => shift.EmployeeId == null).ToList(),
                 existingShifts: shifts.Where(shift => shift.EmployeeId != null).ToList());
 
+            foreach (var assignment in schedule.Where(x => x.WasAssigned && x.EmployeeId.HasValue))
+            {
+                var shift = shifts.First(x => x.Id == assignment.ShiftId);
+
+                var employeeId = assignment.EmployeeId.GetValueOrDefault();
+
+                shift.AssignToEmployee(employeeId);
+
+                await shiftRepository.UpdateAsync(shift);
+            }
+
             return Results.Ok(new
             {
                 message = "Schedule generation completed.",

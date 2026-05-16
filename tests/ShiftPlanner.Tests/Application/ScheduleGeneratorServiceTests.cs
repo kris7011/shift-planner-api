@@ -79,10 +79,10 @@ public class ScheduleGeneratorServiceTests
             1);
 
         var employees = new List<Employee>
-    {
-        highLoadEmployee,
-        lowLoadEmployee
-    };
+        {
+            highLoadEmployee,
+            lowLoadEmployee
+        };
 
         var openShifts = new List<Shift> { openShift };
         var existingShifts = new List<Shift> { existingNightShift };
