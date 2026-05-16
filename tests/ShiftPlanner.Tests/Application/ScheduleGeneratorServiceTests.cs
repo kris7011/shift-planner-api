@@ -25,7 +25,7 @@ public class ScheduleGeneratorServiceTests
         var statusService = new EmployeeLoadStatusService();
         var service = new ScheduleGeneratorService(loadService, statusService);
 
-        var result = service.Generate(employees, shifts);
+        var result = service.Generate(employees, openShifts: shifts, existingShifts: new List<Shift>());
 
         Assert.Single(result);
 
@@ -51,7 +51,7 @@ public class ScheduleGeneratorServiceTests
         var statusService = new EmployeeLoadStatusService();
         var service = new ScheduleGeneratorService(loadService, statusService);
 
-        var result = service.Generate(employees, shifts);
+        var result = service.Generate(employees, openShifts: shifts, existingShifts: new List<Shift>());
 
         Assert.Single(result);
 
@@ -72,7 +72,7 @@ public class ScheduleGeneratorServiceTests
             1,
             highLoadEmployee.Id);
 
-        var newShift = new Shift(
+        var openShift = new Shift(
             new DateOnly(2026, 5, 20),
             ShiftType.Day,
             "CT",
@@ -84,22 +84,18 @@ public class ScheduleGeneratorServiceTests
         lowLoadEmployee
     };
 
-        var shifts = new List<Shift>
-    {
-        existingNightShift,
-        newShift
-    };
+        var openShifts = new List<Shift> { openShift };
+        var existingShifts = new List<Shift> { existingNightShift };
 
         var loadService = new EmployeeLoadService();
         var statusService = new EmployeeLoadStatusService();
         var service = new ScheduleGeneratorService(loadService, statusService);
 
-        var result = service.Generate(employees, shifts);
+        var result = service.Generate(employees, openShifts, existingShifts);
 
-        var assignment = result.First(x => x.ShiftId == newShift.Id);
-
-        Assert.True(assignment.WasAssigned);
-        Assert.Equal(lowLoadEmployee.Id, assignment.EmployeeId);
+        Assert.Single(result);
+        Assert.True(result[0].WasAssigned);
+        Assert.Equal(lowLoadEmployee.Id, result[0].EmployeeId);
     }
 
     [Fact]
@@ -127,7 +123,7 @@ public class ScheduleGeneratorServiceTests
         var statusService = new EmployeeLoadStatusService();
         var service = new ScheduleGeneratorService(loadService, statusService);
 
-        var result = service.Generate(employees, shifts);
+        var result = service.Generate(employees, openShifts: shifts, existingShifts: new List<Shift>());
 
         var assignment = result.First(x => x.ShiftId == newNightShift.Id);
 

@@ -66,4 +66,24 @@ public class ShiftRepository : IShiftRepository
                 employeeId: entity.EmployeeId == Guid.Empty ? null : entity.EmployeeId))
             .ToList();
     }
+
+    public async Task<Shift> UpdateAsync(Shift shift)
+    {
+        var entity = await _dbContext.Shifts
+            .FirstOrDefaultAsync(x => x.Id == shift.Id);
+
+        if (entity == null)
+        {
+            throw new InvalidOperationException("Shift was not found.");
+        }
+
+        entity.EmployeeId = shift.EmployeeId ?? Guid.Empty;
+        entity.Date = shift.Date;
+        entity.ShiftType = shift.ShiftType;
+        entity.RequiredSkill = shift.RequiredSkill;
+
+        await _dbContext.SaveChangesAsync();
+
+        return shift;
+    }
 }

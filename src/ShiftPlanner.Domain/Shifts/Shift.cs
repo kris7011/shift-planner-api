@@ -87,4 +87,9 @@ public class Shift
 
         AssignedEmployees.Add(employee);
     }
+
+    public void AssignToEmployee(Guid employeeId)
+    {
+        EmployeeId = employeeId;
+    }
 }

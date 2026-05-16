@@ -7,5 +7,6 @@ public interface IScheduleGeneratorService
 {
     List<ScheduleAssignmentResult> Generate(
         List<Employee> employees,
-        List<Shift> shifts);
+        List<Shift> openShifts,
+        List<Shift> existingShifts);
 }

@@ -17,7 +17,10 @@ public static class SchedulingEndpoints
             var employees = await employeeRepository.GetAllAsync();
             var shifts = await shiftRepository.GetAllAsync();
 
-            var schedule = scheduleGeneratorService.Generate(employees, shifts);
+            var schedule = scheduleGeneratorService.Generate(
+                employees,
+                openShifts: shifts.Where(shift => shift.EmployeeId == null).ToList(),
+                existingShifts: shifts.Where(shift => shift.EmployeeId != null).ToList());
 
             return Results.Ok(new
             {

@@ -18,18 +18,20 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
     }
 
     public List<ScheduleAssignmentResult> Generate(
-        List<Employee> employees,
-        List<Shift> shifts)
+    List<Employee> employees,
+    List<Shift> openShifts,
+    List<Shift> existingShifts)
     {
         var results = new List<ScheduleAssignmentResult>();
+        var plannedShifts = new List<Shift>(existingShifts);
 
-        foreach (var shift in shifts)
+        foreach (var shift in openShifts)
         {
             var matchingEmployee = employees
                 .Where(employee => employee.HasSkill(shift.RequiredSkill))
                 .Where(employee =>
                 {
-                    var employeeShifts = shifts
+                    var employeeShifts = plannedShifts
                         .Where(existingShift => existingShift.EmployeeId == employee.Id)
                         .ToList();
 
@@ -43,13 +45,19 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
                 })
                 .OrderBy(employee =>
                 {
-                    var employeeShifts = shifts
+                    var employeeShifts = plannedShifts
                         .Where(existingShift => existingShift.EmployeeId == employee.Id)
                         .ToList();
 
                     return _employeeLoadService.CalculateLoad(employeeShifts);
                 })
                 .FirstOrDefault();
+
+            if (matchingEmployee != null)
+            {
+                shift.AssignToEmployee(matchingEmployee.Id);
+                plannedShifts.Add(shift);
+            }
 
             results.Add(new ScheduleAssignmentResult
             {
