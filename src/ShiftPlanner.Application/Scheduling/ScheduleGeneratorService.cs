@@ -21,6 +21,7 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
 
         _rules =
         [
+            new MaxAssignmentsRule(),
             new SameDayShiftRule(),
             new NightToDayRule()
         ];
@@ -41,14 +42,6 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
                 .Where(employee => employee.HasSkill(shift.RequiredSkill))
                 .Where(employee =>
                 {
-                    var currentAssignmentCount = plannedShifts
-                        .Count(existingShift => existingShift.EmployeeId == employee.Id);
-
-                    if (currentAssignmentCount >= maxAssignmentsPerEmployee)
-                    {
-                        return false;
-                    }
-
                     var passesRules = _rules.All(rule =>
                         rule.CanAssign(
                             employee,
