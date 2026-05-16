@@ -10,7 +10,7 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
     private readonly IEmployeeLoadService _employeeLoadService;
     private readonly IEmployeeLoadStatusService _loadStatusService;
 
-    private readonly List<ISchedulingRule> _rules;
+    private readonly IEnumerable<ISchedulingRule> _rules;
 
     public ScheduleGeneratorService(
         IEmployeeLoadService employeeLoadService,
@@ -23,7 +23,10 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
         [
             new MaxAssignmentsRule(),
             new SameDayShiftRule(),
-            new NightToDayRule()
+            new NightToDayRule(),
+            new HighLoadRule(
+                employeeLoadService,
+                loadStatusService)
         ];
     }
 
@@ -40,32 +43,12 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
         {
             var matchingEmployee = employees
                 .Where(employee => employee.HasSkill(shift.RequiredSkill))
-                .Where(employee =>
-                {
-                    var passesRules = _rules.All(rule =>
-                        rule.CanAssign(
-                            employee,
-                            shift,
-                            plannedShifts,
-                            maxAssignmentsPerEmployee));
-
-                    if (!passesRules)
-                    {
-                        return false;
-                    }
-
-                    var employeeShifts = plannedShifts
-                        .Where(existingShift => existingShift.EmployeeId == employee.Id)
-                        .ToList();
-
-                    var currentLoad = _employeeLoadService.CalculateLoad(employeeShifts);
-                    var newShiftLoad = _employeeLoadService.CalculateLoad(new List<Shift> { shift });
-                    var projectedLoad = currentLoad + newShiftLoad;
-
-                    var projectedStatus = _loadStatusService.CalculateStatus(projectedLoad);
-
-                    return projectedStatus != LoadStatus.High;
-                })
+                .Where(employee => _rules.All(rule =>
+                    rule.CanAssign(
+                        employee,
+                        shift,
+                        plannedShifts,
+                        maxAssignmentsPerEmployee)))
                 .OrderBy(employee =>
                 {
                     var employeeShifts = plannedShifts
