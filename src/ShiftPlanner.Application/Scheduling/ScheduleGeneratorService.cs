@@ -33,7 +33,7 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
                 .Where(employee =>
                 {
                     var currentAssignmentCount = plannedShifts
-        .Count(existingShift => existingShift.EmployeeId == employee.Id);
+                        .Count(existingShift => existingShift.EmployeeId == employee.Id);
 
                     if (currentAssignmentCount >= maxAssignmentsPerEmployee)
                     {
@@ -45,6 +45,17 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
                         existingShift.Date == shift.Date);
 
                     if (alreadyAssignedSameDay)
+                    {
+                        return false;
+                    }
+
+                    var hasNightShiftBefore = plannedShifts.Any(existingShift =>
+                        existingShift.EmployeeId == employee.Id &&
+                        existingShift.ShiftType == ShiftType.Night &&
+                        existingShift.Date.AddDays(1) == shift.Date &&
+                        shift.ShiftType == ShiftType.Day);
+
+                    if (hasNightShiftBefore)
                     {
                         return false;
                     }

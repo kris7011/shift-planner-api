@@ -183,4 +183,41 @@ public class ScheduleGeneratorServiceTests
         Assert.False(result[0].WasAssigned);
         Assert.Null(result[0].EmployeeId);
     }
+
+    [Fact]
+    public void Generate_DoesNotAssignDayShift_AfterNightShift()
+    {
+        var employee = new Employee("Kris", new List<string> { "CT" });
+
+        var existingNightShift = new Shift(
+            new DateOnly(2026, 5, 20),
+            ShiftType.Night,
+            "CT",
+            1,
+            employee.Id);
+
+        var openDayShift = new Shift(
+            new DateOnly(2026, 5, 21),
+            ShiftType.Day,
+            "CT",
+            1);
+
+        var employees = new List<Employee> { employee };
+        var openShifts = new List<Shift> { openDayShift };
+        var existingShifts = new List<Shift> { existingNightShift };
+
+        var loadService = new EmployeeLoadService();
+        var statusService = new EmployeeLoadStatusService();
+        var service = new ScheduleGeneratorService(loadService, statusService);
+
+        var result = service.Generate(
+            employees,
+            openShifts,
+            existingShifts,
+            maxAssignmentsPerEmployee: 5);
+
+        Assert.Single(result);
+        Assert.False(result[0].WasAssigned);
+        Assert.Null(result[0].EmployeeId);
+    }
 }
