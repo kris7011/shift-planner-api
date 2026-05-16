@@ -2,6 +2,7 @@ using ShiftPlanner.Application.Scheduling;
 using ShiftPlanner.Domain.Employees;
 using ShiftPlanner.Domain.Shifts;
 using ShiftPlanner.Application.Employees;
+using ShiftPlanner.Application.Scheduling.Rules;
 
 namespace ShiftPlanner.Tests.Application;
 
@@ -23,7 +24,16 @@ public class ScheduleGeneratorServiceTests
 
         var loadService = new EmployeeLoadService();
         var statusService = new EmployeeLoadStatusService();
-        var service = new ScheduleGeneratorService(loadService, statusService);
+
+        var rules = new List<ISchedulingRule>
+        {
+            new MaxAssignmentsRule(),
+            new SameDayShiftRule(),
+            new NightToDayRule(),
+            new HighLoadRule(loadService, statusService)
+        };
+
+        var service = new ScheduleGeneratorService(loadService, rules);
 
         var result = service.Generate(
             employees,
@@ -53,7 +63,16 @@ public class ScheduleGeneratorServiceTests
 
         var loadService = new EmployeeLoadService();
         var statusService = new EmployeeLoadStatusService();
-        var service = new ScheduleGeneratorService(loadService, statusService);
+
+        var rules = new List<ISchedulingRule>
+        {
+            new MaxAssignmentsRule(),
+            new SameDayShiftRule(),
+            new NightToDayRule(),
+            new HighLoadRule(loadService, statusService)
+        };
+
+        var service = new ScheduleGeneratorService(loadService, rules);
 
         var result = service.Generate(
             employees,
@@ -97,7 +116,15 @@ public class ScheduleGeneratorServiceTests
 
         var loadService = new EmployeeLoadService();
         var statusService = new EmployeeLoadStatusService();
-        var service = new ScheduleGeneratorService(loadService, statusService);
+        var rules = new List<ISchedulingRule>
+        {
+            new MaxAssignmentsRule(),
+            new SameDayShiftRule(),
+            new NightToDayRule(),
+            new HighLoadRule(loadService, statusService)
+        };
+
+        var service = new ScheduleGeneratorService(loadService, rules);
 
         var result = service.Generate(
             employees,
@@ -133,7 +160,15 @@ public class ScheduleGeneratorServiceTests
 
         var loadService = new EmployeeLoadService();
         var statusService = new EmployeeLoadStatusService();
-        var service = new ScheduleGeneratorService(loadService, statusService);
+        var rules = new List<ISchedulingRule>
+        {
+            new MaxAssignmentsRule(),
+            new SameDayShiftRule(),
+            new NightToDayRule(),
+            new HighLoadRule(loadService, statusService)
+        };
+
+        var service = new ScheduleGeneratorService(loadService, rules);
 
         var result = service.Generate(
             employees,
@@ -171,7 +206,15 @@ public class ScheduleGeneratorServiceTests
 
         var loadService = new EmployeeLoadService();
         var statusService = new EmployeeLoadStatusService();
-        var service = new ScheduleGeneratorService(loadService, statusService);
+        var rules = new List<ISchedulingRule>
+        {
+            new MaxAssignmentsRule(),
+            new SameDayShiftRule(),
+            new NightToDayRule(),
+            new HighLoadRule(loadService, statusService)
+        };
+
+        var service = new ScheduleGeneratorService(loadService, rules);
 
         var result = service.Generate(
             employees,
@@ -208,7 +251,15 @@ public class ScheduleGeneratorServiceTests
 
         var loadService = new EmployeeLoadService();
         var statusService = new EmployeeLoadStatusService();
-        var service = new ScheduleGeneratorService(loadService, statusService);
+        var rules = new List<ISchedulingRule>
+        {
+            new MaxAssignmentsRule(),
+            new SameDayShiftRule(),
+            new NightToDayRule(),
+            new HighLoadRule(loadService, statusService)
+        };
+
+        var service = new ScheduleGeneratorService(loadService, rules);
 
         var result = service.Generate(
             employees,

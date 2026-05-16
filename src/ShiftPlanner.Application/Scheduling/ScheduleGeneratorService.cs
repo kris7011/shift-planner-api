@@ -8,26 +8,15 @@ namespace ShiftPlanner.Application.Scheduling;
 public class ScheduleGeneratorService : IScheduleGeneratorService
 {
     private readonly IEmployeeLoadService _employeeLoadService;
-    private readonly IEmployeeLoadStatusService _loadStatusService;
 
     private readonly IEnumerable<ISchedulingRule> _rules;
 
     public ScheduleGeneratorService(
         IEmployeeLoadService employeeLoadService,
-        IEmployeeLoadStatusService loadStatusService)
+        IEnumerable<ISchedulingRule> rules)
     {
         _employeeLoadService = employeeLoadService;
-        _loadStatusService = loadStatusService;
-
-        _rules =
-        [
-            new MaxAssignmentsRule(),
-            new SameDayShiftRule(),
-            new NightToDayRule(),
-            new HighLoadRule(
-                employeeLoadService,
-                loadStatusService)
-        ];
+        _rules = rules;
     }
 
     public List<ScheduleAssignmentResult> Generate(
