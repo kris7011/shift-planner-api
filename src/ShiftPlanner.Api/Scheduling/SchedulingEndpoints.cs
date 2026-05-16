@@ -1,5 +1,6 @@
 using ShiftPlanner.Application.Employees;
 using ShiftPlanner.Application.Scheduling;
+using ShiftPlanner.Application.Scheduling.Models;
 using ShiftPlanner.Application.Shifts;
 
 namespace ShiftPlanner.Api.Scheduling;
@@ -33,13 +34,24 @@ public static class SchedulingEndpoints
                 await shiftRepository.UpdateAsync(shift);
             }
 
-            return Results.Ok(new
+            var response = new GenerateScheduleResponse
             {
-                message = "Schedule generation completed.",
-                employeeCount = employees.Count,
-                shiftCount = shifts.Count,
-                assignments = schedule
-            });
+                Message = "Schedule generation completed.",
+                EmployeeCount = employees.Count,
+                ShiftCount = shifts.Count,
+                Assignments = schedule
+                    .Select(assignment => new ScheduleAssignmentResponse
+                    {
+                        ShiftId = assignment.ShiftId,
+                        EmployeeId = assignment.EmployeeId,
+                        EmployeeName = assignment.EmployeeName,
+                        RequiredSkill = assignment.RequiredSkill,
+                        WasAssigned = assignment.WasAssigned
+                    })
+                    .ToList()
+            };
+
+            return Results.Ok(response);
         });
     }
 }
