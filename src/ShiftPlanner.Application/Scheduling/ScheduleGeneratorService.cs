@@ -1,4 +1,5 @@
 using ShiftPlanner.Application.Employees;
+using ShiftPlanner.Application.Scheduling.Rules;
 using ShiftPlanner.Domain.Employees;
 using ShiftPlanner.Domain.Shifts;
 
@@ -9,12 +10,19 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
     private readonly IEmployeeLoadService _employeeLoadService;
     private readonly IEmployeeLoadStatusService _loadStatusService;
 
+    private readonly List<ISchedulingRule> _rules;
+
     public ScheduleGeneratorService(
         IEmployeeLoadService employeeLoadService,
         IEmployeeLoadStatusService loadStatusService)
     {
         _employeeLoadService = employeeLoadService;
         _loadStatusService = loadStatusService;
+
+        _rules =
+        [
+            new SameDayShiftRule()
+        ];
     }
 
     public List<ScheduleAssignmentResult> Generate(
@@ -40,11 +48,14 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
                         return false;
                     }
 
-                    var alreadyAssignedSameDay = plannedShifts.Any(existingShift =>
-                        existingShift.EmployeeId == employee.Id &&
-                        existingShift.Date == shift.Date);
+                    var passesRules = _rules.All(rule =>
+                        rule.CanAssign(
+                            employee,
+                            shift,
+                            plannedShifts,
+                            maxAssignmentsPerEmployee));
 
-                    if (alreadyAssignedSameDay)
+                    if (!passesRules)
                     {
                         return false;
                     }
