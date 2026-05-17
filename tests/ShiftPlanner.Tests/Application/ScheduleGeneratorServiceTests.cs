@@ -271,4 +271,58 @@ public class ScheduleGeneratorServiceTests
         Assert.False(result[0].WasAssigned);
         Assert.Null(result[0].EmployeeId);
     }
+
+    [Fact]
+    public void Generate_ReturnsFailureReasons_WhenEmployeeCannotBeAssigned()
+    {
+        var employee = new Employee("Kris", new List<string> { "CT" });
+
+        var existingShift = new Shift(
+            new DateOnly(2026, 5, 20),
+            ShiftType.Day,
+            "CT",
+            1,
+            employee.Id);
+
+        var openShift = new Shift(
+            new DateOnly(2026, 5, 20),
+            ShiftType.Evening,
+            "CT",
+            1);
+
+        var employees = new List<Employee> { employee };
+
+        var openShifts = new List<Shift> { openShift };
+
+        var existingShifts = new List<Shift> { existingShift };
+
+        var loadService = new EmployeeLoadService();
+        var statusService = new EmployeeLoadStatusService();
+
+        var rules = new List<ISchedulingRule>
+    {
+        new MaxAssignmentsRule(),
+        new SameDayShiftRule(),
+        new NightToDayRule(),
+        new HighLoadRule(loadService, statusService)
+    };
+
+        var service = new ScheduleGeneratorService(
+            loadService,
+            rules);
+
+        var result = service.Generate(
+            employees,
+            openShifts,
+            existingShifts,
+            maxAssignmentsPerEmployee: 5);
+
+        var assignment = result.First();
+
+        Assert.False(assignment.WasAssigned);
+
+        Assert.Contains(
+            assignment.FailureReasons,
+            x => x.Contains("same day"));
+    }
 }
