@@ -3,6 +3,7 @@ using ShiftPlanner.Domain.Employees;
 using ShiftPlanner.Domain.Shifts;
 using ShiftPlanner.Application.Employees;
 using ShiftPlanner.Application.Scheduling.Rules;
+using ShiftPlanner.Tests.Helpers;
 
 namespace ShiftPlanner.Tests.Application;
 
@@ -33,7 +34,7 @@ public class ScheduleGeneratorServiceTests
             new HighLoadRule(loadService, statusService)
         };
 
-        var service = new ScheduleGeneratorService(loadService, rules);
+        var service = ScheduleGeneratorServiceFactory.Create();
 
         var result = service.Generate(
             employees,
@@ -72,7 +73,7 @@ public class ScheduleGeneratorServiceTests
             new HighLoadRule(loadService, statusService)
         };
 
-        var service = new ScheduleGeneratorService(loadService, rules);
+        var service = ScheduleGeneratorServiceFactory.Create();
 
         var result = service.Generate(
             employees,
@@ -124,7 +125,7 @@ public class ScheduleGeneratorServiceTests
             new HighLoadRule(loadService, statusService)
         };
 
-        var service = new ScheduleGeneratorService(loadService, rules);
+        var service = ScheduleGeneratorServiceFactory.Create();
 
         var result = service.Generate(
             employees,
@@ -168,7 +169,7 @@ public class ScheduleGeneratorServiceTests
             new HighLoadRule(loadService, statusService)
         };
 
-        var service = new ScheduleGeneratorService(loadService, rules);
+        var service = ScheduleGeneratorServiceFactory.Create();
 
         var result = service.Generate(
             employees,
@@ -214,7 +215,7 @@ public class ScheduleGeneratorServiceTests
             new HighLoadRule(loadService, statusService)
         };
 
-        var service = new ScheduleGeneratorService(loadService, rules);
+        var service = ScheduleGeneratorServiceFactory.Create();
 
         var result = service.Generate(
             employees,
@@ -259,7 +260,7 @@ public class ScheduleGeneratorServiceTests
             new HighLoadRule(loadService, statusService)
         };
 
-        var service = new ScheduleGeneratorService(loadService, rules);
+        var service = ScheduleGeneratorServiceFactory.Create();
 
         var result = service.Generate(
             employees,
@@ -307,9 +308,7 @@ public class ScheduleGeneratorServiceTests
         new HighLoadRule(loadService, statusService)
     };
 
-        var service = new ScheduleGeneratorService(
-            loadService,
-            rules);
+        var service = ScheduleGeneratorServiceFactory.Create();
 
         var result = service.Generate(
             employees,
