@@ -20,36 +20,55 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
     }
 
     public List<ScheduleAssignmentResult> Generate(
-        List<Employee> employees,
-        List<Shift> openShifts,
-        List<Shift> existingShifts,
-        int maxAssignmentsPerEmployee)
+    List<Employee> employees,
+    List<Shift> openShifts,
+    List<Shift> existingShifts,
+    int maxAssignmentsPerEmployee)
     {
         var results = new List<ScheduleAssignmentResult>();
         var plannedShifts = new List<Shift>(existingShifts);
 
         foreach (var shift in openShifts)
         {
-            var matchingEmployee = employees
-                .Where(employee => employee.HasSkill(shift.RequiredSkill))
-                .Where(employee =>
+            var candidates = new List<Employee>();
+            var failureReasons = new List<string>();
+
+            foreach (var employee in employees)
+            {
+                if (!employee.HasSkill(shift.RequiredSkill))
                 {
-                    foreach (var rule in _rules)
-                    {
-                        var ruleResult = rule.Evaluate(
-                            employee,
-                            shift,
-                            plannedShifts,
-                            maxAssignmentsPerEmployee);
+                    failureReasons.Add(
+                        $"{employee.Name}: Missing required skill '{shift.RequiredSkill}'.");
 
-                        if (!ruleResult.Success)
-                        {
-                            return false;
-                        }
-                    }
+                    continue;
+                }
 
-                    return true;
-                })
+                var ruleResults = _rules
+                    .Select(rule => rule.Evaluate(
+                        employee,
+                        shift,
+                        plannedShifts,
+                        maxAssignmentsPerEmployee))
+                    .ToList();
+
+                var failedRules = ruleResults
+                    .Where(result => !result.Success)
+                    .ToList();
+
+                if (failedRules.Count > 0)
+                {
+                    failureReasons.AddRange(
+                        failedRules
+                            .Where(result => !string.IsNullOrWhiteSpace(result.FailureReason))
+                            .Select(result => $"{employee.Name}: {result.FailureReason}"));
+
+                    continue;
+                }
+
+                candidates.Add(employee);
+            }
+
+            var matchingEmployee = candidates
                 .OrderBy(employee =>
                 {
                     var employeeShifts = plannedShifts
@@ -72,7 +91,10 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
                 EmployeeId = matchingEmployee?.Id,
                 EmployeeName = matchingEmployee?.Name,
                 RequiredSkill = shift.RequiredSkill,
-                WasAssigned = matchingEmployee != null
+                WasAssigned = matchingEmployee != null,
+                FailureReasons = matchingEmployee == null
+                    ? failureReasons
+                    : []
             });
         }
 

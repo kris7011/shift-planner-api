@@ -47,15 +47,16 @@ public static class SchedulingEndpoints
                 EmployeeCount = employees.Count,
                 ShiftCount = shifts.Count,
                 Assignments = schedule
-                    .Select(assignment => new ScheduleAssignmentResponse
-                    {
-                        ShiftId = assignment.ShiftId,
-                        EmployeeId = assignment.EmployeeId,
-                        EmployeeName = assignment.EmployeeName,
-                        RequiredSkill = assignment.RequiredSkill,
-                        WasAssigned = assignment.WasAssigned
-                    })
-                    .ToList()
+                .Select(assignment => new ScheduleAssignmentResponse
+                {
+                    ShiftId = assignment.ShiftId,
+                    EmployeeId = assignment.EmployeeId,
+                    EmployeeName = assignment.EmployeeName,
+                    RequiredSkill = assignment.RequiredSkill,
+                    WasAssigned = assignment.WasAssigned,
+                    FailureReasons = assignment.FailureReasons
+                })
+                .ToList()
             };
 
             return Results.Ok(response);

@@ -7,4 +7,5 @@ public class ScheduleAssignmentResult
     public string? EmployeeName { get; set; }
     public string RequiredSkill { get; set; } = string.Empty;
     public bool WasAssigned { get; set; }
+    public List<string> FailureReasons { get; set; } = [];
 }

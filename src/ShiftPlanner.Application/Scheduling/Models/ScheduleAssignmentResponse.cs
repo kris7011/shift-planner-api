@@ -11,4 +11,5 @@ public class ScheduleAssignmentResponse
     public string RequiredSkill { get; set; } = string.Empty;
 
     public bool WasAssigned { get; set; }
+    public List<string> FailureReasons { get; set; } = [];
 }
