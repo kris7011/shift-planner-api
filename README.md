@@ -309,7 +309,7 @@ on every push to GitHub.
 
 # Test Status
 
-The solution currently includes 30 unit tests covering:
+The solution currently includes 38 unit tests covering:
 
 - Shift staffing rules
 - Skill validation
@@ -323,6 +323,7 @@ The solution currently includes 30 unit tests covering:
 - Night-to-day shift prevention
 - Scheduling failure reasons
 - Rule evaluation behavior
+- Isolated scheduling rule tests
 
 ---
 
