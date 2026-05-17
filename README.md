@@ -1,6 +1,6 @@
 # ShiftPlanner API
 
-A backend-focused workforce planning and load analysis system built with C# and .NET.
+A backend-focused workforce planning and scheduling system built with C# and .NET.
 
 The project simulates healthcare-oriented workforce scheduling by combining:
 
@@ -8,7 +8,8 @@ The project simulates healthcare-oriented workforce scheduling by combining:
 - shift requirements
 - workload scoring
 - overload prevention
-- automatic schedule generation
+- rule-based scheduling
+- explainable scheduling decisions
 
 The solution is built using Clean Architecture principles with strong focus on:
 
@@ -16,6 +17,7 @@ The solution is built using Clean Architecture principles with strong focus on:
 - separation of concerns
 - testable business logic
 - scalable backend architecture
+- explainable scheduling pipelines
 
 ---
 
@@ -24,24 +26,22 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Employee persistence with EF Core and SQLite
 - Shift persistence with employee assignment
 - Employee and shift domain models
-- Shift assignment validation
-- Workload score calculation
-- Employee overload detection
-- Employee load analysis endpoint
-- Schedule generation endpoint
+- Rule-based scheduling engine
 - Skill-based automatic assignment
 - Lowest-load employee selection
-- High-load prevention during schedule generation
-- Maximum assignments per employee
-- Prevention of multiple shifts on the same day
-- Prevention of day shifts after night shifts
-- Persisted generated assignments
+- Maximum assignment protection
+- Same-day assignment prevention
+- Night-to-day shift protection
+- High workload prevention
+- Scheduling failure reason tracking
+- Explainable scheduling decisions
+- Employee workload calculation
+- Employee overload detection
 - REST API endpoints
-- Swagger / OpenAPI documentation
 - Dependency Injection
-- Clean Architecture separation
-- Unit tested business logic
+- Swagger / OpenAPI support
 - GitHub Actions CI pipeline
+- Unit tested business logic
 
 ---
 
@@ -53,8 +53,8 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Entity Framework Core
 - SQLite
 - xUnit
-- Dependency Injection
 - Swagger / OpenAPI
+- Dependency Injection
 - GitHub Actions
 - Clean Architecture
 
@@ -72,35 +72,36 @@ Domain
 Infrastructure
 ```
 
-## Layer Responsibilities
+---
 
-### Domain
+# Layer Responsibilities
+
+## Domain
 
 Contains:
 
 - entities
 - enums
 - business rules
-- core scheduling logic
+- core scheduling concepts
 
 The Domain layer has no external dependencies.
 
 ---
 
-### Application
+## Application
 
 Contains:
 
-- orchestration logic
-- scheduling services
+- scheduling engine
+- scheduling rules
 - workload calculation services
 - overload detection services
-- scheduling rules
-- request/response models
+- orchestration logic
 
 ---
 
-### Infrastructure
+## Infrastructure
 
 Contains:
 
@@ -110,15 +111,53 @@ Contains:
 
 ---
 
-### API
+## API
 
 Contains:
 
 - REST endpoints
 - request/response contracts
-- dependency injection setup
-- middleware configuration
+- middleware
 - Swagger configuration
+- dependency injection setup
+
+---
+
+# Scheduling Engine
+
+The scheduling engine uses a rule-based architecture where each scheduling rule is isolated into its own class.
+
+Current rules include:
+
+- MaxAssignmentsRule
+- SameDayShiftRule
+- NightToDayRule
+- HighLoadRule
+
+Rules are injected through dependency injection and evaluated during schedule generation.
+
+---
+
+# Explainable Scheduling
+
+The scheduler does not only determine whether an employee can be assigned.
+
+It also explains why assignment failed.
+
+Example failure reasons:
+
+- Employee already assigned to a shift on the same day
+- Employee projected workload would be too high
+- Employee has reached maximum assignments
+- Employee cannot work day shift after night shift
+
+This creates a foundation for:
+
+- scheduling analytics
+- audit logging
+- explainable AI scheduling
+- frontend decision visibility
+- manager tooling
 
 ---
 
@@ -183,13 +222,11 @@ POST /api/schedule/generate
 
 Generates schedule assignments based on:
 
-- required shift skills
 - employee skills
-- current employee workload
+- shift requirements
+- workload balancing
+- scheduling rules
 - overload prevention
-- maximum assignments
-- same-day assignment prevention
-- night-to-day scheduling prevention
 
 ### Example Request
 
@@ -199,12 +236,12 @@ Generates schedule assignments based on:
 }
 ```
 
-### Example Response
+### Example Successful Response
 
 ```json
 {
   "message": "Schedule generation completed.",
-  "employeeCount": 1,
+  "employeeCount": 2,
   "shiftCount": 2,
   "assignments": [
     {
@@ -212,26 +249,27 @@ Generates schedule assignments based on:
       "employeeId": "guid",
       "employeeName": "Kris",
       "requiredSkill": "CT",
-      "wasAssigned": true
+      "wasAssigned": true,
+      "failureReasons": []
     }
   ]
 }
 ```
 
----
+### Example Failed Assignment
 
-# Scheduling Rules
-
-The scheduling engine currently supports several automatic scheduling constraints:
-
-- Employees must have the required shift skill
-- Employees with the lowest current workload are prioritized
-- Employees cannot exceed configured assignment limits
-- Employees cannot be assigned multiple shifts on the same day
-- Employees cannot be assigned a day shift directly after a night shift
-- High projected workload assignments are automatically prevented
-
-The scheduling engine is designed for future extension through isolated scheduling rules and services.
+```json
+{
+  "shiftId": "guid",
+  "employeeId": null,
+  "employeeName": null,
+  "requiredSkill": "CT",
+  "wasAssigned": false,
+  "failureReasons": [
+    "Kris: Employee is already assigned to a shift on the same day."
+  ]
+}
+```
 
 ---
 
@@ -257,53 +295,34 @@ dotnet run --project src/ShiftPlanner.Api
 
 ---
 
-# Swagger UI
-
-After starting the API, Swagger UI is available at:
-
-```text
-http://localhost:5026/swagger
-```
-
-Swagger provides interactive API documentation and endpoint testing.
-
----
-
 # CI Pipeline
 
-The project includes a GitHub Actions workflow that automatically:
+The repository includes a GitHub Actions pipeline that automatically:
 
 - restores dependencies
 - builds the solution
-- runs unit tests
+- runs all unit tests
 
-on every push and pull request.
-
-Workflow file:
-
-```text
-.github/workflows/dotnet.yml
-```
+on every push to GitHub.
 
 ---
 
 # Test Status
 
-The solution currently includes unit tests covering:
+The solution currently includes 30 unit tests covering:
 
 - Shift staffing rules
 - Skill validation
-- Load score calculations
-- Employee workload aggregation
-- High load warning logic
-- Load status calculation
+- Workload calculations
+- Employee load aggregation
+- Overload detection
 - Schedule generation
-- Skill-based assignment
-- Lowest-load employee selection
-- High-load assignment prevention
-- Maximum assignment rules
+- Lowest-load assignment selection
+- High-load prevention
 - Same-day assignment prevention
-- Night-to-day scheduling prevention
+- Night-to-day shift prevention
+- Scheduling failure reasons
+- Rule evaluation behavior
 
 ---
 
@@ -312,17 +331,15 @@ The solution currently includes unit tests covering:
 ```text
 Open shifts
 ↓
-Schedule generator
+Scheduling engine
 ↓
-Skill matching
+Rule evaluation
 ↓
 Load balancing
 ↓
-Scheduling rules validation
+Candidate selection
 ↓
-Overload prevention
-↓
-Persist assignments
+Assignment persistence
 ↓
 Updated database state
 ```
@@ -331,32 +348,16 @@ Updated database state
 
 # Future Improvements
 
-- Rule-based scheduling engine
-- Dedicated scheduling rule classes
 - Weekly scheduling windows
 - Fairness balancing across departments
-- EU rest-time compliance validation
-- Maximum shifts per week
-- Weekend distribution balancing
 - Employee preference profiles
-- CSV/Excel shift import/export
+- Rest-time validation rules
+- Configurable scheduling policies
+- Weighted rule priorities
+- Scheduling analytics
+- Audit logging
+- CSV import/export
 - Authentication and authorization
-- Advanced healthcare scheduling rules
-- React or Blazor frontend dashboard
-- Docker container support
-- CI/CD deployment pipeline
+- Docker support
+- Frontend dashboard
 - AI-assisted scheduling recommendations
-- Scheduling analytics and reporting
-
----
-
-# Project Goals
-
-This project is designed as a backend architecture and scheduling engine portfolio project focused on:
-
-- scalable API design
-- healthcare-oriented scheduling logic
-- clean separation of responsibilities
-- maintainable business rules
-- extensible scheduling architecture
-- automated testing and validation
