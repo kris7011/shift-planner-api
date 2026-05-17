@@ -1,19 +1,12 @@
-using ShiftPlanner.Domain.Employees;
-using ShiftPlanner.Domain.Shifts;
-
 namespace ShiftPlanner.Application.Scheduling.Rules;
 
 public class SameDayShiftRule : ISchedulingRule
 {
-    public SchedulingRuleResult Evaluate(
-        Employee employee,
-        Shift shift,
-        List<Shift> plannedShifts,
-        int maxAssignmentsPerEmployee)
+    public SchedulingRuleResult Evaluate(SchedulingRuleContext context)
     {
-        var alreadyAssignedSameDay = plannedShifts.Any(existingShift =>
-            existingShift.EmployeeId == employee.Id &&
-            existingShift.Date == shift.Date);
+        var alreadyAssignedSameDay = context.PlannedShifts.Any(existingShift =>
+            existingShift.EmployeeId == context.Employee.Id &&
+            existingShift.Date == context.Shift.Date);
 
         if (alreadyAssignedSameDay)
         {

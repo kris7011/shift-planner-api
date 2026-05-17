@@ -34,11 +34,15 @@ public class HighLoadRuleTests
         var statusService = new EmployeeLoadStatusService();
         var rule = new HighLoadRule(loadService, statusService);
 
-        var result = rule.Evaluate(
-            employee,
-            newNightShift,
-            plannedShifts,
-            maxAssignmentsPerEmployee: 5);
+        var context = new SchedulingRuleContext
+        {
+            Employee = employee,
+            Shift = newNightShift,
+            PlannedShifts = plannedShifts,
+            MaxAssignmentsPerEmployee = 5
+        };
+
+        var result = rule.Evaluate(context);
 
         Assert.False(result.Success);
         Assert.NotNull(result.FailureReason);
@@ -71,11 +75,15 @@ public class HighLoadRuleTests
         var statusService = new EmployeeLoadStatusService();
         var rule = new HighLoadRule(loadService, statusService);
 
-        var result = rule.Evaluate(
-            employee,
-            newDayShift,
-            plannedShifts,
-            maxAssignmentsPerEmployee: 5);
+        var context = new SchedulingRuleContext
+        {
+            Employee = employee,
+            Shift = newDayShift,
+            PlannedShifts = plannedShifts,
+            MaxAssignmentsPerEmployee = 5
+        };
+
+        var result = rule.Evaluate(context);
 
         Assert.True(result.Success);
         Assert.Null(result.FailureReason);

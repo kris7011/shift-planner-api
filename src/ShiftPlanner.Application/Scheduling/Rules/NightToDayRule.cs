@@ -1,21 +1,16 @@
-using ShiftPlanner.Domain.Employees;
 using ShiftPlanner.Domain.Shifts;
 
 namespace ShiftPlanner.Application.Scheduling.Rules;
 
 public class NightToDayRule : ISchedulingRule
 {
-    public SchedulingRuleResult Evaluate(
-        Employee employee,
-        Shift shift,
-        List<Shift> plannedShifts,
-        int maxAssignmentsPerEmployee)
+    public SchedulingRuleResult Evaluate(SchedulingRuleContext context)
     {
-        var hasNightShiftBefore = plannedShifts.Any(existingShift =>
-            existingShift.EmployeeId == employee.Id &&
+        var hasNightShiftBefore = context.PlannedShifts.Any(existingShift =>
+            existingShift.EmployeeId == context.Employee.Id &&
             existingShift.ShiftType == ShiftType.Night &&
-            existingShift.Date.AddDays(1) == shift.Date &&
-            shift.ShiftType == ShiftType.Day);
+            existingShift.Date.AddDays(1) == context.Shift.Date &&
+            context.Shift.ShiftType == ShiftType.Day);
 
         if (hasNightShiftBefore)
         {

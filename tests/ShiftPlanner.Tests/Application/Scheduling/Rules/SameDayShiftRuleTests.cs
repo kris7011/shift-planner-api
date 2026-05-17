@@ -28,11 +28,15 @@ public class SameDayShiftRuleTests
 
         var rule = new SameDayShiftRule();
 
-        var result = rule.Evaluate(
-            employee,
-            newShift,
-            plannedShifts,
-            maxAssignmentsPerEmployee: 5);
+        var context = new SchedulingRuleContext
+        {
+            Employee = employee,
+            Shift = newShift,
+            PlannedShifts = plannedShifts,
+            MaxAssignmentsPerEmployee = 5
+        };
+
+        var result = rule.Evaluate(context);
 
         Assert.False(result.Success);
         Assert.NotNull(result.FailureReason);
@@ -60,11 +64,15 @@ public class SameDayShiftRuleTests
 
         var rule = new SameDayShiftRule();
 
-        var result = rule.Evaluate(
-            employee,
-            newShift,
-            plannedShifts,
-            maxAssignmentsPerEmployee: 5);
+        var context = new SchedulingRuleContext
+        {
+            Employee = employee,
+            Shift = newShift,
+            PlannedShifts = plannedShifts,
+            MaxAssignmentsPerEmployee = 5
+        };
+
+        var result = rule.Evaluate(context);
 
         Assert.True(result.Success);
         Assert.Null(result.FailureReason);

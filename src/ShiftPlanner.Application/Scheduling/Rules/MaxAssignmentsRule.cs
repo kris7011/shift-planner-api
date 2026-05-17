@@ -1,20 +1,13 @@
-using ShiftPlanner.Domain.Employees;
-using ShiftPlanner.Domain.Shifts;
-
 namespace ShiftPlanner.Application.Scheduling.Rules;
 
 public class MaxAssignmentsRule : ISchedulingRule
 {
-    public SchedulingRuleResult Evaluate(
-        Employee employee,
-        Shift shift,
-        List<Shift> plannedShifts,
-        int maxAssignmentsPerEmployee)
+    public SchedulingRuleResult Evaluate(SchedulingRuleContext context)
     {
-        var currentAssignmentCount = plannedShifts
-            .Count(existingShift => existingShift.EmployeeId == employee.Id);
+        var currentAssignmentCount = context.PlannedShifts
+            .Count(existingShift => existingShift.EmployeeId == context.Employee.Id);
 
-        if (currentAssignmentCount >= maxAssignmentsPerEmployee)
+        if (currentAssignmentCount >= context.MaxAssignmentsPerEmployee)
         {
             return SchedulingRuleResult.Failed(
                 "Employee has reached the maximum number of assignments.");

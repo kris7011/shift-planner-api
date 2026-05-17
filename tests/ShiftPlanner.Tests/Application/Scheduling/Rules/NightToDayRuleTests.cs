@@ -28,11 +28,15 @@ public class NightToDayRuleTests
 
         var rule = new NightToDayRule();
 
-        var result = rule.Evaluate(
-            employee,
-            newDayShift,
-            plannedShifts,
-            maxAssignmentsPerEmployee: 5);
+        var context = new SchedulingRuleContext
+        {
+            Employee = employee,
+            Shift = newDayShift,
+            PlannedShifts = plannedShifts,
+            MaxAssignmentsPerEmployee = 5
+        };
+
+        var result = rule.Evaluate(context);
 
         Assert.False(result.Success);
         Assert.NotNull(result.FailureReason);
@@ -60,11 +64,15 @@ public class NightToDayRuleTests
 
         var rule = new NightToDayRule();
 
-        var result = rule.Evaluate(
-            employee,
-            newEveningShift,
-            plannedShifts,
-            maxAssignmentsPerEmployee: 5);
+        var context = new SchedulingRuleContext
+        {
+            Employee = employee,
+            Shift = newEveningShift,
+            PlannedShifts = plannedShifts,
+            MaxAssignmentsPerEmployee = 5
+        };
+
+        var result = rule.Evaluate(context);
 
         Assert.True(result.Success);
         Assert.Null(result.FailureReason);

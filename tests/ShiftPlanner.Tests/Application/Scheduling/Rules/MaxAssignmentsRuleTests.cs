@@ -39,11 +39,15 @@ public class MaxAssignmentsRuleTests
 
         var rule = new MaxAssignmentsRule();
 
-        var result = rule.Evaluate(
-            employee,
-            newShift,
-            plannedShifts,
-            maxAssignmentsPerEmployee: 2);
+        var context = new SchedulingRuleContext
+        {
+            Employee = employee,
+            Shift = newShift,
+            PlannedShifts = plannedShifts,
+            MaxAssignmentsPerEmployee = 2
+        };
+
+        var result = rule.Evaluate(context);
 
         Assert.False(result.Success);
         Assert.NotNull(result.FailureReason);
@@ -74,11 +78,15 @@ public class MaxAssignmentsRuleTests
 
         var rule = new MaxAssignmentsRule();
 
-        var result = rule.Evaluate(
-            employee,
-            newShift,
-            plannedShifts,
-            maxAssignmentsPerEmployee: 2);
+        var context = new SchedulingRuleContext
+        {
+            Employee = employee,
+            Shift = newShift,
+            PlannedShifts = plannedShifts,
+            MaxAssignmentsPerEmployee = 2
+        };
+
+        var result = rule.Evaluate(context);
 
         Assert.True(result.Success);
         Assert.Null(result.FailureReason);

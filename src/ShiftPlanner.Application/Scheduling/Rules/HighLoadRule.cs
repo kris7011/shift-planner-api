@@ -17,18 +17,14 @@ public class HighLoadRule : ISchedulingRule
         _loadStatusService = loadStatusService;
     }
 
-    public SchedulingRuleResult Evaluate(
-        Employee employee,
-        Shift shift,
-        List<Shift> plannedShifts,
-        int maxAssignmentsPerEmployee)
+    public SchedulingRuleResult Evaluate(SchedulingRuleContext context)
     {
-        var employeeShifts = plannedShifts
-            .Where(existingShift => existingShift.EmployeeId == employee.Id)
+        var employeeShifts = context.PlannedShifts
+            .Where(existingShift => existingShift.EmployeeId == context.Employee.Id)
             .ToList();
 
         var currentLoad = _employeeLoadService.CalculateLoad(employeeShifts);
-        var newShiftLoad = _employeeLoadService.CalculateLoad(new List<Shift> { shift });
+        var newShiftLoad = _employeeLoadService.CalculateLoad(new List<Shift> { context.Shift });
         var projectedLoad = currentLoad + newShiftLoad;
 
         var projectedStatus = _loadStatusService.CalculateStatus(projectedLoad);

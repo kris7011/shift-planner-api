@@ -41,14 +41,19 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
                         $"{employee.Name}: Missing required skill '{shift.RequiredSkill}'.");
 
                     continue;
+
                 }
 
+                var context = new SchedulingRuleContext
+                {
+                    Employee = employee,
+                    Shift = shift,
+                    PlannedShifts = plannedShifts,
+                    MaxAssignmentsPerEmployee = maxAssignmentsPerEmployee
+                };
+
                 var ruleResults = _rules
-                    .Select(rule => rule.Evaluate(
-                        employee,
-                        shift,
-                        plannedShifts,
-                        maxAssignmentsPerEmployee))
+                    .Select(rule => rule.Evaluate(context))
                     .ToList();
 
                 var failedRules = ruleResults
