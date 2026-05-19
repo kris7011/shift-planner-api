@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using ShiftPlanner.Api.LoadAnalysis;
 using ShiftPlanner.Api.Health;
 using ShiftPlanner.Api.Employees;
@@ -7,7 +8,6 @@ using ShiftPlanner.Api.Scheduling;
 using ShiftPlanner.Application;
 using ShiftPlanner.Infrastructure;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplication();
@@ -15,7 +15,13 @@ builder.Services.AddInfrastructure();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
 var app = builder.Build();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
