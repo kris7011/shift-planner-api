@@ -30,7 +30,11 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
 
         foreach (var shift in openShifts)
         {
-            var evaluations = new List<CandidateEvaluation>();
+            var evaluations = EvaluateCandidates(
+                employees,
+                shift,
+                plannedShifts,
+                maxAssignmentsPerEmployee);
 
             foreach (var employee in employees)
             {
@@ -118,5 +122,64 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
         }
 
         return results;
+    }
+
+    private List<CandidateEvaluation> EvaluateCandidates(
+    List<Employee> employees,
+    Shift shift,
+    List<Shift> plannedShifts,
+    int maxAssignmentsPerEmployee)
+    {
+        var evaluations = new List<CandidateEvaluation>();
+
+        foreach (var employee in employees)
+        {
+            var evaluation = new CandidateEvaluation
+            {
+                Employee = employee,
+                CanAssign = true
+            };
+
+            if (!employee.HasSkill(shift.RequiredSkill))
+            {
+                evaluation.CanAssign = false;
+                evaluation.FailureReasons.Add(
+                    $"{employee.Name}: Missing required skill '{shift.RequiredSkill}'.");
+
+                evaluations.Add(evaluation);
+
+                continue;
+            }
+
+            var context = new SchedulingRuleContext
+            {
+                Employee = employee,
+                Shift = shift,
+                PlannedShifts = plannedShifts,
+                MaxAssignmentsPerEmployee = maxAssignmentsPerEmployee
+            };
+
+            var ruleResults = _rules
+                .Select(rule => rule.Evaluate(context))
+                .ToList();
+
+            var failedRules = ruleResults
+                .Where(result => !result.Success)
+                .ToList();
+
+            if (failedRules.Count > 0)
+            {
+                evaluation.CanAssign = false;
+
+                evaluation.FailureReasons.AddRange(
+                    failedRules
+                        .Where(result => !string.IsNullOrWhiteSpace(result.FailureReason))
+                        .Select(result => $"{employee.Name}: {result.FailureReason}"));
+            }
+
+            evaluations.Add(evaluation);
+        }
+
+        return evaluations;
     }
 }
