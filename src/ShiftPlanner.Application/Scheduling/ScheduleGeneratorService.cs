@@ -94,22 +94,10 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
                 plannedShifts.Add(shift);
             }
 
-            var failureReasons = evaluations
-                .Where(evaluation => !evaluation.CanAssign)
-                .SelectMany(evaluation => evaluation.FailureReasons)
-                .ToList();
-
-            results.Add(new ScheduleAssignmentResult
-            {
-                ShiftId = shift.Id,
-                EmployeeId = matchingEmployee?.Id,
-                EmployeeName = matchingEmployee?.Name,
-                RequiredSkill = shift.RequiredSkill,
-                WasAssigned = matchingEmployee != null,
-                FailureReasons = matchingEmployee == null
-                    ? failureReasons
-                    : []
-            });
+            results.Add(CreateAssignmentResult(
+                shift,
+                matchingEmployee,
+                evaluations));
         }
 
         return results;
@@ -190,5 +178,28 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
                 return _employeeLoadService.CalculateLoad(employeeShifts);
             })
             .FirstOrDefault();
+    }
+
+    private static ScheduleAssignmentResult CreateAssignmentResult(
+    Shift shift,
+    Employee? matchingEmployee,
+    List<CandidateEvaluation> evaluations)
+    {
+        var failureReasons = evaluations
+            .Where(evaluation => !evaluation.CanAssign)
+            .SelectMany(evaluation => evaluation.FailureReasons)
+            .ToList();
+
+        return new ScheduleAssignmentResult
+        {
+            ShiftId = shift.Id,
+            EmployeeId = matchingEmployee?.Id,
+            EmployeeName = matchingEmployee?.Name,
+            RequiredSkill = shift.RequiredSkill,
+            WasAssigned = matchingEmployee != null,
+            FailureReasons = matchingEmployee == null
+                ? failureReasons
+                : []
+        };
     }
 }
