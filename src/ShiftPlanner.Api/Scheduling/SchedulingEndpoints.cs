@@ -47,19 +47,24 @@ public static class SchedulingEndpoints
                 EmployeeCount = employees.Count,
                 ShiftCount = shifts.Count,
                 Assignments = schedule
-                .Select(assignment => new ScheduleAssignmentResponse
-                {
-                    ShiftId = assignment.ShiftId,
-                    EmployeeId = assignment.EmployeeId,
-                    EmployeeName = assignment.EmployeeName,
-                    RequiredSkill = assignment.RequiredSkill,
-                    WasAssigned = assignment.WasAssigned,
-                    FailureReasons = assignment.FailureReasons
-                })
-                .ToList()
+                    .Select(assignment => new ScheduleAssignmentResponse
+                    {
+                        ShiftId = assignment.ShiftId,
+                        EmployeeId = assignment.EmployeeId,
+                        EmployeeName = assignment.EmployeeName,
+                        RequiredSkill = assignment.RequiredSkill,
+                        WasAssigned = assignment.WasAssigned,
+                        FailureReasons = assignment.FailureReasons
+                    })
+                    .ToList()
             };
 
             return Results.Ok(response);
-        });
+        })
+        .WithName("GenerateSchedule")
+        .WithSummary("Generates schedule assignments")
+        .WithDescription("Generates employee assignments for open shifts using skill matching, workload balancing, scheduling rules, and failure reasons.")
+        .Produces<GenerateScheduleResponse>(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status400BadRequest);
     }
 }
