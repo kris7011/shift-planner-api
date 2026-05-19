@@ -19,4 +19,6 @@ public class ScheduleOverviewResponse
     public List<SkillGapOverview> SkillGaps { get; set; } = [];
 
     public ScheduleRiskSummary RiskSummary { get; set; } = new();
+
+    public List<RiskIndicator> RiskIndicators { get; set; } = [];
 }

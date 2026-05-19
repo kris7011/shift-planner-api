@@ -57,6 +57,12 @@ public class ScheduleOverviewService : IScheduleOverviewService
             HighRiskEmployeeCount = highRiskEmployeeCount
         };
 
+        var riskIndicators = CreateRiskIndicators(
+            coverageRate,
+            unassignedShifts,
+            skillGaps,
+            highRiskEmployeeCount);
+
         return new ScheduleOverviewResponse
         {
             TotalShifts = totalShifts,
@@ -67,7 +73,8 @@ public class ScheduleOverviewService : IScheduleOverviewService
             HighRiskEmployeeCount = highRiskEmployeeCount,
             UnassignedShiftDetails = unassignedShiftDetails,
             SkillGaps = skillGaps,
-            RiskSummary = riskSummary
+            RiskSummary = riskSummary,
+            RiskIndicators = riskIndicators
         };
     }
 
@@ -87,5 +94,56 @@ public class ScheduleOverviewService : IScheduleOverviewService
         }
 
         return ScheduleRiskLevel.Low;
+    }
+
+    private static List<RiskIndicator> CreateRiskIndicators(
+    decimal coverageRate,
+    int unassignedShiftCount,
+    List<SkillGapOverview> skillGaps,
+    int highRiskEmployeeCount)
+    {
+        var indicators = new List<RiskIndicator>();
+
+        if (coverageRate < 100)
+        {
+            indicators.Add(new RiskIndicator
+            {
+                Type = "Coverage",
+                Severity = ScheduleRiskLevel.Medium,
+                Message = $"Schedule coverage is {coverageRate}%."
+            });
+        }
+
+        if (unassignedShiftCount > 0)
+        {
+            indicators.Add(new RiskIndicator
+            {
+                Type = "UnassignedShifts",
+                Severity = ScheduleRiskLevel.Medium,
+                Message = $"{unassignedShiftCount} shift(s) are currently unassigned."
+            });
+        }
+
+        foreach (var skillGap in skillGaps)
+        {
+            indicators.Add(new RiskIndicator
+            {
+                Type = "SkillGap",
+                Severity = ScheduleRiskLevel.Medium,
+                Message = $"{skillGap.UnassignedShiftCount} unassigned shift(s) require {skillGap.RequiredSkill}."
+            });
+        }
+
+        if (highRiskEmployeeCount > 0)
+        {
+            indicators.Add(new RiskIndicator
+            {
+                Type = "Workload",
+                Severity = ScheduleRiskLevel.High,
+                Message = $"{highRiskEmployeeCount} employee(s) are currently high risk."
+            });
+        }
+
+        return indicators;
     }
 }
