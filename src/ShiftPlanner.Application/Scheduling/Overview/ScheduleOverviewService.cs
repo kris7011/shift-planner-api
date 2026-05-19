@@ -33,6 +33,17 @@ public class ScheduleOverviewService : IScheduleOverviewService
             })
             .ToList();
 
+        var skillGaps = unassignedShiftDetails
+            .GroupBy(shift => shift.RequiredSkill)
+            .Select(group => new SkillGapOverview
+            {
+                RequiredSkill = group.Key,
+                UnassignedShiftCount = group.Count()
+            })
+            .OrderByDescending(skillGap => skillGap.UnassignedShiftCount)
+            .ThenBy(skillGap => skillGap.RequiredSkill)
+            .ToList();
+
         return new ScheduleOverviewResponse
         {
             TotalShifts = totalShifts,
@@ -41,7 +52,8 @@ public class ScheduleOverviewService : IScheduleOverviewService
             CoverageRate = coverageRate,
             EmployeeCount = employeeCount,
             HighRiskEmployeeCount = highRiskEmployeeCount,
-            UnassignedShiftDetails = unassignedShiftDetails
+            UnassignedShiftDetails = unassignedShiftDetails,
+            SkillGaps = skillGaps
         };
     }
 }

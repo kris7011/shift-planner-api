@@ -15,4 +15,6 @@ public class ScheduleOverviewResponse
     public int HighRiskEmployeeCount { get; set; }
 
     public List<UnassignedShiftOverview> UnassignedShiftDetails { get; set; } = [];
+
+    public List<SkillGapOverview> SkillGaps { get; set; } = [];
 }
