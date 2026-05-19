@@ -48,6 +48,7 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Unit tested business logic
 - Scheduling rule context for extensible rule evaluation
 - Schedule risk summary with Low, Medium, and High risk levels
+- Schedule risk indicators for dashboard-ready warnings
 
 ---
 
