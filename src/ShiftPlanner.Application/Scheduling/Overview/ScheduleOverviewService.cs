@@ -87,6 +87,13 @@ public class ScheduleOverviewService : IScheduleOverviewService
             .ThenBy(skill => skill.Skill)
             .ToList();
 
+        var capacitySummary = new CapacitySummary
+        {
+            TotalSkills = skillCapacity.Count,
+            MissingRequiredSkills = uncoveredRequiredSkills.Count,
+            CriticalSkillGaps = uncoveredRequiredSkills.Count(skill => skill.AvailableEmployees == 0)
+        };
+
         var riskIndicators = CreateRiskIndicators(
         coverageRate,
         unassignedShifts,
@@ -107,7 +114,8 @@ public class ScheduleOverviewService : IScheduleOverviewService
             RiskSummary = riskSummary,
             RiskIndicators = riskIndicators,
             SkillCapacity = skillCapacity,
-            UncoveredRequiredSkills = uncoveredRequiredSkills
+            UncoveredRequiredSkills = uncoveredRequiredSkills,
+            CapacitySummary = capacitySummary
         };
     }
 

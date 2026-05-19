@@ -23,4 +23,5 @@ public class ScheduleOverviewResponse
     public List<RiskIndicator> RiskIndicators { get; set; } = [];
     public List<SkillCapacityOverview> SkillCapacity { get; set; } = [];
     public List<UncoveredRequiredSkillOverview> UncoveredRequiredSkills { get; set; } = [];
+    public CapacitySummary CapacitySummary { get; set; } = new();
 }
