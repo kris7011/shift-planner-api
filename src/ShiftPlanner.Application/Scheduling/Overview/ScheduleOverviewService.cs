@@ -3,7 +3,7 @@ namespace ShiftPlanner.Application.Scheduling.Overview;
 public class ScheduleOverviewService : IScheduleOverviewService
 {
     public ScheduleOverviewResponse CreateOverview(
-        int employeeCount,
+        List<Domain.Employees.Employee> employees,
         int highRiskEmployeeCount,
         List<Domain.Shifts.Shift> shifts,
         List<ScheduleAssignmentResult> scheduleResults)
@@ -63,18 +63,30 @@ public class ScheduleOverviewService : IScheduleOverviewService
             skillGaps,
             highRiskEmployeeCount);
 
+        var skillCapacity = employees
+            .SelectMany(employee => employee.Skills)
+            .GroupBy(skill => skill)
+            .Select(group => new SkillCapacityOverview
+            {
+                Skill = group.Key,
+                EmployeeCount = group.Count()
+            })
+            .OrderBy(skill => skill.Skill)
+            .ToList();
+
         return new ScheduleOverviewResponse
         {
             TotalShifts = totalShifts,
             AssignedShifts = assignedShifts,
             UnassignedShifts = unassignedShifts,
             CoverageRate = coverageRate,
-            EmployeeCount = employeeCount,
+            EmployeeCount = employees.Count,
             HighRiskEmployeeCount = highRiskEmployeeCount,
             UnassignedShiftDetails = unassignedShiftDetails,
             SkillGaps = skillGaps,
             RiskSummary = riskSummary,
-            RiskIndicators = riskIndicators
+            RiskIndicators = riskIndicators,
+            SkillCapacity = skillCapacity
         };
     }
 

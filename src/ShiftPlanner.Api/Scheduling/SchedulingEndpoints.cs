@@ -107,7 +107,7 @@ public static class SchedulingEndpoints
             });
 
             var response = scheduleOverviewService.CreateOverview(
-                employeeCount: employees.Count,
+                employees: employees,
                 highRiskEmployeeCount: highRiskEmployeeCount,
                 shifts: shifts,
                 scheduleResults: scheduleResults);

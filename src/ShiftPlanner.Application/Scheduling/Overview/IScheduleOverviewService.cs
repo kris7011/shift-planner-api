@@ -1,10 +1,13 @@
+using ShiftPlanner.Domain.Employees;
+using ShiftPlanner.Domain.Shifts;
+
 namespace ShiftPlanner.Application.Scheduling.Overview;
 
 public interface IScheduleOverviewService
 {
     ScheduleOverviewResponse CreateOverview(
-        int employeeCount,
+        List<Employee> employees,
         int highRiskEmployeeCount,
-        List<Domain.Shifts.Shift> shifts,
+        List<Shift> shifts,
         List<ScheduleAssignmentResult> scheduleResults);
 }
