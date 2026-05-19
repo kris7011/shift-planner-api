@@ -84,18 +84,9 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
                 evaluations.Add(evaluation);
             }
 
-            var matchingEmployee = evaluations
-                .Where(evaluation => evaluation.CanAssign)
-                .Select(evaluation => evaluation.Employee)
-                .OrderBy(employee =>
-                {
-                    var employeeShifts = plannedShifts
-                        .Where(existingShift => existingShift.EmployeeId == employee.Id)
-                        .ToList();
-
-                    return _employeeLoadService.CalculateLoad(employeeShifts);
-                })
-                .FirstOrDefault();
+            var matchingEmployee = SelectBestCandidate(
+                evaluations,
+                plannedShifts);
 
             if (matchingEmployee != null)
             {
@@ -181,5 +172,23 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
         }
 
         return evaluations;
+    }
+
+    private Employee? SelectBestCandidate(
+    List<CandidateEvaluation> evaluations,
+    List<Shift> plannedShifts)
+    {
+        return evaluations
+            .Where(evaluation => evaluation.CanAssign)
+            .Select(evaluation => evaluation.Employee)
+            .OrderBy(employee =>
+            {
+                var employeeShifts = plannedShifts
+                    .Where(existingShift => existingShift.EmployeeId == employee.Id)
+                    .ToList();
+
+                return _employeeLoadService.CalculateLoad(employeeShifts);
+            })
+            .FirstOrDefault();
     }
 }
