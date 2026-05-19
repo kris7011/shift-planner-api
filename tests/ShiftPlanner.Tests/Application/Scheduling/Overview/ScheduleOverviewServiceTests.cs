@@ -62,4 +62,53 @@ public class ScheduleOverviewServiceTests
             indicator.Severity == ScheduleRiskLevel.High &&
             indicator.Message.Contains("UL"));
     }
+
+    [Fact]
+    public void CreateOverview_ReturnsLowRisk_WhenAllShiftsAreAssigned()
+    {
+        var employee = new Employee("Kris", new List<string> { "CT" });
+
+        var assignedShift = new Shift(
+            new DateOnly(2026, 5, 13),
+            ShiftType.Day,
+            "CT",
+            1,
+            employee.Id);
+
+        var scheduleResult = new ScheduleAssignmentResult
+        {
+            ShiftId = assignedShift.Id,
+            EmployeeId = employee.Id,
+            EmployeeName = employee.Name,
+            RequiredSkill = "CT",
+            WasAssigned = true,
+            FailureReasons = []
+        };
+
+        var employees = new List<Employee> { employee };
+        var shifts = new List<Shift> { assignedShift };
+        var scheduleResults = new List<ScheduleAssignmentResult> { scheduleResult };
+
+        var service = new ScheduleOverviewService();
+
+        var result = service.CreateOverview(
+            employees,
+            highRiskEmployeeCount: 0,
+            shifts,
+            scheduleResults);
+
+        Assert.Equal(1, result.TotalShifts);
+        Assert.Equal(1, result.AssignedShifts);
+        Assert.Equal(0, result.UnassignedShifts);
+        Assert.Equal(100, result.CoverageRate);
+
+        Assert.Empty(result.SkillGaps);
+        Assert.Empty(result.UncoveredRequiredSkills);
+        Assert.Empty(result.RiskIndicators);
+
+        Assert.Equal(ScheduleRiskLevel.Low, result.RiskSummary.CoverageRisk);
+        Assert.Equal(0, result.RiskSummary.UnassignedShiftCount);
+        Assert.Equal(0, result.RiskSummary.SkillGapCount);
+        Assert.Equal(0, result.RiskSummary.HighRiskEmployeeCount);
+    }
 }
