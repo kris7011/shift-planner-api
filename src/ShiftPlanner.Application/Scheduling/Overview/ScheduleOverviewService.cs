@@ -74,6 +74,25 @@ public class ScheduleOverviewService : IScheduleOverviewService
             .OrderBy(skill => skill.Skill)
             .ToList();
 
+        var uncoveredRequiredSkills = skillGaps
+            .Select(skillGap =>
+            {
+                var availableEmployees = skillCapacity
+                    .FirstOrDefault(capacity => capacity.Skill == skillGap.RequiredSkill)
+                    ?.EmployeeCount ?? 0;
+
+                return new UncoveredRequiredSkillOverview
+                {
+                    Skill = skillGap.RequiredSkill,
+                    RequiredByUnassignedShifts = skillGap.UnassignedShiftCount,
+                    AvailableEmployees = availableEmployees
+                };
+            })
+            .Where(skill => skill.AvailableEmployees == 0)
+            .OrderByDescending(skill => skill.RequiredByUnassignedShifts)
+            .ThenBy(skill => skill.Skill)
+            .ToList();
+
         return new ScheduleOverviewResponse
         {
             TotalShifts = totalShifts,
@@ -86,7 +105,8 @@ public class ScheduleOverviewService : IScheduleOverviewService
             SkillGaps = skillGaps,
             RiskSummary = riskSummary,
             RiskIndicators = riskIndicators,
-            SkillCapacity = skillCapacity
+            SkillCapacity = skillCapacity,
+            UncoveredRequiredSkills = uncoveredRequiredSkills
         };
     }
 
