@@ -47,6 +47,7 @@ The solution is built using Clean Architecture principles with strong focus on:
 - GitHub Actions CI pipeline
 - Unit tested business logic
 - Scheduling rule context for extensible rule evaluation
+- Schedule risk summary with Low, Medium, and High risk levels
 
 ---
 
