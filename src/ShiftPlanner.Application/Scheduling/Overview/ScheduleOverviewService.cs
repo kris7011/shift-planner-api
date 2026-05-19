@@ -44,6 +44,19 @@ public class ScheduleOverviewService : IScheduleOverviewService
             .ThenBy(skillGap => skillGap.RequiredSkill)
             .ToList();
 
+        var riskLevel = CalculateRiskLevel(
+            unassignedShifts,
+            skillGaps.Count,
+            highRiskEmployeeCount);
+
+        var riskSummary = new ScheduleRiskSummary
+        {
+            CoverageRisk = riskLevel,
+            UnassignedShiftCount = unassignedShifts,
+            SkillGapCount = skillGaps.Count,
+            HighRiskEmployeeCount = highRiskEmployeeCount
+        };
+
         return new ScheduleOverviewResponse
         {
             TotalShifts = totalShifts,
@@ -53,7 +66,26 @@ public class ScheduleOverviewService : IScheduleOverviewService
             EmployeeCount = employeeCount,
             HighRiskEmployeeCount = highRiskEmployeeCount,
             UnassignedShiftDetails = unassignedShiftDetails,
-            SkillGaps = skillGaps
+            SkillGaps = skillGaps,
+            RiskSummary = riskSummary
         };
+    }
+
+    private static ScheduleRiskLevel CalculateRiskLevel(
+        int unassignedShiftCount,
+        int skillGapCount,
+        int highRiskEmployeeCount)
+    {
+        if (unassignedShiftCount > 0 && highRiskEmployeeCount > 0)
+        {
+            return ScheduleRiskLevel.High;
+        }
+
+        if (unassignedShiftCount > 0 || skillGapCount > 0)
+        {
+            return ScheduleRiskLevel.Medium;
+        }
+
+        return ScheduleRiskLevel.Low;
     }
 }

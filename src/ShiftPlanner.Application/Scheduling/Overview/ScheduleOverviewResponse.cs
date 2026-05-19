@@ -17,4 +17,6 @@ public class ScheduleOverviewResponse
     public List<UnassignedShiftOverview> UnassignedShiftDetails { get; set; } = [];
 
     public List<SkillGapOverview> SkillGaps { get; set; } = [];
+
+    public ScheduleRiskSummary RiskSummary { get; set; } = new();
 }
