@@ -57,6 +57,10 @@ public class ScheduleOverviewServiceTests
         Assert.Equal(1, uncoveredSkill.RequiredByUnassignedShifts);
         Assert.Equal(0, uncoveredSkill.AvailableEmployees);
 
+        Assert.Equal(1, result.CapacitySummary.TotalSkills);
+        Assert.Equal(1, result.CapacitySummary.MissingRequiredSkills);
+        Assert.Equal(1, result.CapacitySummary.CriticalSkillGaps);
+
         Assert.Contains(result.RiskIndicators, indicator =>
             indicator.Type == "Capacity" &&
             indicator.Severity == ScheduleRiskLevel.High &&
@@ -105,6 +109,10 @@ public class ScheduleOverviewServiceTests
         Assert.Empty(result.SkillGaps);
         Assert.Empty(result.UncoveredRequiredSkills);
         Assert.Empty(result.RiskIndicators);
+
+        Assert.Equal(1, result.CapacitySummary.TotalSkills);
+        Assert.Equal(0, result.CapacitySummary.MissingRequiredSkills);
+        Assert.Equal(0, result.CapacitySummary.CriticalSkillGaps);
 
         Assert.Equal(ScheduleRiskLevel.Low, result.RiskSummary.CoverageRisk);
         Assert.Equal(0, result.RiskSummary.UnassignedShiftCount);
