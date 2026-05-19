@@ -188,6 +188,7 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
         var failureReasons = evaluations
             .Where(evaluation => !evaluation.CanAssign)
             .SelectMany(evaluation => evaluation.FailureReasons)
+            .Distinct()
             .ToList();
 
         return new ScheduleAssignmentResult
