@@ -2,6 +2,7 @@ using ShiftPlanner.Application.Employees;
 using Microsoft.Extensions.DependencyInjection;
 using ShiftPlanner.Application.Scheduling;
 using ShiftPlanner.Application.Scheduling.Rules;
+using ShiftPlanner.Application.Scheduling.Overview;
 
 namespace ShiftPlanner.Application;
 
@@ -17,6 +18,7 @@ public static class DependencyInjection
         services.AddScoped<ISchedulingRule, SameDayShiftRule>();
         services.AddScoped<ISchedulingRule, NightToDayRule>();
         services.AddScoped<ISchedulingRule, HighLoadRule>();
+        services.AddScoped<IScheduleOverviewService, ScheduleOverviewService>();
 
         return services;
     }

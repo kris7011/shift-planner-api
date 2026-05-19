@@ -1,6 +1,7 @@
 using ShiftPlanner.Application.Employees;
 using ShiftPlanner.Application.Scheduling;
 using ShiftPlanner.Application.Scheduling.Models;
+using ShiftPlanner.Application.Scheduling.Overview;
 using ShiftPlanner.Application.Shifts;
 
 namespace ShiftPlanner.Api.Scheduling;
@@ -66,5 +67,56 @@ public static class SchedulingEndpoints
         .WithDescription("Generates employee assignments for open shifts using skill matching, workload balancing, scheduling rules, and failure reasons.")
         .Produces<GenerateScheduleResponse>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest);
+
+
+        app.MapGet("/api/schedule/overview", async (
+            IScheduleGeneratorService scheduleGeneratorService,
+            IScheduleOverviewService scheduleOverviewService,
+            IEmployeeRepository employeeRepository,
+            IShiftRepository shiftRepository,
+            IEmployeeLoadStatusService employeeLoadStatusService,
+            IEmployeeLoadService employeeLoadService) =>
+        {
+            var employees = await employeeRepository.GetAllAsync();
+            var shifts = await shiftRepository.GetAllAsync();
+
+            var openShifts = shifts
+                .Where(shift => shift.EmployeeId == null)
+                .ToList();
+
+            var existingShifts = shifts
+                .Where(shift => shift.EmployeeId != null)
+                .ToList();
+
+            var scheduleResults = scheduleGeneratorService.Generate(
+                employees,
+                openShifts,
+                existingShifts,
+                maxAssignmentsPerEmployee: 5);
+
+            var highRiskEmployeeCount = employees.Count(employee =>
+            {
+                var employeeShifts = shifts
+                    .Where(shift => shift.EmployeeId == employee.Id)
+                    .ToList();
+
+                var load = employeeLoadService.CalculateLoad(employeeShifts);
+                var status = employeeLoadStatusService.CalculateStatus(load);
+
+                return status == Domain.Employees.LoadStatus.High;
+            });
+
+            var response = scheduleOverviewService.CreateOverview(
+                employeeCount: employees.Count,
+                highRiskEmployeeCount: highRiskEmployeeCount,
+                shifts: shifts,
+                scheduleResults: scheduleResults);
+
+            return Results.Ok(response);
+        })
+        .WithName("GetScheduleOverview")
+        .WithSummary("Gets schedule overview")
+        .WithDescription("Returns leadership-oriented schedule overview with coverage, unassigned shifts, workload risk, and scheduling failure reasons.")
+        .Produces<ScheduleOverviewResponse>(StatusCodes.Status200OK);
     }
 }
