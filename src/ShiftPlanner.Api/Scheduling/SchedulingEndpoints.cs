@@ -2,6 +2,7 @@ using ShiftPlanner.Application.Employees;
 using ShiftPlanner.Application.Scheduling;
 using ShiftPlanner.Application.Scheduling.Models;
 using ShiftPlanner.Application.Scheduling.Overview;
+using ShiftPlanner.Application.Scheduling.Simulation;
 using ShiftPlanner.Application.Shifts;
 
 namespace ShiftPlanner.Api.Scheduling;
@@ -118,5 +119,46 @@ public static class SchedulingEndpoints
         .WithSummary("Gets schedule overview")
         .WithDescription("Returns leadership-oriented schedule overview with coverage, unassigned shifts, workload risk, and scheduling failure reasons.")
         .Produces<ScheduleOverviewResponse>(StatusCodes.Status200OK);
+
+        app.MapPost("/api/schedule/simulate", async (
+            SimulateScheduleRequest request,
+            IScheduleSimulationService scheduleSimulationService,
+            IEmployeeRepository employeeRepository,
+            IShiftRepository shiftRepository) =>
+        {
+            if (string.IsNullOrWhiteSpace(request.RequiredSkill))
+            {
+                return Results.BadRequest("RequiredSkill is required.");
+            }
+
+            if (request.RequiredStaff <= 0)
+            {
+                return Results.BadRequest("RequiredStaff must be greater than 0.");
+            }
+
+            if (request.MaxAssignmentsPerEmployee <= 0)
+            {
+                return Results.BadRequest("MaxAssignmentsPerEmployee must be greater than 0.");
+            }
+
+            var employees = await employeeRepository.GetAllAsync();
+            var shifts = await shiftRepository.GetAllAsync();
+
+            var existingShifts = shifts
+                .Where(shift => shift.EmployeeId != null)
+                .ToList();
+
+            var response = scheduleSimulationService.Simulate(
+                request,
+                employees,
+                existingShifts);
+
+            return Results.Ok(response);
+        })
+        .WithName("SimulateSchedule")
+        .WithSummary("Simulates a schedule assignment")
+        .WithDescription("Simulates whether a potential shift can be covered without persisting the shift to the database.")
+        .Produces<SimulateScheduleResponse>(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status400BadRequest);
     }
 }
