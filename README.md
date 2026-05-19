@@ -10,6 +10,8 @@ The project simulates healthcare-oriented workforce scheduling by combining:
 - overload prevention
 - rule-based scheduling
 - explainable scheduling decisions
+- schedule overview insights
+- skill gap identification
 
 The solution is built using Clean Architecture principles with strong focus on:
 
@@ -37,6 +39,8 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Explainable scheduling decisions
 - Employee workload calculation
 - Employee overload detection
+- Schedule overview endpoint
+- Skill gap overview for unassigned shifts
 - REST API endpoints
 - Dependency Injection
 - Swagger / OpenAPI support
@@ -96,6 +100,7 @@ Contains:
 
 - scheduling engine
 - scheduling rules
+- scheduling overview services
 - workload calculation services
 - overload detection services
 - orchestration logic
@@ -126,14 +131,23 @@ Contains:
 
 # Scheduling Engine
 
-Each rule receives a SchedulingRuleContext that contains the employee, shift, planned shifts, and scheduling limits. This keeps rule signatures stable as the scheduling engine grows.
+The scheduling engine uses a rule-based architecture where each scheduling rule is isolated into its own class.
+
+Each rule receives a `SchedulingRuleContext` that contains:
+
+- employee
+- shift
+- planned shifts
+- scheduling limits
+
+This keeps rule signatures stable as the scheduling engine grows.
 
 Current rules include:
 
-- MaxAssignmentsRule
-- SameDayShiftRule
-- NightToDayRule
-- HighLoadRule
+- `MaxAssignmentsRule`
+- `SameDayShiftRule`
+- `NightToDayRule`
+- `HighLoadRule`
 
 Rules are injected through dependency injection and evaluated during schedule generation.
 
@@ -151,6 +165,7 @@ Example failure reasons:
 - Employee projected workload would be too high
 - Employee has reached maximum assignments
 - Employee cannot work day shift after night shift
+- Employee is missing the required skill
 
 This creates a foundation for:
 
@@ -159,6 +174,27 @@ This creates a foundation for:
 - explainable AI scheduling
 - frontend decision visibility
 - manager tooling
+
+---
+
+# Skill Gap Overview
+
+The schedule overview identifies which required skills are missing from unassigned shifts.
+
+Example:
+
+```json
+{
+  "skillGaps": [
+    {
+      "requiredSkill": "UL",
+      "unassignedShiftCount": 1
+    }
+  ]
+}
+```
+
+This helps managers identify staffing vulnerabilities and missing competencies in the current schedule.
 
 ---
 
@@ -264,10 +300,61 @@ Generates schedule assignments based on:
   "shiftId": "guid",
   "employeeId": null,
   "employeeName": null,
-  "requiredSkill": "CT",
+  "requiredSkill": "UL",
   "wasAssigned": false,
   "failureReasons": [
-    "Kris: Employee is already assigned to a shift on the same day."
+    "Kris: Missing required skill 'UL'."
+  ]
+}
+```
+
+---
+
+## Schedule Overview
+
+```http
+GET /api/schedule/overview
+```
+
+Returns a leadership-oriented overview of the current schedule.
+
+The overview includes:
+
+- total shifts
+- assigned shifts
+- unassigned shifts
+- coverage rate
+- employee count
+- high-risk employee count
+- unassigned shift details
+- skill gaps
+
+### Example Response
+
+```json
+{
+  "totalShifts": 3,
+  "assignedShifts": 2,
+  "unassignedShifts": 1,
+  "coverageRate": 66.67,
+  "employeeCount": 1,
+  "highRiskEmployeeCount": 0,
+  "unassignedShiftDetails": [
+    {
+      "shiftId": "guid",
+      "date": "2026-05-13",
+      "shiftType": 2,
+      "requiredSkill": "UL",
+      "failureReasons": [
+        "Kris: Missing required skill 'UL'."
+      ]
+    }
+  ],
+  "skillGaps": [
+    {
+      "requiredSkill": "UL",
+      "unassignedShiftCount": 1
+    }
   ]
 }
 ```
@@ -293,6 +380,18 @@ dotnet test
 ```bash
 dotnet run --project src/ShiftPlanner.Api
 ```
+
+---
+
+# Swagger UI
+
+After starting the API, Swagger UI is available at:
+
+```text
+http://localhost:5026/swagger
+```
+
+Swagger provides interactive API documentation and endpoint testing.
 
 ---
 
@@ -348,6 +447,24 @@ Updated database state
 
 ---
 
+# Example Leadership Overview Flow
+
+```text
+Current shifts
+↓
+Assigned and unassigned shift analysis
+↓
+Scheduling rule evaluation
+↓
+Failure reason collection
+↓
+Skill gap grouping
+↓
+Leadership overview response
+```
+
+---
+
 # Future Improvements
 
 - Weekly scheduling windows
@@ -363,3 +480,18 @@ Updated database state
 - Docker support
 - Frontend dashboard
 - AI-assisted scheduling recommendations
+
+---
+
+# Project Goals
+
+This project is designed as a backend architecture and scheduling engine portfolio project focused on:
+
+- scalable API design
+- healthcare-oriented scheduling logic
+- clean separation of responsibilities
+- maintainable business rules
+- extensible scheduling architecture
+- explainable scheduling decisions
+- leadership-oriented workforce planning insights
+- automated testing and validation
