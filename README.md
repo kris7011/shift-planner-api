@@ -12,6 +12,7 @@ The project simulates healthcare-oriented workforce scheduling by combining:
 - explainable scheduling decisions
 - schedule overview insights
 - skill gap identification
+- what-if schedule simulation
 
 The solution is built using Clean Architecture principles with strong focus on:
 
@@ -41,16 +42,18 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Employee overload detection
 - Schedule overview endpoint
 - Skill gap overview for unassigned shifts
+- Skill capacity overview for department competencies
+- Uncovered required skills overview
+- Capacity summary for department skill coverage
+- Schedule risk summary with Low, Medium, and High risk levels
+- Schedule risk indicators for dashboard-ready warnings
+- Schedule simulation endpoint for what-if planning
 - REST API endpoints
 - Dependency Injection
 - Swagger / OpenAPI support
 - GitHub Actions CI pipeline
 - Unit tested business logic
 - Scheduling rule context for extensible rule evaluation
-- Schedule risk summary with Low, Medium, and High risk levels
-- Schedule risk indicators for dashboard-ready warnings
-- Uncovered required skills overview
-- Capacity summary for department skill coverage
 
 ---
 
@@ -105,6 +108,7 @@ Contains:
 - scheduling engine
 - scheduling rules
 - scheduling overview services
+- schedule simulation services
 - workload calculation services
 - overload detection services
 - orchestration logic
@@ -199,6 +203,43 @@ Example:
 ```
 
 This helps managers identify staffing vulnerabilities and missing competencies in the current schedule.
+
+---
+
+# Capacity Overview
+
+The schedule overview also compares required skills with the department's available employee competencies.
+
+Example:
+
+```json
+{
+  "skillCapacity": [
+    {
+      "skill": "CT",
+      "employeeCount": 1
+    },
+    {
+      "skill": "MRI",
+      "employeeCount": 1
+    }
+  ],
+  "uncoveredRequiredSkills": [
+    {
+      "skill": "UL",
+      "requiredByUnassignedShifts": 1,
+      "availableEmployees": 0
+    }
+  ],
+  "capacitySummary": {
+    "totalSkills": 2,
+    "missingRequiredSkills": 1,
+    "criticalSkillGaps": 1
+  }
+}
+```
+
+This helps managers distinguish between a planning issue and an actual competency capacity issue.
 
 ---
 
@@ -332,6 +373,11 @@ The overview includes:
 - high-risk employee count
 - unassigned shift details
 - skill gaps
+- risk summary
+- risk indicators
+- skill capacity
+- uncovered required skills
+- capacity summary
 
 ### Example Response
 
@@ -359,7 +405,109 @@ The overview includes:
       "requiredSkill": "UL",
       "unassignedShiftCount": 1
     }
+  ],
+  "riskSummary": {
+    "coverageRisk": "Medium",
+    "unassignedShiftCount": 1,
+    "skillGapCount": 1,
+    "highRiskEmployeeCount": 0
+  },
+  "riskIndicators": [
+    {
+      "type": "Coverage",
+      "severity": "Medium",
+      "message": "Schedule coverage is 66.67%."
+    },
+    {
+      "type": "UnassignedShifts",
+      "severity": "Medium",
+      "message": "1 shift(s) are currently unassigned."
+    },
+    {
+      "type": "SkillGap",
+      "severity": "Medium",
+      "message": "1 unassigned shift(s) require UL."
+    },
+    {
+      "type": "Capacity",
+      "severity": "High",
+      "message": "UL is required by 1 unassigned shift(s), but no employees have this skill."
+    }
+  ],
+  "skillCapacity": [
+    {
+      "skill": "CT",
+      "employeeCount": 1
+    },
+    {
+      "skill": "MRI",
+      "employeeCount": 1
+    }
+  ],
+  "uncoveredRequiredSkills": [
+    {
+      "skill": "UL",
+      "requiredByUnassignedShifts": 1,
+      "availableEmployees": 0
+    }
+  ],
+  "capacitySummary": {
+    "totalSkills": 2,
+    "missingRequiredSkills": 1,
+    "criticalSkillGaps": 1
+  }
+}
+```
+
+---
+
+## Schedule Simulation
+
+```http
+POST /api/schedule/simulate
+```
+
+Simulates whether a potential shift can be covered without saving it to the database.
+
+This is useful for what-if planning, capacity evaluation, and leadership decision support.
+
+### Example Request
+
+```json
+{
+  "date": "2026-05-15",
+  "shiftType": 2,
+  "requiredSkill": "UL",
+  "requiredStaff": 1,
+  "maxAssignmentsPerEmployee": 5
+}
+```
+
+### Example Failed Simulation Response
+
+```json
+{
+  "canBeCovered": false,
+  "requiredSkill": "UL",
+  "riskLevel": "High",
+  "suggestedEmployeeId": null,
+  "suggestedEmployeeName": null,
+  "failureReasons": [
+    "Kris: Missing required skill 'UL'."
   ]
+}
+```
+
+### Example Successful Simulation Response
+
+```json
+{
+  "canBeCovered": true,
+  "requiredSkill": "CT",
+  "riskLevel": "Low",
+  "suggestedEmployeeId": "guid",
+  "suggestedEmployeeName": "Kris",
+  "failureReasons": []
 }
 ```
 
@@ -413,7 +561,7 @@ on every push to GitHub.
 
 # Test Status
 
-The solution currently includes 38 unit tests covering:
+The solution currently includes 42 unit tests covering:
 
 - Shift staffing rules
 - Skill validation
@@ -428,6 +576,9 @@ The solution currently includes 38 unit tests covering:
 - Scheduling failure reasons
 - Rule evaluation behavior
 - Isolated scheduling rule tests
+- Schedule overview logic
+- Capacity summary logic
+- Schedule simulation logic
 
 ---
 
@@ -464,7 +615,29 @@ Failure reason collection
 ↓
 Skill gap grouping
 ↓
+Capacity analysis
+↓
+Risk indicators
+↓
 Leadership overview response
+```
+
+---
+
+# Example Simulation Flow
+
+```text
+Potential shift
+↓
+Simulation endpoint
+↓
+Scheduling engine
+↓
+Rule evaluation
+↓
+Coverage decision
+↓
+Suggested employee or failure reasons
 ```
 
 ---
@@ -498,4 +671,5 @@ This project is designed as a backend architecture and scheduling engine portfol
 - extensible scheduling architecture
 - explainable scheduling decisions
 - leadership-oriented workforce planning insights
+- what-if planning and simulation
 - automated testing and validation
