@@ -50,6 +50,7 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Schedule risk summary with Low, Medium, and High risk levels
 - Schedule risk indicators for dashboard-ready warnings
 - Uncovered required skills overview
+- Capacity summary for department skill coverage
 
 ---
 
