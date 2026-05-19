@@ -42,6 +42,7 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Swagger / OpenAPI support
 - GitHub Actions CI pipeline
 - Unit tested business logic
+- Scheduling rule context for extensible rule evaluation
 
 ---
 
@@ -125,7 +126,7 @@ Contains:
 
 # Scheduling Engine
 
-The scheduling engine uses a rule-based architecture where each scheduling rule is isolated into its own class.
+Each rule receives a SchedulingRuleContext that contains the employee, shift, planned shifts, and scheduling limits. This keeps rule signatures stable as the scheduling engine grows.
 
 Current rules include:
 
