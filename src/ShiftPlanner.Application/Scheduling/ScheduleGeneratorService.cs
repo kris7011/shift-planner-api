@@ -30,18 +30,25 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
 
         foreach (var shift in openShifts)
         {
-            var candidates = new List<Employee>();
-            var failureReasons = new List<string>();
+            var evaluations = new List<CandidateEvaluation>();
 
             foreach (var employee in employees)
             {
+                var evaluation = new CandidateEvaluation
+                {
+                    Employee = employee,
+                    CanAssign = true
+                };
+
                 if (!employee.HasSkill(shift.RequiredSkill))
                 {
-                    failureReasons.Add(
+                    evaluation.CanAssign = false;
+                    evaluation.FailureReasons.Add(
                         $"{employee.Name}: Missing required skill '{shift.RequiredSkill}'.");
 
-                    continue;
+                    evaluations.Add(evaluation);
 
+                    continue;
                 }
 
                 var context = new SchedulingRuleContext
@@ -62,18 +69,20 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
 
                 if (failedRules.Count > 0)
                 {
-                    failureReasons.AddRange(
+                    evaluation.CanAssign = false;
+
+                    evaluation.FailureReasons.AddRange(
                         failedRules
                             .Where(result => !string.IsNullOrWhiteSpace(result.FailureReason))
                             .Select(result => $"{employee.Name}: {result.FailureReason}"));
-
-                    continue;
                 }
 
-                candidates.Add(employee);
+                evaluations.Add(evaluation);
             }
 
-            var matchingEmployee = candidates
+            var matchingEmployee = evaluations
+                .Where(evaluation => evaluation.CanAssign)
+                .Select(evaluation => evaluation.Employee)
                 .OrderBy(employee =>
                 {
                     var employeeShifts = plannedShifts
@@ -89,6 +98,11 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
                 shift.AssignToEmployee(matchingEmployee.Id);
                 plannedShifts.Add(shift);
             }
+
+            var failureReasons = evaluations
+                .Where(evaluation => !evaluation.CanAssign)
+                .SelectMany(evaluation => evaluation.FailureReasons)
+                .ToList();
 
             results.Add(new ScheduleAssignmentResult
             {
