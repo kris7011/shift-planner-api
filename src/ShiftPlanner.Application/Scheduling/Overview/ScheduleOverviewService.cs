@@ -57,12 +57,6 @@ public class ScheduleOverviewService : IScheduleOverviewService
             HighRiskEmployeeCount = highRiskEmployeeCount
         };
 
-        var riskIndicators = CreateRiskIndicators(
-            coverageRate,
-            unassignedShifts,
-            skillGaps,
-            highRiskEmployeeCount);
-
         var skillCapacity = employees
             .SelectMany(employee => employee.Skills)
             .GroupBy(skill => skill)
@@ -92,6 +86,13 @@ public class ScheduleOverviewService : IScheduleOverviewService
             .OrderByDescending(skill => skill.RequiredByUnassignedShifts)
             .ThenBy(skill => skill.Skill)
             .ToList();
+
+        var riskIndicators = CreateRiskIndicators(
+        coverageRate,
+        unassignedShifts,
+        skillGaps,
+        uncoveredRequiredSkills,
+        highRiskEmployeeCount);
 
         return new ScheduleOverviewResponse
         {
@@ -132,6 +133,7 @@ public class ScheduleOverviewService : IScheduleOverviewService
     decimal coverageRate,
     int unassignedShiftCount,
     List<SkillGapOverview> skillGaps,
+    List<UncoveredRequiredSkillOverview> uncoveredRequiredSkills,
     int highRiskEmployeeCount)
     {
         var indicators = new List<RiskIndicator>();
@@ -163,6 +165,16 @@ public class ScheduleOverviewService : IScheduleOverviewService
                 Type = "SkillGap",
                 Severity = ScheduleRiskLevel.Medium,
                 Message = $"{skillGap.UnassignedShiftCount} unassigned shift(s) require {skillGap.RequiredSkill}."
+            });
+        }
+
+        foreach (var uncoveredSkill in uncoveredRequiredSkills)
+        {
+            indicators.Add(new RiskIndicator
+            {
+                Type = "Capacity",
+                Severity = ScheduleRiskLevel.High,
+                Message = $"{uncoveredSkill.Skill} is required by {uncoveredSkill.RequiredByUnassignedShifts} unassigned shift(s), but no employees have this skill."
             });
         }
 
