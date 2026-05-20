@@ -5,6 +5,7 @@ import {
   type ScheduleOverviewResponse,
   type ScheduleRiskLevel,
 } from "./api/scheduleOverviewApi";
+import { resetDemoData } from "./api/demoDataApi";
 import { SimulationPanel } from "./components/SimulationPanel";
 
 function translateRiskLevel(riskLevel: ScheduleRiskLevel) {
@@ -77,6 +78,8 @@ function App() {
   const [overview, setOverview] = useState<ScheduleOverviewResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isResettingDemoData, setIsResettingDemoData] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   async function loadOverview() {
     try {
@@ -90,6 +93,26 @@ function App() {
       setErrorMessage("Kunne ikke hente vagtplanens overblik fra API'et.");
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function handleResetDemoData() {
+    try {
+      setIsResettingDemoData(true);
+      setErrorMessage(null);
+      setStatusMessage(null);
+
+      const result = await resetDemoData();
+
+      setStatusMessage(
+        `Demo-data blev nulstillet. ${result.employeeCount} medarbejdere og ${result.shiftCount} vagter blev oprettet.`,
+      );
+
+      await loadOverview();
+    } catch {
+      setErrorMessage("Kunne ikke nulstille demo-data. Kontroller at API'et kører.");
+    } finally {
+      setIsResettingDemoData(false);
     }
   }
 
@@ -132,8 +155,20 @@ function App() {
           </p>
         </div>
 
-        <button onClick={loadOverview}>Opdater data</button>
+        <div className="hero-actions">
+          <button onClick={loadOverview}>Opdater data</button>
+
+          <button
+            className="secondary-button"
+            disabled={isResettingDemoData}
+            onClick={handleResetDemoData}
+          >
+            {isResettingDemoData ? "Nulstiller..." : "Nulstil demo-data"}
+          </button>
+        </div>
       </header>
+
+      {statusMessage && <p className="status-message">{statusMessage}</p>}
 
       <section className="summary-grid">
         <article className="summary-card">
