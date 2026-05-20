@@ -5,6 +5,7 @@ using ShiftPlanner.Application.Scheduling.Rules;
 using ShiftPlanner.Application.Scheduling.Simulation;
 using ShiftPlanner.Domain.Employees;
 using ShiftPlanner.Domain.Shifts;
+using ShiftPlanner.Tests.Helpers;
 
 namespace ShiftPlanner.Tests.Application.Scheduling.Simulation;
 
@@ -27,22 +28,7 @@ public class ScheduleSimulationServiceTests
         var employees = new List<Employee> { employee };
         var existingShifts = new List<Shift>();
 
-        var loadService = new EmployeeLoadService();
-        var statusService = new EmployeeLoadStatusService();
-
-        var rules = new List<ISchedulingRule>
-        {
-            new MaxAssignmentsRule(),
-            new SameDayShiftRule(),
-            new NightToDayRule(),
-            new HighLoadRule(loadService, statusService)
-        };
-
-        var scheduleGeneratorService = new ScheduleGeneratorService(
-            loadService,
-            rules);
-
-        var service = new ScheduleSimulationService(scheduleGeneratorService);
+        var service = ScheduleSimulationServiceFactory.Create();
 
         var result = service.Simulate(
             request,
@@ -76,22 +62,7 @@ public class ScheduleSimulationServiceTests
         var employees = new List<Employee> { employee };
         var existingShifts = new List<Shift>();
 
-        var loadService = new EmployeeLoadService();
-        var statusService = new EmployeeLoadStatusService();
-
-        var rules = new List<ISchedulingRule>
-        {
-            new MaxAssignmentsRule(),
-            new SameDayShiftRule(),
-            new NightToDayRule(),
-            new HighLoadRule(loadService, statusService)
-        };
-
-        var scheduleGeneratorService = new ScheduleGeneratorService(
-            loadService,
-            rules);
-
-        var service = new ScheduleSimulationService(scheduleGeneratorService);
+        var service = ScheduleSimulationServiceFactory.Create();
 
         var result = service.Simulate(
             request,
@@ -130,22 +101,7 @@ public class ScheduleSimulationServiceTests
         var employees = new List<Employee> { employee };
         var existingShifts = new List<Shift> { existingNightShift };
 
-        var loadService = new EmployeeLoadService();
-        var statusService = new EmployeeLoadStatusService();
-
-        var rules = new List<ISchedulingRule>
-        {
-            new MaxAssignmentsRule(),
-            new SameDayShiftRule(),
-            new NightToDayRule(),
-            new HighLoadRule(loadService, statusService)
-        };
-
-        var scheduleGeneratorService = new ScheduleGeneratorService(
-            loadService,
-            rules);
-
-        var service = new ScheduleSimulationService(scheduleGeneratorService);
+        var service = ScheduleSimulationServiceFactory.Create();
 
         var result = service.Simulate(
             request,
