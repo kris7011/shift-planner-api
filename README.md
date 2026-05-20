@@ -48,6 +48,7 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Schedule risk summary with Low, Medium, and High risk levels
 - Schedule risk indicators for dashboard-ready warnings
 - Schedule simulation endpoint for what-if planning
+- Simulation impact summary for leadership decision support
 - REST API endpoints
 - Dependency Injection
 - Swagger / OpenAPI support
@@ -494,7 +495,8 @@ This is useful for what-if planning, capacity evaluation, and leadership decisio
   "suggestedEmployeeName": null,
   "failureReasons": [
     "Kris: Missing required skill 'UL'."
-  ]
+  ],
+  "impactSummary": "This shift cannot be covered because no available employee can satisfy the required skill 'UL' and scheduling rules."
 }
 ```
 
@@ -507,7 +509,8 @@ This is useful for what-if planning, capacity evaluation, and leadership decisio
   "riskLevel": "Low",
   "suggestedEmployeeId": "guid",
   "suggestedEmployeeName": "Kris",
-  "failureReasons": []
+  "failureReasons": [],
+  "impactSummary": "This shift can be covered by Kris with low scheduling risk."
 }
 ```
 
@@ -561,7 +564,7 @@ on every push to GitHub.
 
 # Test Status
 
-The solution currently includes 42 unit tests covering:
+The solution currently includes 43 unit tests covering:
 
 - Shift staffing rules
 - Skill validation
@@ -579,6 +582,7 @@ The solution currently includes 42 unit tests covering:
 - Schedule overview logic
 - Capacity summary logic
 - Schedule simulation logic
+- Simulation impact summary logic
 
 ---
 
@@ -638,6 +642,8 @@ Rule evaluation
 Coverage decision
 ↓
 Suggested employee or failure reasons
+↓
+Impact summary
 ```
 
 ---
