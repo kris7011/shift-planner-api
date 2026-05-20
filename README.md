@@ -50,6 +50,7 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Schedule simulation endpoint for what-if planning
 - Simulation impact summary for leadership decision support
 - Simulation impact indicators for dashboard-ready what-if warnings
+- Simulation candidate results with employee-specific assignment explanations
 - REST API endpoints
 - Dependency Injection
 - Swagger / OpenAPI support
@@ -509,6 +510,16 @@ This is useful for what-if planning, capacity evaluation, and leadership decisio
       "severity": "High",
       "message": "No available employee can satisfy the required skill 'UL'."
     }
+  ],
+  "candidateResults": [
+    {
+      "employeeId": "guid",
+      "employeeName": "Kris",
+      "canBeAssigned": false,
+      "reasons": [
+        "Missing required skill 'UL'."
+      ]
+    }
   ]
 }
 ```
@@ -529,6 +540,14 @@ This is useful for what-if planning, capacity evaluation, and leadership decisio
       "type": "Coverage",
       "severity": "Low",
       "message": "The simulated shift can be covered."
+    }
+  ],
+  "candidateResults": [
+    {
+      "employeeId": "guid",
+      "employeeName": "Kris",
+      "canBeAssigned": true,
+      "reasons": []
     }
   ]
 }
@@ -604,6 +623,7 @@ The solution currently includes 43 unit tests covering:
 - Schedule simulation logic
 - Simulation impact summary logic
 - Simulation impact indicator logic
+- Simulation candidate result logic
 
 ---
 
@@ -667,6 +687,8 @@ Suggested employee or failure reasons
 Impact summary
 ↓
 Impact indicators
+↓
+Candidate results
 ```
 
 ---
