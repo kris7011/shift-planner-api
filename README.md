@@ -49,6 +49,7 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Schedule risk indicators for dashboard-ready warnings
 - Schedule simulation endpoint for what-if planning
 - Simulation impact summary for leadership decision support
+- Simulation impact indicators for dashboard-ready what-if warnings
 - REST API endpoints
 - Dependency Injection
 - Swagger / OpenAPI support
@@ -496,7 +497,19 @@ This is useful for what-if planning, capacity evaluation, and leadership decisio
   "failureReasons": [
     "Kris: Missing required skill 'UL'."
   ],
-  "impactSummary": "This shift cannot be covered because no available employee can satisfy the required skill 'UL' and scheduling rules."
+  "impactSummary": "This shift cannot be covered because no available employee can satisfy the required skill 'UL' and scheduling rules.",
+  "impactIndicators": [
+    {
+      "type": "Coverage",
+      "severity": "High",
+      "message": "The simulated shift cannot be covered."
+    },
+    {
+      "type": "Skill",
+      "severity": "High",
+      "message": "No available employee can satisfy the required skill 'UL'."
+    }
+  ]
 }
 ```
 
@@ -510,7 +523,14 @@ This is useful for what-if planning, capacity evaluation, and leadership decisio
   "suggestedEmployeeId": "guid",
   "suggestedEmployeeName": "Kris",
   "failureReasons": [],
-  "impactSummary": "This shift can be covered by Kris with low scheduling risk."
+  "impactSummary": "This shift can be covered by Kris with low scheduling risk.",
+  "impactIndicators": [
+    {
+      "type": "Coverage",
+      "severity": "Low",
+      "message": "The simulated shift can be covered."
+    }
+  ]
 }
 ```
 
@@ -583,6 +603,7 @@ The solution currently includes 43 unit tests covering:
 - Capacity summary logic
 - Schedule simulation logic
 - Simulation impact summary logic
+- Simulation impact indicator logic
 
 ---
 
@@ -644,6 +665,8 @@ Coverage decision
 Suggested employee or failure reasons
 ↓
 Impact summary
+↓
+Impact indicators
 ```
 
 ---
