@@ -148,4 +148,32 @@ public class DemoDataService : IDemoDataService
                 1)
         ];
     }
+
+    public async Task<DemoSeedResult> ResetAsync()
+    {
+        await _shiftRepository.DeleteAllAsync();
+        await _employeeRepository.DeleteAllAsync();
+
+        var demoEmployees = CreateDemoEmployees();
+
+        foreach (var employee in demoEmployees)
+        {
+            await _employeeRepository.AddAsync(employee);
+        }
+
+        var demoShifts = CreateDemoShifts(demoEmployees);
+
+        foreach (var shift in demoShifts)
+        {
+            await _shiftRepository.CreateAsync(shift);
+        }
+
+        return new DemoSeedResult
+        {
+            WasSeeded = true,
+            Message = "Demo data was reset and seeded.",
+            EmployeeCount = demoEmployees.Count,
+            ShiftCount = demoShifts.Count
+        };
+    }
 }
