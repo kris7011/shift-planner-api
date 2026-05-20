@@ -52,6 +52,7 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Simulation impact indicators for dashboard-ready what-if warnings
 - Simulation candidate results with employee-specific assignment explanations
 - Simulation candidate scoring
+- Demo seed and reset endpoints for quick local testing
 - REST API endpoints
 - Dependency Injection
 - Swagger / OpenAPI support
@@ -116,6 +117,7 @@ Contains:
 - workload calculation services
 - overload detection services
 - orchestration logic
+- demo data seeding logic
 
 ---
 
@@ -138,6 +140,7 @@ Contains:
 - middleware
 - Swagger configuration
 - dependency injection setup
+- demo endpoints
 
 ---
 
@@ -256,6 +259,72 @@ GET /health
 ```
 
 Returns API health status.
+
+---
+
+## Demo Data
+
+```http
+POST /api/demo/seed
+POST /api/demo/reset
+```
+
+The demo endpoints make it easy to test the API locally with realistic sample data.
+
+### Seed Demo Data
+
+```http
+POST /api/demo/seed
+```
+
+Creates demo employees and shifts if the database is empty.
+
+Example response when data is created:
+
+```json
+{
+  "wasSeeded": true,
+  "message": "Demo data was seeded.",
+  "employeeCount": 10,
+  "shiftCount": 10
+}
+```
+
+Example response when data already exists:
+
+```json
+{
+  "wasSeeded": false,
+  "message": "Demo data was skipped because the database already contains data.",
+  "employeeCount": 10,
+  "shiftCount": 10
+}
+```
+
+### Reset Demo Data
+
+```http
+POST /api/demo/reset
+```
+
+Deletes all employees and shifts, then creates fresh demo data.
+
+```json
+{
+  "wasSeeded": true,
+  "message": "Demo data was reset and seeded.",
+  "employeeCount": 10,
+  "shiftCount": 10
+}
+```
+
+The demo dataset includes:
+
+- 10 employees
+- 10 shifts
+- assigned and unassigned shifts
+- CT, MRI, XR, and Night competencies
+- deliberate skill gaps for UL and Intervention
 
 ---
 
@@ -387,17 +456,17 @@ The overview includes:
 
 ```json
 {
-  "totalShifts": 3,
-  "assignedShifts": 2,
-  "unassignedShifts": 1,
-  "coverageRate": 66.67,
-  "employeeCount": 1,
+  "totalShifts": 10,
+  "assignedShifts": 8,
+  "unassignedShifts": 2,
+  "coverageRate": 80.0,
+  "employeeCount": 10,
   "highRiskEmployeeCount": 0,
   "unassignedShiftDetails": [
     {
       "shiftId": "guid",
-      "date": "2026-05-13",
-      "shiftType": 2,
+      "date": "2026-05-15",
+      "shiftType": 1,
       "requiredSkill": "UL",
       "failureReasons": [
         "Kris: Missing required skill 'UL'."
@@ -408,24 +477,28 @@ The overview includes:
     {
       "requiredSkill": "UL",
       "unassignedShiftCount": 1
+    },
+    {
+      "requiredSkill": "Intervention",
+      "unassignedShiftCount": 1
     }
   ],
   "riskSummary": {
     "coverageRisk": "Medium",
-    "unassignedShiftCount": 1,
-    "skillGapCount": 1,
+    "unassignedShiftCount": 2,
+    "skillGapCount": 2,
     "highRiskEmployeeCount": 0
   },
   "riskIndicators": [
     {
       "type": "Coverage",
       "severity": "Medium",
-      "message": "Schedule coverage is 66.67%."
+      "message": "Schedule coverage is 80.0%."
     },
     {
       "type": "UnassignedShifts",
       "severity": "Medium",
-      "message": "1 shift(s) are currently unassigned."
+      "message": "2 shift(s) are currently unassigned."
     },
     {
       "type": "SkillGap",
@@ -441,11 +514,19 @@ The overview includes:
   "skillCapacity": [
     {
       "skill": "CT",
-      "employeeCount": 1
+      "employeeCount": 4
+    },
+    {
+      "skill": "XR",
+      "employeeCount": 4
     },
     {
       "skill": "MRI",
-      "employeeCount": 1
+      "employeeCount": 4
+    },
+    {
+      "skill": "Night",
+      "employeeCount": 3
     }
   ],
   "uncoveredRequiredSkills": [
@@ -453,12 +534,17 @@ The overview includes:
       "skill": "UL",
       "requiredByUnassignedShifts": 1,
       "availableEmployees": 0
+    },
+    {
+      "skill": "Intervention",
+      "requiredByUnassignedShifts": 1,
+      "availableEmployees": 0
     }
   ],
   "capacitySummary": {
-    "totalSkills": 2,
-    "missingRequiredSkills": 1,
-    "criticalSkillGaps": 1
+    "totalSkills": 4,
+    "missingRequiredSkills": 2,
+    "criticalSkillGaps": 2
   }
 }
 ```
@@ -580,6 +666,29 @@ dotnet run --project src/ShiftPlanner.Api
 
 ---
 
+## Seed Demo Data
+
+After starting the API, create a fresh demo dataset:
+
+```bash
+curl -X POST http://localhost:5026/api/demo/reset
+```
+
+This creates:
+
+- 10 demo employees
+- 10 demo shifts
+- assigned and unassigned shifts
+- deliberate skill gaps for UL and Intervention
+
+Then open the schedule overview:
+
+```bash
+curl http://localhost:5026/api/schedule/overview
+```
+
+---
+
 # Swagger UI
 
 After starting the API, Swagger UI is available at:
@@ -628,6 +737,7 @@ The solution currently includes 43 unit tests covering:
 - Simulation impact indicator logic
 - Simulation candidate result logic
 - Simulation candidate scoring logic
+- Demo data seeding and reset support
 
 ---
 
@@ -695,6 +805,24 @@ Impact indicators
 Candidate results
 ↓
 Candidate scoring
+```
+
+---
+
+# Demo Data Flow
+
+```text
+POST /api/demo/reset
+↓
+Delete existing shifts
+↓
+Delete existing employees
+↓
+Create demo employees
+↓
+Create demo shifts
+↓
+Return seed result
 ```
 
 ---
