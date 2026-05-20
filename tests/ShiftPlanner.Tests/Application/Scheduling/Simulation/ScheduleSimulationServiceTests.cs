@@ -80,12 +80,12 @@ public class ScheduleSimulationServiceTests
         var statusService = new EmployeeLoadStatusService();
 
         var rules = new List<ISchedulingRule>
-    {
-        new MaxAssignmentsRule(),
-        new SameDayShiftRule(),
-        new NightToDayRule(),
-        new HighLoadRule(loadService, statusService)
-    };
+        {
+            new MaxAssignmentsRule(),
+            new SameDayShiftRule(),
+            new NightToDayRule(),
+            new HighLoadRule(loadService, statusService)
+        };
 
         var scheduleGeneratorService = new ScheduleGeneratorService(
             loadService,
@@ -104,5 +104,62 @@ public class ScheduleSimulationServiceTests
         Assert.Equal(employee.Id, result.SuggestedEmployeeId);
         Assert.Equal(employee.Name, result.SuggestedEmployeeName);
         Assert.Empty(result.FailureReasons);
+    }
+
+    [Fact]
+    public void Simulate_ReturnsHighRisk_WhenDayShiftIsAfterExistingNightShift()
+    {
+        var employee = new Employee("Kris", new List<string> { "CT" });
+
+        var existingNightShift = new Shift(
+            new DateOnly(2026, 5, 14),
+            ShiftType.Night,
+            "CT",
+            1,
+            employee.Id);
+
+        var request = new SimulateScheduleRequest
+        {
+            Date = new DateOnly(2026, 5, 15),
+            ShiftType = ShiftType.Day,
+            RequiredSkill = "CT",
+            RequiredStaff = 1,
+            MaxAssignmentsPerEmployee = 5
+        };
+
+        var employees = new List<Employee> { employee };
+        var existingShifts = new List<Shift> { existingNightShift };
+
+        var loadService = new EmployeeLoadService();
+        var statusService = new EmployeeLoadStatusService();
+
+        var rules = new List<ISchedulingRule>
+        {
+            new MaxAssignmentsRule(),
+            new SameDayShiftRule(),
+            new NightToDayRule(),
+            new HighLoadRule(loadService, statusService)
+        };
+
+        var scheduleGeneratorService = new ScheduleGeneratorService(
+            loadService,
+            rules);
+
+        var service = new ScheduleSimulationService(scheduleGeneratorService);
+
+        var result = service.Simulate(
+            request,
+            employees,
+            existingShifts);
+
+        Assert.False(result.CanBeCovered);
+        Assert.Equal("CT", result.RequiredSkill);
+        Assert.Equal(ScheduleRiskLevel.High, result.RiskLevel);
+        Assert.Null(result.SuggestedEmployeeId);
+        Assert.Null(result.SuggestedEmployeeName);
+
+        Assert.Contains(result.FailureReasons, reason =>
+            reason.Contains("day shift", StringComparison.OrdinalIgnoreCase) ||
+            reason.Contains("night shift", StringComparison.OrdinalIgnoreCase));
     }
 }
