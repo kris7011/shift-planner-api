@@ -7,6 +7,7 @@ using ShiftPlanner.Api.Shifts;
 using ShiftPlanner.Api.Scheduling;
 using ShiftPlanner.Application;
 using ShiftPlanner.Infrastructure;
+using ShiftPlanner.Api.Demo;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,5 +37,6 @@ app.MapHealthEndpoints();
 app.MapEmployeeEndpoints();
 app.MapShiftEndpoints();
 app.MapSchedulingEndpoints();
+app.MapDemoEndpoints();
 
 app.Run();
