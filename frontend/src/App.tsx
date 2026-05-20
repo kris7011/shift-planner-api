@@ -5,6 +5,7 @@ import {
   type ScheduleOverviewResponse,
   type ScheduleRiskLevel,
 } from "./api/scheduleOverviewApi";
+import { SimulationPanel } from "./components/SimulationPanel";
 
 function translateRiskLevel(riskLevel: ScheduleRiskLevel) {
   switch (riskLevel) {
@@ -236,6 +237,9 @@ function App() {
             ))}
           </div>
         </article>
+
+        <SimulationPanel />
+
       </section>
     </main>
   );

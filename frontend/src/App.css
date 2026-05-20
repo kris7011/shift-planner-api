@@ -205,4 +205,80 @@ button:hover {
   .content-grid {
     grid-template-columns: 1fr;
   }
+
+  .simulation-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section-header {
+  margin-bottom: 18px;
+}
+
+.section-header p {
+  margin: 8px 0 0;
+  color: #526173;
+}
+
+.simulation-panel {
+  grid-column: 1 / -1;
+}
+
+.simulation-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.simulation-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #172033;
+  font-weight: 700;
+}
+
+.simulation-form input,
+.simulation-form select {
+  border: 1px solid #dbe3ef;
+  border-radius: 12px;
+  padding: 12px;
+  background: white;
+  color: #172033;
+  font: inherit;
+}
+
+.simulation-form button {
+  align-self: end;
+}
+
+.simulation-result {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #edf2f7;
+}
+
+.simulation-result h3 {
+  margin: 24px 0 12px;
+  color: #172033;
+}
+
+.simulation-summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.simulation-summary span {
+  display: block;
+  margin-bottom: 6px;
+  color: #526173;
+}
+
+.simulation-summary strong {
+  color: #172033;
+  font-size: 24px;
 }
