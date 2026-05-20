@@ -2,6 +2,23 @@
   min-height: 100vh;
 }
 
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  color: #172033;
+  background: #f4f7fb;
+}
+
+h1,
+h2,
+h3,
+p,
+span,
+strong {
+  color: inherit;
+}
+
 .page {
   min-height: 100vh;
   padding: 48px;
@@ -22,6 +39,7 @@
 .hero h1 {
   margin: 0;
   font-size: 42px;
+  color: #172033;
 }
 
 .hero p {
@@ -63,7 +81,7 @@ button:hover {
 .panel {
   border: 1px solid #dbe3ef;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.96);
   box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
 }
 
@@ -79,6 +97,7 @@ button:hover {
 
 .summary-card strong {
   font-size: 34px;
+  color: #172033;
 }
 
 .summary-card.warning strong {
@@ -93,11 +112,13 @@ button:hover {
 
 .panel {
   padding: 24px;
+  color: #172033;
 }
 
 .panel h2 {
   margin-top: 0;
   margin-bottom: 18px;
+  color: #172033;
 }
 
 .metric-row,
@@ -108,11 +129,28 @@ button:hover {
   align-items: center;
   padding: 14px 0;
   border-top: 1px solid #edf2f7;
+  color: #172033;
 }
 
 .metric-row:first-of-type,
 .list-item:first-child {
   border-top: 0;
+}
+
+.metric-row span {
+  color: #172033;
+}
+
+.metric-row strong {
+  color: #111827;
+}
+
+.list-item strong {
+  color: #111827;
+}
+
+.list-item span {
+  color: #172033;
 }
 
 .list-item p {
