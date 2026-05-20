@@ -17,4 +17,6 @@ public class SimulateScheduleResponse
     public List<string> FailureReasons { get; set; } = [];
 
     public string ImpactSummary { get; set; } = string.Empty;
+
+    public List<SimulationImpactIndicator> ImpactIndicators { get; set; } = [];
 }

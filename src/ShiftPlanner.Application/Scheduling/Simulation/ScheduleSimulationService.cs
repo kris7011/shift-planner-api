@@ -43,6 +43,11 @@ public class ScheduleSimulationService : IScheduleSimulationService
             request.RequiredSkill,
             assignmentResult.EmployeeName);
 
+        var impactIndicators = CreateImpactIndicators(
+            canBeCovered,
+            request.RequiredSkill,
+            assignmentResult.FailureReasons);
+
         return new SimulateScheduleResponse
         {
             CanBeCovered = canBeCovered,
@@ -51,7 +56,8 @@ public class ScheduleSimulationService : IScheduleSimulationService
             SuggestedEmployeeId = assignmentResult.EmployeeId,
             SuggestedEmployeeName = assignmentResult.EmployeeName,
             FailureReasons = assignmentResult.FailureReasons,
-            ImpactSummary = impactSummary
+            ImpactSummary = impactSummary,
+            ImpactIndicators = impactIndicators
         };
     }
 
@@ -66,5 +72,59 @@ public class ScheduleSimulationService : IScheduleSimulationService
         }
 
         return $"This shift cannot be covered because no available employee can satisfy the required skill '{requiredSkill}' and scheduling rules.";
+    }
+
+    private static List<SimulationImpactIndicator> CreateImpactIndicators(
+        bool canBeCovered,
+        string requiredSkill,
+        List<string> failureReasons)
+    {
+        if (canBeCovered)
+        {
+            return
+            [
+                new SimulationImpactIndicator
+                {
+                    Type = "Coverage",
+                    Severity = ScheduleRiskLevel.Low,
+                    Message = "The simulated shift can be covered."
+                }
+            ];
+        }
+
+        var indicators = new List<SimulationImpactIndicator>
+        {
+            new()
+            {
+                Type = "Coverage",
+                Severity = ScheduleRiskLevel.High,
+                Message = "The simulated shift cannot be covered."
+            }
+        };
+
+        if (failureReasons.Any(reason =>
+            reason.Contains("Missing required skill", StringComparison.OrdinalIgnoreCase)))
+        {
+            indicators.Add(new SimulationImpactIndicator
+            {
+                Type = "Skill",
+                Severity = ScheduleRiskLevel.High,
+                Message = $"No available employee can satisfy the required skill '{requiredSkill}'."
+            });
+        }
+
+        if (failureReasons.Any(reason =>
+            reason.Contains("night shift", StringComparison.OrdinalIgnoreCase) ||
+            reason.Contains("day shift", StringComparison.OrdinalIgnoreCase)))
+        {
+            indicators.Add(new SimulationImpactIndicator
+            {
+                Type = "RestRule",
+                Severity = ScheduleRiskLevel.High,
+                Message = "The simulated shift conflicts with rest-time or shift sequence rules."
+            });
+        }
+
+        return indicators;
     }
 }

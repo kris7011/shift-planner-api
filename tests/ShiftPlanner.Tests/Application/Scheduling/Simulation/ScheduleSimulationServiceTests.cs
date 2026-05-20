@@ -43,6 +43,10 @@ public class ScheduleSimulationServiceTests
 
         Assert.Contains("cannot be covered", result.ImpactSummary);
         Assert.Contains("UL", result.ImpactSummary);
+
+        Assert.Contains(result.ImpactIndicators, indicator =>
+            indicator.Type == "Skill" &&
+            indicator.Severity == ScheduleRiskLevel.High);
     }
 
     [Fact]
@@ -78,6 +82,10 @@ public class ScheduleSimulationServiceTests
 
         Assert.Contains("can be covered", result.ImpactSummary);
         Assert.Contains(employee.Name, result.ImpactSummary);
+
+        Assert.Contains(result.ImpactIndicators, indicator =>
+            indicator.Type == "Coverage" &&
+            indicator.Severity == ScheduleRiskLevel.Low);
     }
 
     [Fact]
@@ -123,5 +131,9 @@ public class ScheduleSimulationServiceTests
 
         Assert.Contains("cannot be covered", result.ImpactSummary);
         Assert.Contains("CT", result.ImpactSummary);
+
+        Assert.Contains(result.ImpactIndicators, indicator =>
+            indicator.Type == "RestRule" &&
+            indicator.Severity == ScheduleRiskLevel.High);
     }
 }

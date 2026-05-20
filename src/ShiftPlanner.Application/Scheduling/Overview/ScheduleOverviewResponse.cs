@@ -26,5 +26,4 @@ public class ScheduleOverviewResponse
     public List<SkillCapacityOverview> SkillCapacity { get; set; } = [];
     public List<UncoveredRequiredSkillOverview> UncoveredRequiredSkills { get; set; } = [];
     public CapacitySummary CapacitySummary { get; set; } = new();
-    public List<SimulationImpactIndicator> ImpactIndicators { get; set; } = [];
 }
