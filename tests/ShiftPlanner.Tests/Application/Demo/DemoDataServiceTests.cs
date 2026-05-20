@@ -93,4 +93,33 @@ public class DemoDataServiceTests
             return Task.CompletedTask;
         }
     }
+
+    [Fact]
+    public async Task SeedAsync_ReturnsSkippedResult_WhenDataAlreadyExists()
+    {
+        var employeeRepository = new FakeEmployeeRepository();
+        var shiftRepository = new FakeShiftRepository();
+
+        await employeeRepository.AddAsync(
+            new Employee("Existing Employee", new List<string> { "CT" }));
+
+        var service = new DemoDataService(
+            employeeRepository,
+            shiftRepository);
+
+        var result = await service.SeedAsync();
+
+        Assert.False(result.WasSeeded);
+        Assert.Equal(
+            "Demo data was skipped because the database already contains data.",
+            result.Message);
+        Assert.Equal(1, result.EmployeeCount);
+        Assert.Equal(0, result.ShiftCount);
+
+        var employees = await employeeRepository.GetAllAsync();
+        var shifts = await shiftRepository.GetAllAsync();
+
+        Assert.Single(employees);
+        Assert.Empty(shifts);
+    }
 }
