@@ -8,6 +8,8 @@ using ShiftPlanner.Api.Scheduling;
 using ShiftPlanner.Application;
 using ShiftPlanner.Infrastructure;
 using ShiftPlanner.Api.Demo;
+using Microsoft.EntityFrameworkCore;
+using ShiftPlanner.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,12 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ShiftPlannerDbContext>();
+    dbContext.Database.Migrate();
+}
 
 if (app.Environment.IsDevelopment())
 {
