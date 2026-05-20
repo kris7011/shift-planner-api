@@ -19,4 +19,6 @@ public class SimulateScheduleResponse
     public string ImpactSummary { get; set; } = string.Empty;
 
     public List<SimulationImpactIndicator> ImpactIndicators { get; set; } = [];
+
+    public List<SimulationCandidateResult> CandidateResults { get; set; } = [];
 }
