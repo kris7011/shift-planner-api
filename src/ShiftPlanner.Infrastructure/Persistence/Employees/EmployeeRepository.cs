@@ -48,4 +48,13 @@ public class EmployeeRepository : IEmployeeRepository
 
         return employees;
     }
+
+    public async Task DeleteAllAsync()
+    {
+        var employees = await _dbContext.Employees.ToListAsync();
+
+        _dbContext.Employees.RemoveRange(employees);
+
+        await _dbContext.SaveChangesAsync();
+    }
 }

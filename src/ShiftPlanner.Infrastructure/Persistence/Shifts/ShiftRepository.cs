@@ -86,4 +86,13 @@ public class ShiftRepository : IShiftRepository
 
         return shift;
     }
+
+    public async Task DeleteAllAsync()
+    {
+        var shifts = await _dbContext.Shifts.ToListAsync();
+
+        _dbContext.Shifts.RemoveRange(shifts);
+
+        await _dbContext.SaveChangesAsync();
+    }
 }

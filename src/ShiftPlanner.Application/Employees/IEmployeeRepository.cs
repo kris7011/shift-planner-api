@@ -6,4 +6,5 @@ public interface IEmployeeRepository
 {
     Task<Employee> AddAsync(Employee employee);
     Task<List<Employee>> GetAllAsync();
+    Task DeleteAllAsync();
 }
