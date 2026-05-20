@@ -19,6 +19,59 @@ function translateRiskLevel(riskLevel: ScheduleRiskLevel) {
   }
 }
 
+function translateRiskType(type: string) {
+  switch (type) {
+    case "Coverage":
+      return "Dækning";
+    case "UnassignedShifts":
+      return "Ubesatte vagter";
+    case "SkillGap":
+      return "Kompetencegab";
+    case "Capacity":
+      return "Kapacitet";
+    default:
+      return type;
+  }
+}
+
+function translateRiskMessage(message: string) {
+  if (message.startsWith("Schedule coverage is")) {
+    const percentage = message
+      .replace("Schedule coverage is", "")
+      .replace(".", "")
+      .trim();
+
+    return `Vagtplanens dækningsgrad er ${percentage}.`;
+  }
+
+  if (message.includes("shift(s) are currently unassigned")) {
+    const count = message.split(" ")[0];
+
+    return `${count} vagt(er) er aktuelt ubesatte.`;
+  }
+
+  if (message.includes("unassigned shift(s) require")) {
+    const count = message.split(" ")[0];
+    const skill = message
+      .replace(`${count} unassigned shift(s) require`, "")
+      .replace(".", "")
+      .trim();
+
+    return `${count} ubesat vagt kræver ${skill}.`;
+  }
+
+  if (message.includes("is required by") && message.includes("but no employees have this skill")) {
+    const skill = message.split(" is required by ")[0];
+    const count = message
+      .split(" is required by ")[1]
+      .split(" unassigned shift(s)")[0];
+
+    return `${skill} kræves af ${count} ubesat vagt, men ingen medarbejdere har denne kompetence.`;
+  }
+
+  return message;
+}
+
 function App() {
   const [overview, setOverview] = useState<ScheduleOverviewResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -133,8 +186,8 @@ function App() {
               {overview.riskIndicators.map((indicator, index) => (
                 <div className="list-item" key={`${indicator.type}-${index}`}>
                   <div>
-                    <strong>{indicator.type}</strong>
-                    <p>{indicator.message}</p>
+                    <strong>{translateRiskType(indicator.type)}</strong>
+                    <p>{translateRiskMessage(indicator.message)}</p>
                   </div>
 
                   <span className={`badge ${indicator.severity.toLowerCase()}`}>
