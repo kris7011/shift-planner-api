@@ -47,6 +47,13 @@ public class ScheduleSimulationServiceTests
         Assert.Contains(result.ImpactIndicators, indicator =>
             indicator.Type == "Skill" &&
             indicator.Severity == ScheduleRiskLevel.High);
+
+        var candidate = Assert.Single(result.CandidateResults);
+        Assert.Equal(employee.Id, candidate.EmployeeId);
+        Assert.Equal(employee.Name, candidate.EmployeeName);
+        Assert.False(candidate.CanBeAssigned);
+        Assert.Contains(candidate.Reasons, reason =>
+            reason.Contains("Missing required skill"));
     }
 
     [Fact]
@@ -86,6 +93,12 @@ public class ScheduleSimulationServiceTests
         Assert.Contains(result.ImpactIndicators, indicator =>
             indicator.Type == "Coverage" &&
             indicator.Severity == ScheduleRiskLevel.Low);
+
+        var candidate = Assert.Single(result.CandidateResults);
+        Assert.Equal(employee.Id, candidate.EmployeeId);
+        Assert.Equal(employee.Name, candidate.EmployeeName);
+        Assert.True(candidate.CanBeAssigned);
+        Assert.Empty(candidate.Reasons);
     }
 
     [Fact]
@@ -135,5 +148,13 @@ public class ScheduleSimulationServiceTests
         Assert.Contains(result.ImpactIndicators, indicator =>
             indicator.Type == "RestRule" &&
             indicator.Severity == ScheduleRiskLevel.High);
+
+        var candidate = Assert.Single(result.CandidateResults);
+        Assert.Equal(employee.Id, candidate.EmployeeId);
+        Assert.Equal(employee.Name, candidate.EmployeeName);
+        Assert.False(candidate.CanBeAssigned);
+        Assert.Contains(candidate.Reasons, reason =>
+            reason.Contains("day shift", StringComparison.OrdinalIgnoreCase) ||
+            reason.Contains("night shift", StringComparison.OrdinalIgnoreCase));
     }
 }

@@ -48,6 +48,10 @@ public class ScheduleSimulationService : IScheduleSimulationService
             request.RequiredSkill,
             assignmentResult.FailureReasons);
 
+        var candidateResults = CreateCandidateResults(
+            employees,
+            assignmentResult);
+
         return new SimulateScheduleResponse
         {
             CanBeCovered = canBeCovered,
@@ -57,7 +61,8 @@ public class ScheduleSimulationService : IScheduleSimulationService
             SuggestedEmployeeName = assignmentResult.EmployeeName,
             FailureReasons = assignmentResult.FailureReasons,
             ImpactSummary = impactSummary,
-            ImpactIndicators = impactIndicators
+            ImpactIndicators = impactIndicators,
+            CandidateResults = candidateResults
         };
     }
 
@@ -126,5 +131,32 @@ public class ScheduleSimulationService : IScheduleSimulationService
         }
 
         return indicators;
+    }
+
+    private static List<SimulationCandidateResult> CreateCandidateResults(
+    List<Employee> employees,
+    ScheduleAssignmentResult assignmentResult)
+    {
+        return employees
+            .Select(employee =>
+            {
+                var employeeReasons = assignmentResult.FailureReasons
+                    .Where(reason => reason.StartsWith($"{employee.Name}:"))
+                    .Select(reason => reason.Replace($"{employee.Name}: ", string.Empty))
+                    .ToList();
+
+                var canBeAssigned = assignmentResult.EmployeeId == employee.Id;
+
+                return new SimulationCandidateResult
+                {
+                    EmployeeId = employee.Id,
+                    EmployeeName = employee.Name,
+                    CanBeAssigned = canBeAssigned,
+                    Reasons = canBeAssigned
+                        ? []
+                        : employeeReasons
+                };
+            })
+            .ToList();
     }
 }
