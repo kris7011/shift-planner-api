@@ -1,7 +1,4 @@
-using ShiftPlanner.Application.Employees;
-using ShiftPlanner.Application.Scheduling;
 using ShiftPlanner.Application.Scheduling.Overview;
-using ShiftPlanner.Application.Scheduling.Rules;
 using ShiftPlanner.Application.Scheduling.Simulation;
 using ShiftPlanner.Domain.Employees;
 using ShiftPlanner.Domain.Shifts;
@@ -43,6 +40,9 @@ public class ScheduleSimulationServiceTests
 
         Assert.Contains(result.FailureReasons, reason =>
             reason.Contains("Missing required skill"));
+
+        Assert.Contains("cannot be covered", result.ImpactSummary);
+        Assert.Contains("UL", result.ImpactSummary);
     }
 
     [Fact]
@@ -75,6 +75,9 @@ public class ScheduleSimulationServiceTests
         Assert.Equal(employee.Id, result.SuggestedEmployeeId);
         Assert.Equal(employee.Name, result.SuggestedEmployeeName);
         Assert.Empty(result.FailureReasons);
+
+        Assert.Contains("can be covered", result.ImpactSummary);
+        Assert.Contains(employee.Name, result.ImpactSummary);
     }
 
     [Fact]
@@ -117,5 +120,8 @@ public class ScheduleSimulationServiceTests
         Assert.Contains(result.FailureReasons, reason =>
             reason.Contains("day shift", StringComparison.OrdinalIgnoreCase) ||
             reason.Contains("night shift", StringComparison.OrdinalIgnoreCase));
+
+        Assert.Contains("cannot be covered", result.ImpactSummary);
+        Assert.Contains("CT", result.ImpactSummary);
     }
 }

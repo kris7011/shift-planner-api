@@ -32,16 +32,39 @@ public class ScheduleSimulationService : IScheduleSimulationService
 
         var assignmentResult = results.First();
 
+        var canBeCovered = assignmentResult.WasAssigned;
+
+        var riskLevel = canBeCovered
+            ? ScheduleRiskLevel.Low
+            : ScheduleRiskLevel.High;
+
+        var impactSummary = CreateImpactSummary(
+            canBeCovered,
+            request.RequiredSkill,
+            assignmentResult.EmployeeName);
+
         return new SimulateScheduleResponse
         {
-            CanBeCovered = assignmentResult.WasAssigned,
+            CanBeCovered = canBeCovered,
             RequiredSkill = request.RequiredSkill,
-            RiskLevel = assignmentResult.WasAssigned
-                ? ScheduleRiskLevel.Low
-                : ScheduleRiskLevel.High,
+            RiskLevel = riskLevel,
             SuggestedEmployeeId = assignmentResult.EmployeeId,
             SuggestedEmployeeName = assignmentResult.EmployeeName,
-            FailureReasons = assignmentResult.FailureReasons
+            FailureReasons = assignmentResult.FailureReasons,
+            ImpactSummary = impactSummary
         };
+    }
+
+    private static string CreateImpactSummary(
+        bool canBeCovered,
+        string requiredSkill,
+        string? suggestedEmployeeName)
+    {
+        if (canBeCovered)
+        {
+            return $"This shift can be covered by {suggestedEmployeeName} with low scheduling risk.";
+        }
+
+        return $"This shift cannot be covered because no available employee can satisfy the required skill '{requiredSkill}' and scheduling rules.";
     }
 }

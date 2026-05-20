@@ -15,4 +15,6 @@ public class SimulateScheduleResponse
     public string? SuggestedEmployeeName { get; set; }
 
     public List<string> FailureReasons { get; set; } = [];
+
+    public string ImpactSummary { get; set; } = string.Empty;
 }
