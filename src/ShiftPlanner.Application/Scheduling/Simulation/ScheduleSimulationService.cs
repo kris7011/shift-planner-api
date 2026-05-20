@@ -152,6 +152,7 @@ public class ScheduleSimulationService : IScheduleSimulationService
                     EmployeeId = employee.Id,
                     EmployeeName = employee.Name,
                     CanBeAssigned = canBeAssigned,
+                    Score = canBeAssigned ? 100 : 0,
                     Reasons = canBeAssigned
                         ? []
                         : employeeReasons

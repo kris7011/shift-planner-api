@@ -8,5 +8,7 @@ public class SimulationCandidateResult
 
     public bool CanBeAssigned { get; set; }
 
+    public int Score { get; set; }
+
     public List<string> Reasons { get; set; } = [];
 }

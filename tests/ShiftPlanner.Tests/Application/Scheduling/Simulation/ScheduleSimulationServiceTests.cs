@@ -52,6 +52,7 @@ public class ScheduleSimulationServiceTests
         Assert.Equal(employee.Id, candidate.EmployeeId);
         Assert.Equal(employee.Name, candidate.EmployeeName);
         Assert.False(candidate.CanBeAssigned);
+        Assert.Equal(0, candidate.Score);
         Assert.Contains(candidate.Reasons, reason =>
             reason.Contains("Missing required skill"));
     }
@@ -98,6 +99,7 @@ public class ScheduleSimulationServiceTests
         Assert.Equal(employee.Id, candidate.EmployeeId);
         Assert.Equal(employee.Name, candidate.EmployeeName);
         Assert.True(candidate.CanBeAssigned);
+        Assert.Equal(100, candidate.Score);
         Assert.Empty(candidate.Reasons);
     }
 
@@ -153,6 +155,7 @@ public class ScheduleSimulationServiceTests
         Assert.Equal(employee.Id, candidate.EmployeeId);
         Assert.Equal(employee.Name, candidate.EmployeeName);
         Assert.False(candidate.CanBeAssigned);
+        Assert.Equal(0, candidate.Score);
         Assert.Contains(candidate.Reasons, reason =>
             reason.Contains("day shift", StringComparison.OrdinalIgnoreCase) ||
             reason.Contains("night shift", StringComparison.OrdinalIgnoreCase));
