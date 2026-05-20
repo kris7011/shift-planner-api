@@ -8,12 +8,9 @@ public static class DemoEndpoints
     {
         app.MapPost("/api/demo/seed", async (IDemoDataService demoDataService) =>
         {
-            await demoDataService.SeedAsync();
+            var result = await demoDataService.SeedAsync();
 
-            return Results.Ok(new
-            {
-                Message = "Demo data seed completed."
-            });
+            return Results.Ok(result);
         })
         .WithName("SeedDemoData")
         .WithSummary("Seeds demo data")

@@ -18,14 +18,20 @@ public class DemoDataService : IDemoDataService
         _shiftRepository = shiftRepository;
     }
 
-    public async Task SeedAsync()
+    public async Task<DemoSeedResult> SeedAsync()
     {
         var employees = await _employeeRepository.GetAllAsync();
         var shifts = await _shiftRepository.GetAllAsync();
 
         if (employees.Count > 0 || shifts.Count > 0)
         {
-            return;
+            return new DemoSeedResult
+            {
+                WasSeeded = false,
+                Message = "Demo data was skipped because the database already contains data.",
+                EmployeeCount = employees.Count,
+                ShiftCount = shifts.Count
+            };
         }
 
         var demoEmployees = CreateDemoEmployees();
@@ -41,6 +47,14 @@ public class DemoDataService : IDemoDataService
         {
             await _shiftRepository.CreateAsync(shift);
         }
+
+        return new DemoSeedResult
+        {
+            WasSeeded = true,
+            Message = "Demo data was seeded.",
+            EmployeeCount = demoEmployees.Count,
+            ShiftCount = demoShifts.Count
+        };
     }
 
     private static List<Employee> CreateDemoEmployees()
