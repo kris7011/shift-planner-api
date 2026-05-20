@@ -51,6 +51,7 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Simulation impact summary for leadership decision support
 - Simulation impact indicators for dashboard-ready what-if warnings
 - Simulation candidate results with employee-specific assignment explanations
+- Simulation candidate scoring
 - REST API endpoints
 - Dependency Injection
 - Swagger / OpenAPI support
@@ -516,6 +517,7 @@ This is useful for what-if planning, capacity evaluation, and leadership decisio
       "employeeId": "guid",
       "employeeName": "Kris",
       "canBeAssigned": false,
+      "score": 0,
       "reasons": [
         "Missing required skill 'UL'."
       ]
@@ -547,6 +549,7 @@ This is useful for what-if planning, capacity evaluation, and leadership decisio
       "employeeId": "guid",
       "employeeName": "Kris",
       "canBeAssigned": true,
+      "score": 100,
       "reasons": []
     }
   ]
@@ -624,6 +627,7 @@ The solution currently includes 43 unit tests covering:
 - Simulation impact summary logic
 - Simulation impact indicator logic
 - Simulation candidate result logic
+- Simulation candidate scoring logic
 
 ---
 
@@ -689,6 +693,8 @@ Impact summary
 Impact indicators
 ↓
 Candidate results
+↓
+Candidate scoring
 ```
 
 ---
