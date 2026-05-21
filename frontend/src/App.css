@@ -318,3 +318,59 @@ button:disabled {
   color: #166534;
   font-weight: 700;
 }
+
+.full-width-panel {
+  grid-column: 1 / -1;
+}
+
+.unassigned-shift-list {
+  display: grid;
+  gap: 16px;
+}
+
+.unassigned-shift-card {
+  border: 1px solid #edf2f7;
+  border-radius: 16px;
+  padding: 18px;
+  background: #ffffff;
+}
+
+.unassigned-shift-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.unassigned-shift-header strong {
+  color: #111827;
+  font-size: 18px;
+}
+
+.unassigned-shift-header p {
+  margin: 6px 0 0;
+  color: #526173;
+}
+
+.failure-reasons {
+  margin-top: 14px;
+  border-top: 1px solid #edf2f7;
+  padding-top: 14px;
+}
+
+.failure-reasons span {
+  display: block;
+  margin-bottom: 8px;
+  color: #526173;
+  font-weight: 700;
+}
+
+.failure-reasons ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #172033;
+}
+
+.failure-reasons li {
+  margin-bottom: 6px;
+}

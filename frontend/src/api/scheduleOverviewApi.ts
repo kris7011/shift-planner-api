@@ -1,5 +1,7 @@
 export type ScheduleRiskLevel = "Low" | "Medium" | "High";
 
+export type ShiftType = "Day" | "Evening" | "Night" | "OnCall";
+
 export type RiskIndicator = {
     type: string;
     severity: ScheduleRiskLevel;
@@ -23,6 +25,14 @@ export type SkillCapacity = {
     employeeCount: number;
 };
 
+export type UnassignedShiftDetail = {
+    shiftId: string;
+    date: string;
+    shiftType: ShiftType;
+    requiredSkill: string;
+    failureReasons: string[];
+};
+
 export type ScheduleOverviewResponse = {
     totalShifts: number;
     assignedShifts: number;
@@ -34,6 +44,7 @@ export type ScheduleOverviewResponse = {
     riskIndicators: RiskIndicator[];
     uncoveredRequiredSkills: UncoveredRequiredSkill[];
     skillCapacity: SkillCapacity[];
+    unassignedShiftDetails: UnassignedShiftDetail[];
 };
 
 const API_BASE_URL = "http://localhost:5026";

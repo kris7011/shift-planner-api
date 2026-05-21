@@ -74,6 +74,54 @@ function translateRiskMessage(message: string) {
   return message;
 }
 
+function translateShiftType(shiftType: string) {
+  switch (shiftType) {
+    case "Day":
+      return "Dag";
+    case "Evening":
+      return "Aften";
+    case "Night":
+      return "Nat";
+    case "OnCall":
+      return "Vagt fra hjemmet";
+    default:
+      return shiftType;
+  }
+}
+
+function formatDate(date: string) {
+  return new Intl.DateTimeFormat("da-DK", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(new Date(date));
+}
+
+function translateFailureReason(reason: string) {
+  if (reason.includes("Missing required skill")) {
+    const skill = reason
+      .split("Missing required skill")[1]
+      .replace(".", "")
+      .replaceAll("'", "")
+      .trim();
+
+    const employeeName = reason.split(":")[0];
+
+    return `${employeeName} mangler kompetencen ${skill}.`;
+  }
+
+  if (
+    reason.includes("day shift") ||
+    reason.includes("night shift")
+  ) {
+    return reason
+      .replace("day shift", "dagvagt")
+      .replace("night shift", "nattevagt");
+  }
+
+  return reason;
+}
+
 function App() {
   const [overview, setOverview] = useState<ScheduleOverviewResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -271,6 +319,46 @@ function App() {
               </div>
             ))}
           </div>
+        </article>
+
+        <article className="panel full-width-panel">
+          <h2>Ubesatte vagter</h2>
+
+          {overview.unassignedShiftDetails.length === 0 ? (
+            <p>Der er ingen ubesatte vagter.</p>
+          ) : (
+            <div className="unassigned-shift-list">
+              {overview.unassignedShiftDetails.map((shift) => (
+                <div className="unassigned-shift-card" key={shift.shiftId}>
+                  <div className="unassigned-shift-header">
+                    <div>
+                      <strong>{formatDate(shift.date)}</strong>
+                      <p>
+                        {translateShiftType(shift.shiftType)} · Kræver{" "}
+                        {shift.requiredSkill}
+                      </p>
+                    </div>
+
+                    <span className="badge high">Ubesat</span>
+                  </div>
+
+                  {shift.failureReasons.length > 0 && (
+                    <div className="failure-reasons">
+                      <span>Årsager</span>
+
+                      <ul>
+                        {shift.failureReasons.map((reason, index) => (
+                          <li key={`${shift.shiftId}-${index}`}>
+                            {translateFailureReason(reason)}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </article>
 
         <SimulationPanel />
