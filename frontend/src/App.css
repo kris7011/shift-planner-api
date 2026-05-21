@@ -500,3 +500,12 @@ button:disabled {
   font-weight: 700;
   white-space: nowrap;
 }
+
+.success-button {
+  background: #16a34a;
+  color: white;
+}
+
+.success-button:hover {
+  background: #15803d;
+}

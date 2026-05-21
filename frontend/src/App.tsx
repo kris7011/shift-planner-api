@@ -6,6 +6,7 @@ import {
   type ScheduleRiskLevel,
 } from "./api/scheduleOverviewApi";
 import { resetDemoData } from "./api/demoDataApi";
+import { generateSchedule } from "./api/scheduleGenerationApi";
 import { SimulationPanel } from "./components/SimulationPanel";
 
 function translateRiskLevel(riskLevel: ScheduleRiskLevel) {
@@ -154,6 +155,7 @@ function App() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isResettingDemoData, setIsResettingDemoData] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [isGeneratingSchedule, setIsGeneratingSchedule] = useState(false);
 
   async function loadOverview() {
     try {
@@ -187,6 +189,36 @@ function App() {
       setErrorMessage("Kunne ikke nulstille demo-data. Kontroller at API'et kører.");
     } finally {
       setIsResettingDemoData(false);
+    }
+  }
+
+  async function handleGenerateSchedule() {
+    try {
+      setIsGeneratingSchedule(true);
+      setErrorMessage(null);
+      setStatusMessage(null);
+
+      const result = await generateSchedule({
+        maxAssignmentsPerEmployee: 5,
+      });
+
+      const assignedCount = result.assignments.filter(
+        (assignment) => assignment.wasAssigned,
+      ).length;
+
+      const unassignedCount = result.assignments.filter(
+        (assignment) => !assignment.wasAssigned,
+      ).length;
+
+      setStatusMessage(
+        `Vagtplanen blev genereret. ${assignedCount} vagt(er) blev tildelt, og ${unassignedCount} vagt(er) kunne ikke tildeles.`,
+      );
+
+      await loadOverview();
+    } catch {
+      setErrorMessage("Kunne ikke generere vagtplanen. Kontroller at API'et kører.");
+    } finally {
+      setIsGeneratingSchedule(false);
     }
   }
 
@@ -233,6 +265,14 @@ function App() {
 
         <div className="hero-actions">
           <button onClick={loadOverview}>Opdater data</button>
+
+          <button
+            className="success-button"
+            disabled={isGeneratingSchedule}
+            onClick={handleGenerateSchedule}
+          >
+            {isGeneratingSchedule ? "Genererer..." : "Generér vagtplan"}
+          </button>
 
           <button
             className="secondary-button"
