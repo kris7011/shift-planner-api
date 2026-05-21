@@ -6,7 +6,10 @@ import {
   type ScheduleRiskLevel,
 } from "./api/scheduleOverviewApi";
 import { resetDemoData } from "./api/demoDataApi";
-import { generateSchedule } from "./api/scheduleGenerationApi";
+import {
+  generateSchedule,
+  type GenerateScheduleResponse,
+} from "./api/scheduleGenerationApi";
 import { SimulationPanel } from "./components/SimulationPanel";
 
 function translateRiskLevel(riskLevel: ScheduleRiskLevel) {
@@ -156,6 +159,8 @@ function App() {
   const [isResettingDemoData, setIsResettingDemoData] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [isGeneratingSchedule, setIsGeneratingSchedule] = useState(false);
+  const [generationResult, setGenerationResult] =
+    useState<GenerateScheduleResponse | null>(null);
 
   async function loadOverview() {
     try {
@@ -177,6 +182,7 @@ function App() {
       setIsResettingDemoData(true);
       setErrorMessage(null);
       setStatusMessage(null);
+      setGenerationResult(null);
 
       const result = await resetDemoData();
 
@@ -201,6 +207,8 @@ function App() {
       const result = await generateSchedule({
         maxAssignmentsPerEmployee: 5,
       });
+
+      setGenerationResult(result);
 
       const assignedCount = result.assignments.filter(
         (assignment) => assignment.wasAssigned,
@@ -285,6 +293,83 @@ function App() {
       </header>
 
       {statusMessage && <p className="status-message">{statusMessage}</p>}
+
+      {generationResult && (
+        <section className="generation-result-panel">
+          <div className="generation-result-header">
+            <div>
+              <span>Seneste generering</span>
+              <strong>Resultat af vagtplanlægning</strong>
+            </div>
+
+            <span className="badge medium">
+              {generationResult.assignments.length} vurderede vagter
+            </span>
+          </div>
+
+          <div className="generation-result-grid">
+            <div>
+              <span>Tildelte vagter</span>
+              <strong>
+                {
+                  generationResult.assignments.filter(
+                    (assignment) => assignment.wasAssigned,
+                  ).length
+                }
+              </strong>
+            </div>
+
+            <div>
+              <span>Ikke tildelte vagter</span>
+              <strong>
+                {
+                  generationResult.assignments.filter(
+                    (assignment) => !assignment.wasAssigned,
+                  ).length
+                }
+              </strong>
+            </div>
+          </div>
+
+          <div className="generation-assignment-list">
+            {generationResult.assignments.slice(0, 6).map((assignment) => (
+              <div className="generation-assignment-item" key={assignment.shiftId}>
+                <div>
+                  <strong>
+                    {assignment.wasAssigned
+                      ? assignment.employeeName
+                      : "Ikke tildelt"}
+                  </strong>
+
+                  <p>Krævet kompetence: {assignment.requiredSkill}</p>
+
+                  {!assignment.wasAssigned &&
+                    assignment.failureReasons.length > 0 && (
+                      <p>
+                        {assignment.failureReasons
+                          .slice(0, 2)
+                          .map(translateFailureReason)
+                          .join(" ")}
+                      </p>
+                    )}
+                </div>
+
+                <span
+                  className={`badge ${assignment.wasAssigned ? "low" : "high"}`}
+                >
+                  {assignment.wasAssigned ? "Tildelt" : "Ikke tildelt"}
+                </span>
+              </div>
+            ))}
+
+            {generationResult.assignments.length > 6 && (
+              <p className="more-reasons">
+                + {generationResult.assignments.length - 6} flere vurderinger
+              </p>
+            )}
+          </div>
+        </section>
+      )}
 
       <section className={`status-banner ${dashboardStatus.className}`}>
         <div>
