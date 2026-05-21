@@ -254,25 +254,40 @@ export function SimulationPanel() {
                     <h3>Kandidater</h3>
 
                     <div className="list">
-                        {result.candidateResults.map((candidate) => (
-                            <div className="list-item" key={candidate.employeeId}>
-                                <div>
-                                    <strong>{candidate.employeeName}</strong>
-                                    <p>
-                                        {candidate.canBeAssigned
-                                            ? "Kan tage vagten."
-                                            : candidate.reasons.map(translateFailureReason).join(" ")}
-                                    </p>
-                                </div>
+                        {result.candidateResults
+                            .toSorted((firstCandidate, secondCandidate) => {
+                                if (firstCandidate.canBeAssigned !== secondCandidate.canBeAssigned) {
+                                    return firstCandidate.canBeAssigned ? -1 : 1;
+                                }
 
-                                <span
-                                    className={`badge ${candidate.canBeAssigned ? "low" : "high"
-                                        }`}
-                                >
-                                    Score {candidate.score}
-                                </span>
-                            </div>
-                        ))}
+                                return secondCandidate.score - firstCandidate.score;
+                            })
+                            .slice(0, 5)
+                            .map((candidate) => (
+                                <div className="list-item" key={candidate.employeeId}>
+                                    <div>
+                                        <strong>{candidate.employeeName}</strong>
+                                        <p>
+                                            {candidate.canBeAssigned
+                                                ? "Kan tage vagten."
+                                                : candidate.reasons.map(translateFailureReason).join(" ")}
+                                        </p>
+                                    </div>
+
+                                    <span
+                                        className={`badge ${candidate.canBeAssigned ? "low" : "high"
+                                            }`}
+                                    >
+                                        Score {candidate.score}
+                                    </span>
+                                </div>
+                            ))}
+
+                        {result.candidateResults.length > 5 && (
+                            <p className="more-reasons">
+                                + {result.candidateResults.length - 5} flere kandidater
+                            </p>
+                        )}
                     </div>
                 </div>
             )}
