@@ -85,6 +85,9 @@ export function WeeklyScheduleTable({ refreshKey }: WeeklyScheduleTableProps) {
         }, {});
     }, [shifts]);
 
+    const assignedShiftCount = shifts.filter((shift) => shift.employeeId).length;
+    const unassignedShiftCount = shifts.length - assignedShiftCount;
+
     if (isLoading) {
         return (
             <article className="panel full-width-panel">
@@ -106,12 +109,41 @@ export function WeeklyScheduleTable({ refreshKey }: WeeklyScheduleTableProps) {
 
     return (
         <article className="panel full-width-panel">
-            <div className="section-header">
+            <div className="section-header schedule-section-header">
                 <div>
                     <h2>Ugeplan</h2>
                     <p>
                         Skemavisning fra mandag til søndag med tildelte og ubesatte vagter.
                     </p>
+                </div>
+
+                <div className="schedule-legend">
+                    <span>
+                        <i className="legend-dot assigned-dot" />
+                        Tildelt
+                    </span>
+
+                    <span>
+                        <i className="legend-dot unassigned-dot" />
+                        Ubesat
+                    </span>
+                </div>
+            </div>
+
+            <div className="weekly-schedule-summary">
+                <div>
+                    <span>Vagter i ugeplanen</span>
+                    <strong>{shifts.length}</strong>
+                </div>
+
+                <div>
+                    <span>Tildelte vagter</span>
+                    <strong>{assignedShiftCount}</strong>
+                </div>
+
+                <div>
+                    <span>Ubesatte vagter</span>
+                    <strong>{unassignedShiftCount}</strong>
                 </div>
             </div>
 

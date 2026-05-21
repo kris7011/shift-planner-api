@@ -238,6 +238,14 @@ button:hover {
   .weekly-schedule-grid {
     grid-template-columns: repeat(7, 220px);
   }
+
+  .schedule-section-header {
+    flex-direction: column;
+  }
+
+  .weekly-schedule-summary {
+    grid-template-columns: 1fr;
+  }
 }
 
 .section-header {
@@ -676,4 +684,71 @@ button:disabled {
   margin: 6px 0 0;
   color: #526173;
   font-size: 14px;
+}
+
+.schedule-section-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.schedule-legend {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.schedule-legend span {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid #edf2f7;
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: #ffffff;
+  color: #172033;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.assigned-dot {
+  background: #22c55e;
+}
+
+.unassigned-dot {
+  background: #ef4444;
+}
+
+.weekly-schedule-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.weekly-schedule-summary div {
+  border: 1px solid #edf2f7;
+  border-radius: 16px;
+  padding: 16px;
+  background: #f8fafc;
+}
+
+.weekly-schedule-summary span {
+  display: block;
+  margin-bottom: 8px;
+  color: #526173;
+  font-weight: 700;
+}
+
+.weekly-schedule-summary strong {
+  color: #172033;
+  font-size: 28px;
 }
