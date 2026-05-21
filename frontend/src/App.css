@@ -234,6 +234,10 @@ button:hover {
   .generation-result-grid {
     grid-template-columns: 1fr;
   }
+
+  .weekly-schedule-grid {
+    grid-template-columns: repeat(7, 220px);
+  }
 }
 
 .section-header {
@@ -598,4 +602,78 @@ button:disabled {
 .generation-assignment-item p {
   margin: 6px 0 0;
   color: #526173;
+}
+
+.weekly-schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(180px, 1fr));
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.schedule-day-card {
+  border: 1px solid #edf2f7;
+  border-radius: 16px;
+  padding: 16px;
+  background: #ffffff;
+  min-width: 180px;
+}
+
+.schedule-day-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: baseline;
+  margin-bottom: 14px;
+  border-bottom: 1px solid #edf2f7;
+  padding-bottom: 10px;
+}
+
+.schedule-day-header strong {
+  color: #111827;
+}
+
+.schedule-day-header span {
+  color: #526173;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.empty-day-text {
+  margin: 0;
+  color: #526173;
+  font-style: italic;
+}
+
+.schedule-shift-list {
+  display: grid;
+  gap: 10px;
+}
+
+.schedule-shift-card {
+  display: grid;
+  gap: 10px;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.schedule-shift-card.assigned {
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+}
+
+.schedule-shift-card.unassigned {
+  border: 1px solid #fecaca;
+  background: #fff7f7;
+}
+
+.schedule-shift-card strong {
+  color: #111827;
+}
+
+.schedule-shift-card p {
+  margin: 6px 0 0;
+  color: #526173;
+  font-size: 14px;
 }

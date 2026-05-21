@@ -11,6 +11,7 @@ import {
   type GenerateScheduleResponse,
 } from "./api/scheduleGenerationApi";
 import { SimulationPanel } from "./components/SimulationPanel";
+import { WeeklyScheduleTable } from "./components/WeeklyScheduleTable";
 
 function translateRiskLevel(riskLevel: ScheduleRiskLevel) {
   switch (riskLevel) {
@@ -161,6 +162,7 @@ function App() {
   const [isGeneratingSchedule, setIsGeneratingSchedule] = useState(false);
   const [generationResult, setGenerationResult] =
     useState<GenerateScheduleResponse | null>(null);
+  const [scheduleRefreshKey, setScheduleRefreshKey] = useState(0);
 
   async function loadOverview() {
     try {
@@ -191,6 +193,7 @@ function App() {
       );
 
       await loadOverview();
+      setScheduleRefreshKey((current) => current + 1);
     } catch {
       setErrorMessage("Kunne ikke nulstille demo-data. Kontroller at API'et kører.");
     } finally {
@@ -223,6 +226,7 @@ function App() {
       );
 
       await loadOverview();
+      setScheduleRefreshKey((current) => current + 1);
     } catch {
       setErrorMessage("Kunne ikke generere vagtplanen. Kontroller at API'et kører.");
     } finally {
@@ -489,6 +493,8 @@ function App() {
             ))}
           </div>
         </article>
+
+        <WeeklyScheduleTable refreshKey={scheduleRefreshKey} />
 
         <article className="panel full-width-panel">
           <h2>Ubesatte vagter</h2>
