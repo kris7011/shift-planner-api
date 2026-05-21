@@ -228,10 +228,22 @@ export function SimulationPanel() {
                     <p>{translateImpactSummary(result.impactSummary)}</p>
 
                     {result.suggestedEmployeeName && (
-                        <p>
-                            <strong>Foreslået medarbejder:</strong>{" "}
-                            {result.suggestedEmployeeName}
-                        </p>
+                        <div className="suggested-employee-card">
+                            <span>Foreslået medarbejder</span>
+
+                            <div className="suggested-employee-content">
+                                <strong>{result.suggestedEmployeeName}</strong>
+
+                                <span className="badge low">
+                                    {translateRiskLevel(result.riskLevel)} risiko
+                                </span>
+                            </div>
+
+                            <p>
+                                Systemet vurderer denne medarbejder som bedste kandidat ud fra
+                                kompetencer, eksisterende vagter og planlægningsregler.
+                            </p>
+                        </div>
                     )}
 
                     <h3>Simuleringsindikatorer</h3>
