@@ -347,12 +347,18 @@ function App() {
                       <span>Årsager</span>
 
                       <ul>
-                        {shift.failureReasons.map((reason, index) => (
+                        {shift.failureReasons.slice(0, 3).map((reason, index) => (
                           <li key={`${shift.shiftId}-${index}`}>
                             {translateFailureReason(reason)}
                           </li>
                         ))}
                       </ul>
+
+                      {shift.failureReasons.length > 3 && (
+                        <p className="more-reasons">
+                          + {shift.failureReasons.length - 3} flere årsager
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>

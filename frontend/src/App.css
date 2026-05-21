@@ -374,3 +374,9 @@ button:disabled {
 .failure-reasons li {
   margin-bottom: 6px;
 }
+
+.more-reasons {
+  margin: 10px 0 0;
+  color: #526173;
+  font-weight: 700;
+}
