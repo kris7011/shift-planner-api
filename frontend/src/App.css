@@ -215,6 +215,15 @@ button:hover {
     flex-direction: column;
     align-items: stretch;
   }
+
+  .status-banner {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .status-banner-metrics {
+    justify-content: flex-start;
+  }
 }
 
 .section-header {
@@ -414,4 +423,80 @@ button:disabled {
 .suggested-employee-card p {
   margin: 12px 0 0;
   color: #166534;
+}
+
+.status-banner {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 24px;
+  border: 1px solid #dbe3ef;
+  border-radius: 20px;
+  padding: 22px;
+  background: white;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+}
+
+.status-banner>div:first-child span {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.status-banner strong {
+  display: block;
+  color: #172033;
+  font-size: 26px;
+}
+
+.status-banner p {
+  margin: 8px 0 0;
+  color: #526173;
+}
+
+.status-banner.high {
+  border-color: #fecaca;
+  background: #fff7f7;
+}
+
+.status-banner.high>div:first-child span {
+  color: #991b1b;
+}
+
+.status-banner.medium {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.status-banner.medium>div:first-child span {
+  color: #92400e;
+}
+
+.status-banner.low {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.status-banner.low>div:first-child span {
+  color: #166534;
+}
+
+.status-banner-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.status-banner-metrics span {
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #172033;
+  font-weight: 700;
+  white-space: nowrap;
 }

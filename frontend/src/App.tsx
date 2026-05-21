@@ -122,6 +122,32 @@ function translateFailureReason(reason: string) {
   return reason;
 }
 
+function getDashboardStatus(overview: ScheduleOverviewResponse) {
+  if (overview.capacitySummary.criticalSkillGaps > 0) {
+    return {
+      title: "Kræver opmærksomhed",
+      description:
+        "Der er kritiske kompetencegab, som kan påvirke vagtplanens dækning.",
+      className: "high",
+    };
+  }
+
+  if (overview.unassignedShifts > 0) {
+    return {
+      title: "Delvist dækket",
+      description:
+        "Der er ubesatte vagter, men de krævede kompetencer findes i medarbejdergruppen.",
+      className: "medium",
+    };
+  }
+
+  return {
+    title: "Stabil vagtplan",
+    description: "Alle vagter er dækket uden aktuelle kapacitetsalarmer.",
+    className: "low",
+  };
+}
+
 function App() {
   const [overview, setOverview] = useState<ScheduleOverviewResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -191,6 +217,8 @@ function App() {
     );
   }
 
+  const dashboardStatus = getDashboardStatus(overview);
+
   return (
     <main className="page">
       <header className="hero">
@@ -217,6 +245,22 @@ function App() {
       </header>
 
       {statusMessage && <p className="status-message">{statusMessage}</p>}
+
+      <section className={`status-banner ${dashboardStatus.className}`}>
+        <div>
+          <span>Aktuel status</span>
+          <strong>{dashboardStatus.title}</strong>
+          <p>{dashboardStatus.description}</p>
+        </div>
+
+        <div className="status-banner-metrics">
+          <span>{overview.coverageRate}% dækket</span>
+          <span>{overview.unassignedShifts} ubesatte vagter</span>
+          <span>
+            {overview.capacitySummary.criticalSkillGaps} kritiske kompetencegab
+          </span>
+        </div>
+      </section>
 
       <section className="summary-grid">
         <article className="summary-card">
