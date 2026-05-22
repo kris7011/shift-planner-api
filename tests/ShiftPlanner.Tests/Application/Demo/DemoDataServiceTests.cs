@@ -23,13 +23,13 @@ public class DemoDataServiceTests
         Assert.True(result.WasSeeded);
         Assert.Equal("Demo data was reset and seeded.", result.Message);
         Assert.Equal(10, result.EmployeeCount);
-        Assert.Equal(10, result.ShiftCount);
+        Assert.Equal(14, result.ShiftCount);
 
         var employees = await employeeRepository.GetAllAsync();
         var shifts = await shiftRepository.GetAllAsync();
 
         Assert.Equal(10, employees.Count);
-        Assert.Equal(10, shifts.Count);
+        Assert.Equal(14, shifts.Count);
     }
 
     private class FakeEmployeeRepository : IEmployeeRepository

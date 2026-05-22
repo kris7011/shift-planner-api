@@ -145,6 +145,30 @@ public class DemoDataService : IDemoDataService
                 new DateOnly(2026, 5, 15),
                 ShiftType.Evening,
                 "Intervention",
+                1),
+
+            new Shift(
+                new DateOnly(2026, 5, 16),
+                ShiftType.Day,
+                "CT",
+                1),
+
+            new Shift(
+                new DateOnly(2026, 5, 16),
+                ShiftType.Night,
+                "Night",
+                1),
+
+            new Shift(
+                new DateOnly(2026, 5, 17),
+                ShiftType.Day,
+                "XR",
+                1),
+
+            new Shift(
+                new DateOnly(2026, 5, 17),
+                ShiftType.Night,
+                "Night",
                 1)
         ];
     }
