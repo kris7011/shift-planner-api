@@ -7,21 +7,21 @@ import {
     type ShiftType,
 } from "../api/scheduleDataApi";
 
-type ScheduleFilter = "all" | "assigned" | "unassigned";
-
 const weekDays = [
-    { label: "Mandag", date: "2026-05-11" },
-    { label: "Tirsdag", date: "2026-05-12" },
-    { label: "Onsdag", date: "2026-05-13" },
-    { label: "Torsdag", date: "2026-05-14" },
-    { label: "Fredag", date: "2026-05-15" },
-    { label: "Lørdag", date: "2026-05-16" },
-    { label: "Søndag", date: "2026-05-17" },
+    { label: "Mandag", date: "2026-05-11", isWeekend: false },
+    { label: "Tirsdag", date: "2026-05-12", isWeekend: false },
+    { label: "Onsdag", date: "2026-05-13", isWeekend: false },
+    { label: "Torsdag", date: "2026-05-14", isWeekend: false },
+    { label: "Fredag", date: "2026-05-15", isWeekend: false },
+    { label: "Lørdag", date: "2026-05-16", isWeekend: true },
+    { label: "Søndag", date: "2026-05-17", isWeekend: true },
 ];
 
 type WeeklyScheduleTableProps = {
     refreshKey: number;
 };
+
+type ScheduleFilter = "all" | "assigned" | "unassigned";
 
 function translateShiftType(shiftType: ShiftType) {
     switch (shiftType) {
@@ -151,7 +151,9 @@ export function WeeklyScheduleTable({ refreshKey }: WeeklyScheduleTableProps) {
                         </button>
 
                         <button
-                            className={scheduleFilter === "unassigned" ? "active-filter" : ""}
+                            className={
+                                scheduleFilter === "unassigned" ? "active-filter" : ""
+                            }
                             onClick={() => setScheduleFilter("unassigned")}
                             type="button"
                         >
@@ -168,6 +170,11 @@ export function WeeklyScheduleTable({ refreshKey }: WeeklyScheduleTableProps) {
                         <span>
                             <i className="legend-dot unassigned-dot" />
                             Ubesat
+                        </span>
+
+                        <span>
+                            <i className="legend-dot weekend-dot" />
+                            Weekend
                         </span>
                     </div>
                 </div>
@@ -192,12 +199,25 @@ export function WeeklyScheduleTable({ refreshKey }: WeeklyScheduleTableProps) {
 
             <div className="weekly-schedule-grid">
                 {weekDays.map((day) => {
-                    const dayShifts = (shiftsByDate[day.date] ?? []).filter(shouldShowShift);
+                    const dayShifts = (shiftsByDate[day.date] ?? []).filter(
+                        shouldShowShift,
+                    );
 
                     return (
-                        <div className="schedule-day-card" key={day.date}>
+                        <div
+                            className={`schedule-day-card ${day.isWeekend ? "weekend-day" : ""
+                                }`}
+                            key={day.date}
+                        >
                             <div className="schedule-day-header">
-                                <strong>{day.label}</strong>
+                                <div>
+                                    <strong>{day.label}</strong>
+
+                                    {day.isWeekend && (
+                                        <span className="weekend-label">Weekend</span>
+                                    )}
+                                </div>
+
                                 <span>{formatDate(day.date)}</span>
                             </div>
 

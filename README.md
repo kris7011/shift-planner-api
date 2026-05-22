@@ -13,6 +13,7 @@ The project simulates healthcare-oriented workforce scheduling by combining:
 - schedule overview insights
 - skill gap identification
 - what-if schedule simulation
+- weekly schedule visualization
 
 The solution is built using Clean Architecture principles with strong focus on:
 
@@ -53,6 +54,12 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Simulation candidate results with employee-specific assignment explanations
 - Simulation candidate scoring
 - Demo seed and reset endpoints for quick local testing
+- React frontend dashboard
+- Danish frontend UI
+- Weekly schedule table from Monday to Sunday
+- Weekend shift visualization
+- Schedule generation from frontend
+- Demo data reset from frontend
 - REST API endpoints
 - Dependency Injection
 - Swagger / OpenAPI support
@@ -74,6 +81,9 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Dependency Injection
 - GitHub Actions
 - Clean Architecture
+- React
+- Vite
+- TypeScript
 
 ---
 
@@ -87,6 +97,10 @@ Application
 Domain
 ↓
 Infrastructure
+
+Frontend
+↓
+API
 ```
 
 ---
@@ -141,6 +155,21 @@ Contains:
 - Swagger configuration
 - dependency injection setup
 - demo endpoints
+- CORS configuration for local frontend development
+
+---
+
+## Frontend
+
+Contains:
+
+- Danish dashboard UI
+- schedule overview display
+- weekly schedule table
+- schedule generation actions
+- demo data reset actions
+- shift simulation panel
+- candidate scoring display
 
 ---
 
@@ -192,61 +221,28 @@ This creates a foundation for:
 
 ---
 
-# Skill Gap Overview
+# Demo Data
 
-The schedule overview identifies which required skills are missing from unassigned shifts.
+The demo dataset is designed to show a realistic healthcare-oriented scheduling scenario.
 
-Example:
+It includes:
 
-```json
-{
-  "skillGaps": [
-    {
-      "requiredSkill": "UL",
-      "unassignedShiftCount": 1
-    }
-  ]
-}
-```
+- 10 employees
+- 14 shifts
+- shifts from Monday to Sunday
+- weekday and weekend shifts
+- assigned and unassigned shifts
+- CT, MRI, XR, and Night competencies
+- deliberate skill gaps for UL and Intervention
 
-This helps managers identify staffing vulnerabilities and missing competencies in the current schedule.
+The deliberate skill gaps make it possible to demonstrate:
 
----
-
-# Capacity Overview
-
-The schedule overview also compares required skills with the department's available employee competencies.
-
-Example:
-
-```json
-{
-  "skillCapacity": [
-    {
-      "skill": "CT",
-      "employeeCount": 1
-    },
-    {
-      "skill": "MRI",
-      "employeeCount": 1
-    }
-  ],
-  "uncoveredRequiredSkills": [
-    {
-      "skill": "UL",
-      "requiredByUnassignedShifts": 1,
-      "availableEmployees": 0
-    }
-  ],
-  "capacitySummary": {
-    "totalSkills": 2,
-    "missingRequiredSkills": 1,
-    "criticalSkillGaps": 1
-  }
-}
-```
-
-This helps managers distinguish between a planning issue and an actual competency capacity issue.
+- uncovered required skills
+- capacity risk
+- unassigned shifts
+- schedule simulation
+- candidate scoring
+- leadership-oriented decision support
 
 ---
 
@@ -286,7 +282,7 @@ Example response when data is created:
   "wasSeeded": true,
   "message": "Demo data was seeded.",
   "employeeCount": 10,
-  "shiftCount": 10
+  "shiftCount": 14
 }
 ```
 
@@ -297,7 +293,7 @@ Example response when data already exists:
   "wasSeeded": false,
   "message": "Demo data was skipped because the database already contains data.",
   "employeeCount": 10,
-  "shiftCount": 10
+  "shiftCount": 14
 }
 ```
 
@@ -314,17 +310,9 @@ Deletes all employees and shifts, then creates fresh demo data.
   "wasSeeded": true,
   "message": "Demo data was reset and seeded.",
   "employeeCount": 10,
-  "shiftCount": 10
+  "shiftCount": 14
 }
 ```
-
-The demo dataset includes:
-
-- 10 employees
-- 10 shifts
-- assigned and unassigned shifts
-- CT, MRI, XR, and Night competencies
-- deliberate skill gaps for UL and Intervention
 
 ---
 
@@ -360,8 +348,8 @@ GET /api/shifts
 ```json
 {
   "date": "2026-05-12",
-  "shiftType": 2,
-  "requiredSkill": "CT",
+  "shiftType": "Night",
+  "requiredSkill": "Night",
   "requiredStaff": 1,
   "employeeId": "guid"
 }
@@ -391,13 +379,13 @@ Generates schedule assignments based on:
 }
 ```
 
-### Example Successful Response
+### Example Response
 
 ```json
 {
   "message": "Schedule generation completed.",
-  "employeeCount": 2,
-  "shiftCount": 2,
+  "employeeCount": 10,
+  "shiftCount": 14,
   "assignments": [
     {
       "shiftId": "guid",
@@ -406,22 +394,17 @@ Generates schedule assignments based on:
       "requiredSkill": "CT",
       "wasAssigned": true,
       "failureReasons": []
+    },
+    {
+      "shiftId": "guid",
+      "employeeId": null,
+      "employeeName": null,
+      "requiredSkill": "UL",
+      "wasAssigned": false,
+      "failureReasons": [
+        "Kris: Missing required skill 'UL'."
+      ]
     }
-  ]
-}
-```
-
-### Example Failed Assignment
-
-```json
-{
-  "shiftId": "guid",
-  "employeeId": null,
-  "employeeName": null,
-  "requiredSkill": "UL",
-  "wasAssigned": false,
-  "failureReasons": [
-    "Kris: Missing required skill 'UL'."
   ]
 }
 ```
@@ -456,17 +439,17 @@ The overview includes:
 
 ```json
 {
-  "totalShifts": 10,
-  "assignedShifts": 8,
+  "totalShifts": 14,
+  "assignedShifts": 12,
   "unassignedShifts": 2,
-  "coverageRate": 80.0,
+  "coverageRate": 85.71,
   "employeeCount": 10,
   "highRiskEmployeeCount": 0,
   "unassignedShiftDetails": [
     {
       "shiftId": "guid",
       "date": "2026-05-15",
-      "shiftType": 1,
+      "shiftType": "Day",
       "requiredSkill": "UL",
       "failureReasons": [
         "Kris: Missing required skill 'UL'."
@@ -493,7 +476,7 @@ The overview includes:
     {
       "type": "Coverage",
       "severity": "Medium",
-      "message": "Schedule coverage is 80.0%."
+      "message": "Schedule coverage is 85.71%."
     },
     {
       "type": "UnassignedShifts",
@@ -566,7 +549,7 @@ This is useful for what-if planning, capacity evaluation, and leadership decisio
 ```json
 {
   "date": "2026-05-15",
-  "shiftType": 2,
+  "shiftType": "Day",
   "requiredSkill": "UL",
   "requiredStaff": 1,
   "maxAssignmentsPerEmployee": 5
@@ -620,9 +603,9 @@ This is useful for what-if planning, capacity evaluation, and leadership decisio
   "requiredSkill": "CT",
   "riskLevel": "Low",
   "suggestedEmployeeId": "guid",
-  "suggestedEmployeeName": "Kris",
+  "suggestedEmployeeName": "Lars",
   "failureReasons": [],
-  "impactSummary": "This shift can be covered by Kris with low scheduling risk.",
+  "impactSummary": "This shift can be covered by Lars with low scheduling risk.",
   "impactIndicators": [
     {
       "type": "Coverage",
@@ -633,7 +616,7 @@ This is useful for what-if planning, capacity evaluation, and leadership decisio
   "candidateResults": [
     {
       "employeeId": "guid",
-      "employeeName": "Kris",
+      "employeeName": "Lars",
       "canBeAssigned": true,
       "score": 100,
       "reasons": []
@@ -646,13 +629,13 @@ This is useful for what-if planning, capacity evaluation, and leadership decisio
 
 # Running the Project
 
-## Build
+## Build Backend
 
 ```bash
 dotnet build
 ```
 
-## Run Tests
+## Run Backend Tests
 
 ```bash
 dotnet test
@@ -666,7 +649,24 @@ dotnet run --project src/ShiftPlanner.Api
 
 ---
 
-## Seed Demo Data
+# Running the Frontend
+
+From the `frontend` folder:
+
+```bash
+npm install
+npm run dev
+```
+
+The frontend is available at:
+
+```text
+http://localhost:5173
+```
+
+---
+
+# Seed Demo Data
 
 After starting the API, create a fresh demo dataset:
 
@@ -677,7 +677,8 @@ curl -X POST http://localhost:5026/api/demo/reset
 This creates:
 
 - 10 demo employees
-- 10 demo shifts
+- 14 demo shifts
+- weekday and weekend shifts
 - assigned and unassigned shifts
 - deliberate skill gaps for UL and Intervention
 
@@ -715,7 +716,7 @@ on every push to GitHub.
 
 # Test Status
 
-The solution currently includes 43 unit tests covering:
+The solution currently includes 45 unit tests covering:
 
 - Shift staffing rules
 - Skill validation
@@ -738,6 +739,30 @@ The solution currently includes 43 unit tests covering:
 - Simulation candidate result logic
 - Simulation candidate scoring logic
 - Demo data seeding and reset support
+
+---
+
+# Example Frontend Demo Flow
+
+```text
+Start API
+↓
+Start frontend
+↓
+Click "Nulstil demo-data"
+↓
+Review dashboard status
+↓
+Review weekly schedule from Monday to Sunday
+↓
+Click "Generér vagtplan"
+↓
+Review assigned and unassigned shifts
+↓
+Simulate a new shift
+↓
+Review suggested employee and candidate scores
+```
 
 ---
 
@@ -840,14 +865,15 @@ Return seed result
 - CSV import/export
 - Authentication and authorization
 - Docker support
-- Frontend dashboard
 - AI-assisted scheduling recommendations
+- More advanced recommendation scoring
+- Real historical workload analysis
 
 ---
 
 # Project Goals
 
-This project is designed as a backend architecture and scheduling engine portfolio project focused on:
+This project is designed as a backend and frontend portfolio project focused on:
 
 - scalable API design
 - healthcare-oriented scheduling logic
@@ -858,3 +884,4 @@ This project is designed as a backend architecture and scheduling engine portfol
 - leadership-oriented workforce planning insights
 - what-if planning and simulation
 - automated testing and validation
+- practical frontend decision support
