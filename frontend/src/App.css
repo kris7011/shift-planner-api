@@ -246,6 +246,14 @@ button:hover {
   .weekly-schedule-summary {
     grid-template-columns: 1fr;
   }
+
+  .schedule-header-actions {
+    align-items: flex-start;
+  }
+
+  .schedule-filter {
+    justify-content: flex-start;
+  }
 }
 
 .section-header {
@@ -751,4 +759,36 @@ button:disabled {
 .weekly-schedule-summary strong {
   color: #172033;
   font-size: 28px;
+}
+
+.schedule-header-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.schedule-filter {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.schedule-filter button {
+  border: 1px solid #dbe3ef;
+  padding: 8px 12px;
+  background: #ffffff;
+  color: #172033;
+  font-size: 13px;
+}
+
+.schedule-filter button:hover {
+  background: #f8fafc;
+}
+
+.schedule-filter button.active-filter {
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #1d4ed8;
 }

@@ -7,6 +7,8 @@ import {
     type ShiftType,
 } from "../api/scheduleDataApi";
 
+type ScheduleFilter = "all" | "assigned" | "unassigned";
+
 const weekDays = [
     { label: "Mandag", date: "2026-05-11" },
     { label: "Tirsdag", date: "2026-05-12" },
@@ -48,6 +50,7 @@ export function WeeklyScheduleTable({ refreshKey }: WeeklyScheduleTableProps) {
     const [shifts, setShifts] = useState<Shift[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [scheduleFilter, setScheduleFilter] = useState<ScheduleFilter>("all");
 
     async function loadScheduleData() {
         try {
@@ -88,6 +91,18 @@ export function WeeklyScheduleTable({ refreshKey }: WeeklyScheduleTableProps) {
     const assignedShiftCount = shifts.filter((shift) => shift.employeeId).length;
     const unassignedShiftCount = shifts.length - assignedShiftCount;
 
+    function shouldShowShift(shift: Shift) {
+        if (scheduleFilter === "assigned") {
+            return Boolean(shift.employeeId);
+        }
+
+        if (scheduleFilter === "unassigned") {
+            return !shift.employeeId;
+        }
+
+        return true;
+    }
+
     if (isLoading) {
         return (
             <article className="panel full-width-panel">
@@ -117,16 +132,44 @@ export function WeeklyScheduleTable({ refreshKey }: WeeklyScheduleTableProps) {
                     </p>
                 </div>
 
-                <div className="schedule-legend">
-                    <span>
-                        <i className="legend-dot assigned-dot" />
-                        Tildelt
-                    </span>
+                <div className="schedule-header-actions">
+                    <div className="schedule-filter">
+                        <button
+                            className={scheduleFilter === "all" ? "active-filter" : ""}
+                            onClick={() => setScheduleFilter("all")}
+                            type="button"
+                        >
+                            Alle vagter
+                        </button>
 
-                    <span>
-                        <i className="legend-dot unassigned-dot" />
-                        Ubesat
-                    </span>
+                        <button
+                            className={scheduleFilter === "assigned" ? "active-filter" : ""}
+                            onClick={() => setScheduleFilter("assigned")}
+                            type="button"
+                        >
+                            Kun tildelte
+                        </button>
+
+                        <button
+                            className={scheduleFilter === "unassigned" ? "active-filter" : ""}
+                            onClick={() => setScheduleFilter("unassigned")}
+                            type="button"
+                        >
+                            Kun ubesatte
+                        </button>
+                    </div>
+
+                    <div className="schedule-legend">
+                        <span>
+                            <i className="legend-dot assigned-dot" />
+                            Tildelt
+                        </span>
+
+                        <span>
+                            <i className="legend-dot unassigned-dot" />
+                            Ubesat
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -149,7 +192,7 @@ export function WeeklyScheduleTable({ refreshKey }: WeeklyScheduleTableProps) {
 
             <div className="weekly-schedule-grid">
                 {weekDays.map((day) => {
-                    const dayShifts = shiftsByDate[day.date] ?? [];
+                    const dayShifts = (shiftsByDate[day.date] ?? []).filter(shouldShowShift);
 
                     return (
                         <div className="schedule-day-card" key={day.date}>
