@@ -53,6 +53,21 @@ public static class EmployeeEndpoints
             }));
         });
 
+        app.MapGet("/api/employees/load-overview", async (
+            IEmployeeRepository employeeRepository,
+            IShiftRepository shiftRepository,
+            EmployeeLoadOverviewService employeeLoadOverviewService) =>
+        {
+            var employees = await employeeRepository.GetAllAsync();
+            var shifts = await shiftRepository.GetAllAsync();
+
+            var overview = employeeLoadOverviewService.CreateOverview(
+                employees.ToList(),
+                shifts.ToList());
+
+            return Results.Ok(overview);
+        });
+
         app.MapGet("/api/employees/{id:guid}/load", async (
             Guid id,
             IShiftRepository shiftRepository,
