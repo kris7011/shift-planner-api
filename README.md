@@ -11,6 +11,7 @@ The project simulates healthcare-oriented workforce scheduling by combining:
 - rule-based scheduling
 - explainable scheduling decisions
 - schedule overview insights
+- employee load overview
 - skill gap identification
 - what-if schedule simulation
 - weekly schedule visualization
@@ -41,6 +42,11 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Explainable scheduling decisions
 - Employee workload calculation
 - Employee overload detection
+- Employee load overview endpoint
+- Employee load overview in frontend dashboard
+- Employee load summary cards
+- Employee skills and workload score visualization
+- Danish workload status labels
 - Schedule overview endpoint
 - Skill gap overview for unassigned shifts
 - Skill capacity overview for department competencies
@@ -129,6 +135,7 @@ Contains:
 - scheduling overview services
 - schedule simulation services
 - workload calculation services
+- employee load overview services
 - overload detection services
 - orchestration logic
 - demo data seeding logic
@@ -168,6 +175,10 @@ Contains:
 - weekly schedule table
 - schedule generation actions
 - demo data reset actions
+- employee workload overview
+- workload status badges
+- workload summary cards
+- employee skill chips
 - shift simulation panel
 - candidate scoring display
 
@@ -221,6 +232,29 @@ This creates a foundation for:
 
 ---
 
+# Employee Load Overview
+
+The employee load overview provides a dashboard-ready view of each employee's current workload.
+
+It includes:
+
+- employee name
+- employee skills
+- total workload score
+- workload status
+- high-risk flag
+
+The frontend also shows summary cards for:
+
+- high workload employees
+- medium workload employees
+- low workload employees
+- average workload score
+
+This makes it easier to identify whether the schedule is balanced across employees.
+
+---
+
 # Demo Data
 
 The demo dataset is designed to show a realistic healthcare-oriented scheduling scenario.
@@ -242,6 +276,7 @@ The deliberate skill gaps make it possible to demonstrate:
 - unassigned shifts
 - schedule simulation
 - candidate scoring
+- employee workload distribution
 - leadership-oriented decision support
 
 ---
@@ -321,6 +356,7 @@ Deletes all employees and shifts, then creates fresh demo data.
 ```http
 POST /api/employees
 GET /api/employees
+GET /api/employees/load-overview
 GET /api/employees/{id}/load
 GET /api/employees/{id}/overload-status
 ```
@@ -332,6 +368,41 @@ GET /api/employees/{id}/overload-status
   "name": "Kris",
   "skills": ["CT", "MRI"]
 }
+```
+
+---
+
+## Employee Load Overview
+
+```http
+GET /api/employees/load-overview
+```
+
+Returns the current workload overview for all employees.
+
+The response is ordered by highest workload first.
+
+### Example Response
+
+```json
+[
+  {
+    "employeeId": "guid",
+    "employeeName": "Henrik",
+    "skills": ["CT", "Night"],
+    "totalLoad": 4,
+    "loadStatus": "Medium",
+    "isHighRisk": false
+  },
+  {
+    "employeeId": "guid",
+    "employeeName": "Mette",
+    "skills": ["MRI", "XR"],
+    "totalLoad": 2,
+    "loadStatus": "Low",
+    "isHighRisk": false
+  }
+]
 ```
 
 ---
@@ -688,6 +759,12 @@ Then open the schedule overview:
 curl http://localhost:5026/api/schedule/overview
 ```
 
+You can also inspect the employee load overview:
+
+```bash
+curl http://localhost:5026/api/employees/load-overview
+```
+
 ---
 
 # Swagger UI
@@ -716,12 +793,13 @@ on every push to GitHub.
 
 # Test Status
 
-The solution currently includes 45 unit tests covering:
+The solution currently includes 46 unit tests covering:
 
 - Shift staffing rules
 - Skill validation
 - Workload calculations
 - Employee load aggregation
+- Employee load overview logic
 - Overload detection
 - Schedule generation
 - Lowest-load assignment selection
@@ -754,6 +832,10 @@ Click "Nulstil demo-data"
 Review dashboard status
 ↓
 Review weekly schedule from Monday to Sunday
+↓
+Review employee load summary cards
+↓
+Review employee workload table
 ↓
 Click "Generér vagtplan"
 ↓
@@ -802,6 +884,8 @@ Skill gap grouping
 Capacity analysis
 ↓
 Risk indicators
+↓
+Employee workload overview
 ↓
 Leadership overview response
 ```
@@ -881,6 +965,7 @@ This project is designed as a backend and frontend portfolio project focused on:
 - maintainable business rules
 - extensible scheduling architecture
 - explainable scheduling decisions
+- employee workload visibility
 - leadership-oriented workforce planning insights
 - what-if planning and simulation
 - automated testing and validation
