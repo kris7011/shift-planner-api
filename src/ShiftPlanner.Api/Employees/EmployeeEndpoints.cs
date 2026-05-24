@@ -68,6 +68,32 @@ public static class EmployeeEndpoints
             return Results.Ok(overview);
         });
 
+        app.MapGet("/api/employees/{id:guid}/load-details", async (
+            Guid id,
+            IEmployeeRepository employeeRepository,
+            IShiftRepository shiftRepository,
+            EmployeeLoadDetailsService employeeLoadDetailsService) =>
+        {
+            var employees = await employeeRepository.GetAllAsync();
+            var employee = employees.FirstOrDefault(employee => employee.Id == id);
+
+            if (employee == null)
+            {
+                return Results.NotFound(new
+                {
+                    error = "Employee was not found."
+                });
+            }
+
+            var shifts = await shiftRepository.GetAllAsync();
+
+            var details = employeeLoadDetailsService.CreateDetails(
+                employee,
+                shifts.ToList());
+
+            return Results.Ok(details);
+        });
+
         app.MapGet("/api/employees/{id:guid}/load", async (
             Guid id,
             IShiftRepository shiftRepository,
