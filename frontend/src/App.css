@@ -944,6 +944,18 @@ button:disabled {
   white-space: nowrap;
 }
 
+.clickable-row.selected-row {
+  background: #eff6ff;
+}
+
+.clickable-row.selected-row td {
+  border-bottom-color: #bfdbfe;
+}
+
+.clickable-row.selected-row strong {
+  color: #1d4ed8;
+}
+
 @media (max-width: 700px) {
 
   .employee-load-details-header,

@@ -616,7 +616,10 @@ function App() {
                 <tbody>
                   {employeeLoadOverview.map((employee) => (
                     <tr
-                      className="clickable-row"
+                      className={`clickable-row ${selectedEmployeeLoadDetails?.employeeId === employee.employeeId
+                          ? "selected-row"
+                          : ""
+                        }`}
                       key={employee.employeeId}
                       onClick={() => handleEmployeeLoadClick(employee.employeeId)}
                     >
