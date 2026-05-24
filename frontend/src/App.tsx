@@ -7,6 +7,10 @@ import {
 } from "./api/scheduleOverviewApi";
 import { resetDemoData } from "./api/demoDataApi";
 import {
+  getEmployeeLoadOverview,
+  type EmployeeLoadOverviewItem
+} from "./api/employeeLoadOverviewApi";
+import {
   generateSchedule,
   type GenerateScheduleResponse,
 } from "./api/scheduleGenerationApi";
@@ -153,6 +157,19 @@ function getDashboardStatus(overview: ScheduleOverviewResponse) {
   };
 }
 
+function translateLoadStatus(status: string) {
+  switch (status) {
+    case "Low":
+      return "Lav";
+    case "Medium":
+      return "Mellem";
+    case "High":
+      return "Høj";
+    default:
+      return status;
+  }
+}
+
 function App() {
   const [overview, setOverview] = useState<ScheduleOverviewResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -163,15 +180,22 @@ function App() {
   const [generationResult, setGenerationResult] =
     useState<GenerateScheduleResponse | null>(null);
   const [scheduleRefreshKey, setScheduleRefreshKey] = useState(0);
+  const [employeeLoadOverview, setEmployeeLoadOverview] = useState<
+    EmployeeLoadOverviewItem[]
+  >([]);
 
   async function loadOverview() {
     try {
       setIsLoading(true);
       setErrorMessage(null);
 
-      const data = await getScheduleOverview();
+      const [overviewData, employeeLoadData] = await Promise.all([
+        getScheduleOverview(),
+        getEmployeeLoadOverview(),
+      ]);
 
-      setOverview(data);
+      setOverview(overviewData);
+      setEmployeeLoadOverview(employeeLoadData);
     } catch {
       setErrorMessage("Kunne ikke hente vagtplanens overblik fra API'et.");
     } finally {
@@ -495,6 +519,65 @@ function App() {
         </article>
 
         <WeeklyScheduleTable refreshKey={scheduleRefreshKey} />
+
+        <article className="panel full-width-panel">
+          <div className="panel-header">
+            <div>
+              <h2>Belastning pr. medarbejder</h2>
+              <p>
+                Overblik over samlet belastningsscore, kompetencer og aktuel
+                belastningsstatus.
+              </p>
+            </div>
+          </div>
+
+          {employeeLoadOverview.length === 0 ? (
+            <p>Der er ingen medarbejderbelastning at vise.</p>
+          ) : (
+            <div className="employee-load-table-wrapper">
+              <table className="employee-load-table">
+                <thead>
+                  <tr>
+                    <th>Medarbejder</th>
+                    <th>Kompetencer</th>
+                    <th>Belastningsscore</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {employeeLoadOverview.map((employee) => (
+                    <tr key={employee.employeeId}>
+                      <td>
+                        <strong>{employee.employeeName}</strong>
+                      </td>
+
+                      <td>
+                        <div className="skill-chip-list">
+                          {employee.skills.map((skill) => (
+                            <span className="skill-chip" key={`${employee.employeeId}-${skill}`}>
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+
+                      <td>
+                        <strong>{employee.totalLoad}</strong>
+                      </td>
+
+                      <td>
+                        <span className={`badge ${employee.loadStatus.toLowerCase()}`}>
+                          {translateLoadStatus(employee.loadStatus)}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </article>
 
         <article className="panel full-width-panel">
           <h2>Ubesatte vagter</h2>
