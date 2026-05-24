@@ -824,6 +824,49 @@ button:disabled {
   border: 1px solid #fca5a5;
 }
 
+.employee-load-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 1rem;
+}
+
+.employee-load-summary-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+}
+
+.employee-load-summary-card span {
+  display: block;
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.4rem;
+}
+
+.employee-load-summary-card strong {
+  display: block;
+  color: #0f172a;
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+@media (max-width: 900px) {
+  .employee-load-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .employee-load-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 900px) {
   .page {
     padding: 24px;

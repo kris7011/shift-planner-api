@@ -184,6 +184,26 @@ function App() {
     EmployeeLoadOverviewItem[]
   >([]);
 
+  const highLoadEmployeeCount = employeeLoadOverview.filter(
+    (employee) => employee.loadStatus === "High"
+  ).length;
+
+  const mediumLoadEmployeeCount = employeeLoadOverview.filter(
+    (employee) => employee.loadStatus === "Medium"
+  ).length;
+
+  const lowLoadEmployeeCount = employeeLoadOverview.filter(
+    (employee) => employee.loadStatus === "Low"
+  ).length;
+
+  const averageLoadScore =
+    employeeLoadOverview.length === 0
+      ? 0
+      : employeeLoadOverview.reduce(
+        (total, employee) => total + employee.totalLoad,
+        0
+      ) / employeeLoadOverview.length;
+
   async function loadOverview() {
     try {
       setIsLoading(true);
@@ -528,6 +548,28 @@ function App() {
                 Overblik over samlet belastningsscore, kompetencer og aktuel
                 belastningsstatus.
               </p>
+
+              <div className="employee-load-summary">
+                <div className="employee-load-summary-card">
+                  <span>Høj belastning</span>
+                  <strong>{highLoadEmployeeCount}</strong>
+                </div>
+
+                <div className="employee-load-summary-card">
+                  <span>Mellem belastning</span>
+                  <strong>{mediumLoadEmployeeCount}</strong>
+                </div>
+
+                <div className="employee-load-summary-card">
+                  <span>Lav belastning</span>
+                  <strong>{lowLoadEmployeeCount}</strong>
+                </div>
+
+                <div className="employee-load-summary-card">
+                  <span>Gennemsnitlig score</span>
+                  <strong>{averageLoadScore.toFixed(1).replace(".", ",")}</strong>
+                </div>
+              </div>
             </div>
           </div>
 
