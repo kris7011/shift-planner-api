@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import {
+  getEmployeeLoadDetails,
+  type EmployeeLoadDetailsResponse
+} from "./api/employeeLoadDetailsApi";
+import {
   getScheduleOverview,
   type ScheduleOverviewResponse,
   type ScheduleRiskLevel,
@@ -183,6 +187,11 @@ function App() {
   const [employeeLoadOverview, setEmployeeLoadOverview] = useState<
     EmployeeLoadOverviewItem[]
   >([]);
+  const [selectedEmployeeLoadDetails, setSelectedEmployeeLoadDetails] =
+    useState<EmployeeLoadDetailsResponse | null>(null);
+  const [isLoadingEmployeeDetails, setIsLoadingEmployeeDetails] = useState(false);
+  const [employeeDetailsErrorMessage, setEmployeeDetailsErrorMessage] =
+    useState<string | null>(null);
 
   const highLoadEmployeeCount = employeeLoadOverview.filter(
     (employee) => employee.loadStatus === "High"
@@ -220,6 +229,23 @@ function App() {
       setErrorMessage("Kunne ikke hente vagtplanens overblik fra API'et.");
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function handleEmployeeLoadClick(employeeId: string) {
+    try {
+      setIsLoadingEmployeeDetails(true);
+      setEmployeeDetailsErrorMessage(null);
+
+      const details = await getEmployeeLoadDetails(employeeId);
+
+      setSelectedEmployeeLoadDetails(details);
+    } catch {
+      setEmployeeDetailsErrorMessage(
+        "Kunne ikke hente belastningsdetaljer for medarbejderen."
+      );
+    } finally {
+      setIsLoadingEmployeeDetails(false);
     }
   }
 
@@ -589,7 +615,11 @@ function App() {
 
                 <tbody>
                   {employeeLoadOverview.map((employee) => (
-                    <tr key={employee.employeeId}>
+                    <tr
+                      className="clickable-row"
+                      key={employee.employeeId}
+                      onClick={() => handleEmployeeLoadClick(employee.employeeId)}
+                    >
                       <td>
                         <strong>{employee.employeeName}</strong>
                       </td>
@@ -617,6 +647,56 @@ function App() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {isLoadingEmployeeDetails && (
+            <p className="employee-load-details-message">
+              Henter belastningsdetaljer...
+            </p>
+          )}
+
+          {employeeDetailsErrorMessage && (
+            <p className="error-text">{employeeDetailsErrorMessage}</p>
+          )}
+
+          {selectedEmployeeLoadDetails && (
+            <div className="employee-load-details-panel">
+              <div className="employee-load-details-header">
+                <div>
+                  <span>Valgt medarbejder</span>
+                  <h3>{selectedEmployeeLoadDetails.employeeName}</h3>
+                  <p>
+                    Samlet belastningsscore:{" "}
+                    <strong>{selectedEmployeeLoadDetails.totalLoad}</strong>
+                  </p>
+                </div>
+
+                <span
+                  className={`badge ${selectedEmployeeLoadDetails.loadStatus.toLowerCase()}`}
+                >
+                  {translateLoadStatus(selectedEmployeeLoadDetails.loadStatus)}
+                </span>
+              </div>
+
+              {selectedEmployeeLoadDetails.assignedShifts.length === 0 ? (
+                <p>Medarbejderen har ingen tildelte vagter i den aktuelle plan.</p>
+              ) : (
+                <div className="employee-load-details-list">
+                  {selectedEmployeeLoadDetails.assignedShifts.map((shift) => (
+                    <div className="employee-load-details-item" key={shift.shiftId}>
+                      <div>
+                        <strong>{shift.date}</strong>
+                        <p>
+                          {translateShiftType(shift.shiftType)} · {shift.requiredSkill}
+                        </p>
+                      </div>
+
+                      <span>Score {shift.loadScore}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </article>
