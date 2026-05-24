@@ -12,6 +12,7 @@ The project simulates healthcare-oriented workforce scheduling by combining:
 - explainable scheduling decisions
 - schedule overview insights
 - employee load overview
+- employee load details
 - skill gap identification
 - what-if schedule simulation
 - weekly schedule visualization
@@ -43,9 +44,13 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Employee workload calculation
 - Employee overload detection
 - Employee load overview endpoint
+- Employee load details endpoint
 - Employee load overview in frontend dashboard
 - Employee load summary cards
 - Employee skills and workload score visualization
+- Shift-level workload score explanation
+- Clickable employee workload rows
+- Selected employee row highlighting
 - Danish workload status labels
 - Schedule overview endpoint
 - Skill gap overview for unassigned shifts
@@ -136,6 +141,7 @@ Contains:
 - schedule simulation services
 - workload calculation services
 - employee load overview services
+- employee load details services
 - overload detection services
 - orchestration logic
 - demo data seeding logic
@@ -179,6 +185,10 @@ Contains:
 - workload status badges
 - workload summary cards
 - employee skill chips
+- clickable employee workload rows
+- selected employee highlight
+- employee workload detail panel
+- shift-level load score explanation
 - shift simulation panel
 - candidate scoring display
 
@@ -255,6 +265,33 @@ This makes it easier to identify whether the schedule is balanced across employe
 
 ---
 
+# Employee Load Details
+
+The employee load details feature explains why an employee has a specific workload score.
+
+It includes:
+
+- selected employee
+- employee skills
+- total workload score
+- workload status
+- assigned shifts
+- shift type
+- required skill
+- load score per shift
+
+This makes the workload score explainable instead of showing it only as a number.
+
+Example:
+
+```text
+Henrik has a total workload score of 4 because he has one Night shift with a load score of 4.
+```
+
+In the frontend, employee rows in the workload table are clickable. When a row is selected, the dashboard shows a detail panel with the assigned shifts that contribute to the employee's total workload score.
+
+---
+
 # Demo Data
 
 The demo dataset is designed to show a realistic healthcare-oriented scheduling scenario.
@@ -277,6 +314,7 @@ The deliberate skill gaps make it possible to demonstrate:
 - schedule simulation
 - candidate scoring
 - employee workload distribution
+- employee load details
 - leadership-oriented decision support
 
 ---
@@ -359,6 +397,7 @@ GET /api/employees
 GET /api/employees/load-overview
 GET /api/employees/{id}/load
 GET /api/employees/{id}/overload-status
+GET /api/employees/{id}/load-details
 ```
 
 ### Example Employee Request
@@ -403,6 +442,40 @@ The response is ordered by highest workload first.
     "isHighRisk": false
   }
 ]
+```
+
+---
+
+## Employee Load Details
+
+```http
+GET /api/employees/{id}/load-details
+```
+
+Returns detailed workload information for one employee.
+
+The response explains which assigned shifts contribute to the employee's total workload score.
+
+### Example Response
+
+```json
+{
+  "employeeId": "guid",
+  "employeeName": "Henrik",
+  "skills": ["CT", "Night"],
+  "totalLoad": 4,
+  "loadStatus": "Medium",
+  "isHighRisk": false,
+  "assignedShifts": [
+    {
+      "shiftId": "guid",
+      "date": "2026-05-12",
+      "shiftType": "Night",
+      "requiredSkill": "Night",
+      "loadScore": 4
+    }
+  ]
+}
 ```
 
 ---
@@ -765,6 +838,12 @@ You can also inspect the employee load overview:
 curl http://localhost:5026/api/employees/load-overview
 ```
 
+Or inspect load details for a specific employee:
+
+```bash
+curl http://localhost:5026/api/employees/{id}/load-details
+```
+
 ---
 
 # Swagger UI
@@ -793,13 +872,14 @@ on every push to GitHub.
 
 # Test Status
 
-The solution currently includes 46 unit tests covering:
+The solution currently includes 47 unit tests covering:
 
 - Shift staffing rules
 - Skill validation
 - Workload calculations
 - Employee load aggregation
 - Employee load overview logic
+- Employee load details logic
 - Overload detection
 - Schedule generation
 - Lowest-load assignment selection
@@ -836,6 +916,10 @@ Review weekly schedule from Monday to Sunday
 Review employee load summary cards
 ↓
 Review employee workload table
+↓
+Click an employee row
+↓
+Review employee load details
 ↓
 Click "Generér vagtplan"
 ↓
@@ -886,6 +970,8 @@ Capacity analysis
 Risk indicators
 ↓
 Employee workload overview
+↓
+Employee workload details
 ↓
 Leadership overview response
 ```
@@ -966,6 +1052,7 @@ This project is designed as a backend and frontend portfolio project focused on:
 - extensible scheduling architecture
 - explainable scheduling decisions
 - employee workload visibility
+- shift-level workload explanation
 - leadership-oriented workforce planning insights
 - what-if planning and simulation
 - automated testing and validation
