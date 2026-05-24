@@ -777,7 +777,7 @@ button:disabled {
 }
 
 .employee-load-table td {
-  color: #e5e7eb;
+  color: #0f172a;
 }
 
 .employee-load-table tr:last-child td {
@@ -785,7 +785,7 @@ button:disabled {
 }
 
 .employee-load-table strong {
-  color: #f8fafc;
+  color: #0f172a;
 }
 
 .skill-chip-list {
@@ -801,27 +801,27 @@ button:disabled {
   padding: 0.25rem 0.55rem;
   font-size: 0.78rem;
   font-weight: 700;
-  color: #dbeafe;
-  background: rgba(37, 99, 235, 0.18);
-  border: 1px solid rgba(96, 165, 250, 0.25);
+  color: #1d4ed8;
+  background: #dbeafe;
+  border: 1px solid #bfdbfe;
 }
 
 .badge.low {
-  color: #bbf7d0;
-  background: rgba(22, 163, 74, 0.18);
-  border: 1px solid rgba(74, 222, 128, 0.25);
+  color: #166534;
+  background: #dcfce7;
+  border: 1px solid #86efac;
 }
 
 .badge.medium {
-  color: #fde68a;
-  background: rgba(217, 119, 6, 0.18);
-  border: 1px solid rgba(251, 191, 36, 0.25);
+  color: #92400e;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
 }
 
 .badge.high {
-  color: #fecaca;
-  background: rgba(220, 38, 38, 0.18);
-  border: 1px solid rgba(248, 113, 113, 0.25);
+  color: #991b1b;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
 }
 
 @media (max-width: 900px) {
