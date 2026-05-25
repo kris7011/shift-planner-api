@@ -1074,6 +1074,35 @@ button:disabled {
   color: #526173;
 }
 
+.shift-analysis-summary {
+  text-align: left;
+}
+
+.shift-analysis-summary strong {
+  text-align: left;
+}
+
+.shift-analysis-candidates h4 {
+  text-align: left;
+}
+
+.shift-analysis-candidate {
+  text-align: left;
+}
+
+.shift-analysis-candidate>div {
+  flex: 1;
+}
+
+.shift-analysis-candidate strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.shift-analysis-candidate ul {
+  margin-top: 0;
+}
+
 @media (max-width: 700px) {
 
   .shift-analysis-header,
