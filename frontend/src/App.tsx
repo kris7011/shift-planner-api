@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import {
+  getShiftAssignmentAnalysis,
+  type ShiftAssignmentAnalysisResponse
+} from "./api/shiftAssignmentAnalysisApi";
+import {
   getEmployeeLoadDetails,
   type EmployeeLoadDetailsResponse
 } from "./api/employeeLoadDetailsApi";
@@ -213,6 +217,16 @@ function App() {
         0
       ) / employeeLoadOverview.length;
 
+  const [
+    selectedShiftAssignmentAnalysis,
+    setSelectedShiftAssignmentAnalysis
+  ] = useState<ShiftAssignmentAnalysisResponse | null>(null);
+
+  const [isLoadingShiftAnalysis, setIsLoadingShiftAnalysis] = useState(false);
+
+  const [shiftAnalysisErrorMessage, setShiftAnalysisErrorMessage] =
+    useState<string | null>(null);
+
   async function loadOverview() {
     try {
       setIsLoading(true);
@@ -246,6 +260,23 @@ function App() {
       );
     } finally {
       setIsLoadingEmployeeDetails(false);
+    }
+  }
+
+  async function handleUnassignedShiftClick(shiftId: string) {
+    try {
+      setIsLoadingShiftAnalysis(true);
+      setShiftAnalysisErrorMessage(null);
+
+      const analysis = await getShiftAssignmentAnalysis(shiftId);
+
+      setSelectedShiftAssignmentAnalysis(analysis);
+    } catch {
+      setShiftAnalysisErrorMessage(
+        "Kunne ikke hente forklaring for den ubesatte vagt."
+      );
+    } finally {
+      setIsLoadingShiftAnalysis(false);
     }
   }
 
@@ -617,8 +648,8 @@ function App() {
                   {employeeLoadOverview.map((employee) => (
                     <tr
                       className={`clickable-row ${selectedEmployeeLoadDetails?.employeeId === employee.employeeId
-                          ? "selected-row"
-                          : ""
+                        ? "selected-row"
+                        : ""
                         }`}
                       key={employee.employeeId}
                       onClick={() => handleEmployeeLoadClick(employee.employeeId)}
@@ -712,7 +743,14 @@ function App() {
           ) : (
             <div className="unassigned-shift-list">
               {overview.unassignedShiftDetails.map((shift) => (
-                <div className="unassigned-shift-card" key={shift.shiftId}>
+                <div
+                  className={`unassigned-shift-card clickable-card ${selectedShiftAssignmentAnalysis?.shiftId === shift.shiftId
+                    ? "selected-card"
+                    : ""
+                    }`}
+                  key={shift.shiftId}
+                  onClick={() => handleUnassignedShiftClick(shift.shiftId)}
+                >
                   <div className="unassigned-shift-header">
                     <div>
                       <strong>{formatDate(shift.date)}</strong>
@@ -746,6 +784,84 @@ function App() {
                   )}
                 </div>
               ))}
+            </div>
+          )}
+
+          {isLoadingShiftAnalysis && (
+            <p className="shift-analysis-message">
+              Henter forklaring for ubesat vagt...
+            </p>
+          )}
+
+          {shiftAnalysisErrorMessage && (
+            <p className="error-text">{shiftAnalysisErrorMessage}</p>
+          )}
+
+          {selectedShiftAssignmentAnalysis && (
+            <div className="shift-analysis-panel">
+              <div className="shift-analysis-header">
+                <div>
+                  <span>Valgt ubesat vagt</span>
+                  <h3>
+                    {translateShiftType(selectedShiftAssignmentAnalysis.shiftType)} ·{" "}
+                    {selectedShiftAssignmentAnalysis.requiredSkill}
+                  </h3>
+                  <p>{selectedShiftAssignmentAnalysis.date}</p>
+                </div>
+
+                <span
+                  className={`badge ${selectedShiftAssignmentAnalysis.canBeCovered ? "low" : "high"
+                    }`}
+                >
+                  {selectedShiftAssignmentAnalysis.canBeCovered
+                    ? "Kan dækkes"
+                    : "Kan ikke dækkes"}
+                </span>
+              </div>
+
+              <div className="shift-analysis-summary">
+                <strong>Overordnet forklaring</strong>
+
+                <ul>
+                  {selectedShiftAssignmentAnalysis.summaryReasons.map((reason) => (
+                    <li key={reason}>{reason}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="shift-analysis-candidates">
+                <h4>Kandidater</h4>
+
+                {selectedShiftAssignmentAnalysis.candidateResults.map((candidate) => (
+                  <div
+                    className="shift-analysis-candidate"
+                    key={candidate.employeeId}
+                  >
+                    <div>
+                      <strong>{candidate.employeeName}</strong>
+
+                      {candidate.reasons.length === 0 ? (
+                        <p>Kan tage vagten.</p>
+                      ) : (
+                        <ul>
+                          {candidate.reasons.map((reason) => (
+                            <li key={`${candidate.employeeId}-${reason}`}>
+                              {reason}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+
+                    <span
+                      className={`badge ${candidate.canBeAssigned ? "low" : "high"
+                        }`}
+                    >
+                      {candidate.canBeAssigned ? "Mulig" : "Blokeret"}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </article>

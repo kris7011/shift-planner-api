@@ -956,6 +956,132 @@ button:disabled {
   color: #1d4ed8;
 }
 
+.clickable-card {
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.clickable-card:hover {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  transform: translateY(-1px);
+}
+
+.clickable-card.selected-card {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.shift-analysis-message {
+  margin-top: 1rem;
+  color: #526173;
+  font-weight: 700;
+}
+
+.shift-analysis-panel {
+  margin-top: 1.5rem;
+  border: 1px solid #dbe3ef;
+  border-radius: 18px;
+  padding: 20px;
+  background: #f8fafc;
+}
+
+.shift-analysis-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.shift-analysis-header span:first-child {
+  display: block;
+  margin-bottom: 8px;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.shift-analysis-header h3 {
+  margin: 0;
+  color: #172033;
+  font-size: 24px;
+}
+
+.shift-analysis-header p {
+  margin: 8px 0 0;
+  color: #526173;
+}
+
+.shift-analysis-summary {
+  border: 1px solid #edf2f7;
+  border-radius: 14px;
+  padding: 16px;
+  background: #ffffff;
+  margin-bottom: 16px;
+}
+
+.shift-analysis-summary strong {
+  display: block;
+  margin-bottom: 10px;
+  color: #111827;
+}
+
+.shift-analysis-summary ul,
+.shift-analysis-candidate ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #172033;
+}
+
+.shift-analysis-summary li,
+.shift-analysis-candidate li {
+  margin-bottom: 6px;
+}
+
+.shift-analysis-candidates {
+  display: grid;
+  gap: 12px;
+}
+
+.shift-analysis-candidates h4 {
+  margin: 0 0 4px;
+  color: #172033;
+}
+
+.shift-analysis-candidate {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  border: 1px solid #edf2f7;
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: #ffffff;
+}
+
+.shift-analysis-candidate strong {
+  color: #111827;
+}
+
+.shift-analysis-candidate p {
+  margin: 6px 0 0;
+  color: #526173;
+}
+
+@media (max-width: 700px) {
+
+  .shift-analysis-header,
+  .shift-analysis-candidate {
+    flex-direction: column;
+  }
+}
+
 @media (max-width: 700px) {
 
   .employee-load-details-header,
