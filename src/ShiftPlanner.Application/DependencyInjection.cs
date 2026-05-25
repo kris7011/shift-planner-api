@@ -5,6 +5,7 @@ using ShiftPlanner.Application.Scheduling.Rules;
 using ShiftPlanner.Application.Scheduling.Overview;
 using ShiftPlanner.Application.Scheduling.Simulation;
 using ShiftPlanner.Application.Demo;
+using ShiftPlanner.Application.Scheduling.Analysis;
 
 namespace ShiftPlanner.Application;
 
@@ -25,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<ISchedulingRule, HighLoadRule>();
         services.AddScoped<IScheduleOverviewService, ScheduleOverviewService>();
         services.AddScoped<IScheduleSimulationService, ScheduleSimulationService>();
+        services.AddScoped<ShiftAssignmentAnalysisService>();
         services.AddScoped<IDemoDataService, DemoDataService>();
 
         return services;

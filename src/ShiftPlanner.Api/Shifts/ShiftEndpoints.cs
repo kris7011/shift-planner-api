@@ -1,3 +1,5 @@
+using ShiftPlanner.Application.Employees;
+using ShiftPlanner.Application.Scheduling.Analysis;
 using ShiftPlanner.Application.Shifts;
 using ShiftPlanner.Domain.Shifts;
 
@@ -46,6 +48,34 @@ public static class ShiftEndpoints
                 shift.RequiredSkill,
                 shift.RequiredStaff
             }));
+        });
+
+        app.MapGet("/api/shifts/{id:guid}/assignment-analysis", async (
+            Guid id,
+            IShiftRepository shiftRepository,
+            IEmployeeRepository employeeRepository,
+            ShiftAssignmentAnalysisService shiftAssignmentAnalysisService) =>
+        {
+            var shifts = await shiftRepository.GetAllAsync();
+            var shift = shifts.FirstOrDefault(shift => shift.Id == id);
+
+            if (shift == null)
+            {
+                return Results.NotFound(new
+                {
+                    error = "Shift was not found."
+                });
+            }
+
+            var employees = await employeeRepository.GetAllAsync();
+
+            var analysis = shiftAssignmentAnalysisService.Analyze(
+                shift,
+                employees.ToList(),
+                shifts.ToList(),
+                maxAssignmentsPerEmployee: 5);
+
+            return Results.Ok(analysis);
         });
 
         return app;
