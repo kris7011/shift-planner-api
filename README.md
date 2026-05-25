@@ -77,6 +77,10 @@ The solution is built using Clean Architecture principles with strong focus on:
 - GitHub Actions CI pipeline
 - Unit tested business logic
 - Scheduling rule context for extensible rule evaluation
+- Shift assignment analysis endpoint
+- Clickable unassigned shift cards
+- Candidate-level assignment analysis
+- Danish assignment failure explanations
 
 ---
 
@@ -191,6 +195,10 @@ Contains:
 - shift-level load score explanation
 - shift simulation panel
 - candidate scoring display
+- clickable unassigned shift cards
+- unassigned shift explanation panel
+- candidate-level assignment analysis
+- Danish assignment failure explanations
 
 ---
 
@@ -579,6 +587,42 @@ The overview includes:
 - uncovered required skills
 - capacity summary
 
+## Shift Assignment Analysis
+
+```http
+GET /api/shifts/{id}/assignment-analysis
+```
+
+Returns an assignment analysis for a specific shift.
+
+The analysis explains whether the shift can be covered and why each employee can or cannot be assigned.
+
+### Example Response
+
+```json
+{
+  "shiftId": "guid",
+  "date": "2026-05-15",
+  "shiftType": "Day",
+  "requiredSkill": "UL",
+  "isAssigned": false,
+  "canBeCovered": false,
+  "summaryReasons": [
+    "No employees have the required skill 'UL'."
+  ],
+  "candidateResults": [
+    {
+      "employeeId": "guid",
+      "employeeName": "Kris",
+      "canBeAssigned": false,
+      "reasons": [
+        "Missing required skill 'UL'."
+      ]
+    }
+  ]
+}
+```
+
 ### Example Response
 
 ```json
@@ -872,7 +916,7 @@ on every push to GitHub.
 
 # Test Status
 
-The solution currently includes 47 unit tests covering:
+The solution currently includes 49 unit tests covering:
 
 - Shift staffing rules
 - Skill validation
@@ -897,7 +941,8 @@ The solution currently includes 47 unit tests covering:
 - Simulation candidate result logic
 - Simulation candidate scoring logic
 - Demo data seeding and reset support
-
+- Shift assignment analysis logic
+  
 ---
 
 # Example Frontend Demo Flow
