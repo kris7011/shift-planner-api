@@ -13,6 +13,7 @@ The project simulates healthcare-oriented workforce scheduling by combining:
 - schedule overview insights
 - employee load overview
 - employee load details
+- shift assignment analysis
 - skill gap identification
 - what-if schedule simulation
 - weekly schedule visualization
@@ -59,6 +60,10 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Capacity summary for department skill coverage
 - Schedule risk summary with Low, Medium, and High risk levels
 - Schedule risk indicators for dashboard-ready warnings
+- Shift assignment analysis endpoint
+- Clickable unassigned shift cards
+- Candidate-level assignment analysis
+- Danish assignment failure explanations
 - Schedule simulation endpoint for what-if planning
 - Simulation impact summary for leadership decision support
 - Simulation impact indicators for dashboard-ready what-if warnings
@@ -77,10 +82,6 @@ The solution is built using Clean Architecture principles with strong focus on:
 - GitHub Actions CI pipeline
 - Unit tested business logic
 - Scheduling rule context for extensible rule evaluation
-- Shift assignment analysis endpoint
-- Clickable unassigned shift cards
-- Candidate-level assignment analysis
-- Danish assignment failure explanations
 
 ---
 
@@ -143,6 +144,7 @@ Contains:
 - scheduling rules
 - scheduling overview services
 - schedule simulation services
+- shift assignment analysis services
 - workload calculation services
 - employee load overview services
 - employee load details services
@@ -193,12 +195,12 @@ Contains:
 - selected employee highlight
 - employee workload detail panel
 - shift-level load score explanation
-- shift simulation panel
-- candidate scoring display
 - clickable unassigned shift cards
 - unassigned shift explanation panel
 - candidate-level assignment analysis
 - Danish assignment failure explanations
+- shift simulation panel
+- candidate scoring display
 
 ---
 
@@ -300,6 +302,34 @@ In the frontend, employee rows in the workload table are clickable. When a row i
 
 ---
 
+# Shift Assignment Analysis
+
+The shift assignment analysis feature explains why a shift can or cannot be covered.
+
+It includes:
+
+- selected shift
+- shift date
+- shift type
+- required skill
+- assignment status
+- coverage status
+- summary reasons
+- candidate-level assignment results
+- blocking reasons per employee
+
+This makes unassigned shifts explainable instead of only showing that they are uncovered.
+
+Example:
+
+```text
+The UL shift cannot be covered because no employees have the required skill 'UL'.
+```
+
+In the frontend, unassigned shift cards are clickable. When a card is selected, the dashboard shows an explanation panel with summary reasons and candidate-level blocking reasons.
+
+---
+
 # Demo Data
 
 The demo dataset is designed to show a realistic healthcare-oriented scheduling scenario.
@@ -319,6 +349,7 @@ The deliberate skill gaps make it possible to demonstrate:
 - uncovered required skills
 - capacity risk
 - unassigned shifts
+- shift assignment analysis
 - schedule simulation
 - candidate scoring
 - employee workload distribution
@@ -493,6 +524,7 @@ The response explains which assigned shifts contribute to the employee's total w
 ```http
 POST /api/shifts
 GET /api/shifts
+GET /api/shifts/{id}/assignment-analysis
 ```
 
 ### Example Shift Request
@@ -586,42 +618,6 @@ The overview includes:
 - skill capacity
 - uncovered required skills
 - capacity summary
-
-## Shift Assignment Analysis
-
-```http
-GET /api/shifts/{id}/assignment-analysis
-```
-
-Returns an assignment analysis for a specific shift.
-
-The analysis explains whether the shift can be covered and why each employee can or cannot be assigned.
-
-### Example Response
-
-```json
-{
-  "shiftId": "guid",
-  "date": "2026-05-15",
-  "shiftType": "Day",
-  "requiredSkill": "UL",
-  "isAssigned": false,
-  "canBeCovered": false,
-  "summaryReasons": [
-    "No employees have the required skill 'UL'."
-  ],
-  "candidateResults": [
-    {
-      "employeeId": "guid",
-      "employeeName": "Kris",
-      "canBeAssigned": false,
-      "reasons": [
-        "Missing required skill 'UL'."
-      ]
-    }
-  ]
-}
-```
 
 ### Example Response
 
@@ -717,6 +713,44 @@ The analysis explains whether the shift can be covered and why each employee can
     "missingRequiredSkills": 2,
     "criticalSkillGaps": 2
   }
+}
+```
+
+---
+
+## Shift Assignment Analysis
+
+```http
+GET /api/shifts/{id}/assignment-analysis
+```
+
+Returns an assignment analysis for a specific shift.
+
+The analysis explains whether the shift can be covered and why each employee can or cannot be assigned.
+
+### Example Response
+
+```json
+{
+  "shiftId": "guid",
+  "date": "2026-05-15",
+  "shiftType": "Day",
+  "requiredSkill": "UL",
+  "isAssigned": false,
+  "canBeCovered": false,
+  "summaryReasons": [
+    "No employees have the required skill 'UL'."
+  ],
+  "candidateResults": [
+    {
+      "employeeId": "guid",
+      "employeeName": "Kris",
+      "canBeAssigned": false,
+      "reasons": [
+        "Missing required skill 'UL'."
+      ]
+    }
+  ]
 }
 ```
 
@@ -888,6 +922,12 @@ Or inspect load details for a specific employee:
 curl http://localhost:5026/api/employees/{id}/load-details
 ```
 
+Or inspect assignment analysis for a specific shift:
+
+```bash
+curl http://localhost:5026/api/shifts/{id}/assignment-analysis
+```
+
 ---
 
 # Swagger UI
@@ -924,6 +964,7 @@ The solution currently includes 49 unit tests covering:
 - Employee load aggregation
 - Employee load overview logic
 - Employee load details logic
+- Shift assignment analysis logic
 - Overload detection
 - Schedule generation
 - Lowest-load assignment selection
@@ -941,8 +982,7 @@ The solution currently includes 49 unit tests covering:
 - Simulation candidate result logic
 - Simulation candidate scoring logic
 - Demo data seeding and reset support
-- Shift assignment analysis logic
-  
+
 ---
 
 # Example Frontend Demo Flow
@@ -969,6 +1009,10 @@ Review employee load details
 Click "Generér vagtplan"
 ↓
 Review assigned and unassigned shifts
+↓
+Click an unassigned shift
+↓
+Review assignment analysis and candidate blocking reasons
 ↓
 Simulate a new shift
 ↓
@@ -1017,6 +1061,8 @@ Risk indicators
 Employee workload overview
 ↓
 Employee workload details
+↓
+Shift assignment analysis
 ↓
 Leadership overview response
 ```
@@ -1098,6 +1144,7 @@ This project is designed as a backend and frontend portfolio project focused on:
 - explainable scheduling decisions
 - employee workload visibility
 - shift-level workload explanation
+- shift assignment explanation
 - leadership-oriented workforce planning insights
 - what-if planning and simulation
 - automated testing and validation
