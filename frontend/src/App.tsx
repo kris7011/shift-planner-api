@@ -139,6 +139,46 @@ function translateFailureReason(reason: string) {
   return reason;
 }
 
+function translateAssignmentReason(reason: string) {
+  if (reason.startsWith("Missing required skill")) {
+    const skill = reason.match(/'(.+)'/)?.[1];
+
+    return skill
+      ? `Mangler nødvendig kompetence '${skill}'.`
+      : "Mangler nødvendig kompetence.";
+  }
+
+  if (reason.startsWith("No employees have the required skill")) {
+    const skill = reason.match(/'(.+)'/)?.[1];
+
+    return skill
+      ? `Ingen medarbejdere har den nødvendige kompetence '${skill}'.`
+      : "Ingen medarbejdere har den nødvendige kompetence.";
+  }
+
+  if (reason.startsWith("Employee has reached the maximum")) {
+    return "Medarbejderen har nået det maksimale antal tildelinger.";
+  }
+
+  if (reason === "Employee is already assigned to a shift on the same day.") {
+    return "Medarbejderen er allerede tildelt en vagt samme dag.";
+  }
+
+  if (reason === "Employee cannot work a day shift immediately after a night shift.") {
+    return "Medarbejderen kan ikke arbejde dagvagt direkte efter nattevagt.";
+  }
+
+  if (reason === "At least one employee can cover this shift.") {
+    return "Mindst én medarbejder kan dække denne vagt.";
+  }
+
+  if (reason === "Employees with the required skill are blocked by scheduling rules.") {
+    return "Medarbejdere med den nødvendige kompetence er blokeret af planlægningsregler.";
+  }
+
+  return reason;
+}
+
 function getDashboardStatus(overview: ScheduleOverviewResponse) {
   if (overview.capacitySummary.criticalSkillGaps > 0) {
     return {
@@ -824,7 +864,7 @@ function App() {
 
                 <ul>
                   {selectedShiftAssignmentAnalysis.summaryReasons.map((reason) => (
-                    <li key={reason}>{reason}</li>
+                    <li key={reason}>{translateAssignmentReason(reason)}</li>
                   ))}
                 </ul>
               </div>
@@ -846,7 +886,7 @@ function App() {
                         <ul>
                           {candidate.reasons.map((reason) => (
                             <li key={`${candidate.employeeId}-${reason}`}>
-                              {reason}
+                              {translateAssignmentReason(reason)}
                             </li>
                           ))}
                         </ul>
