@@ -82,6 +82,8 @@ The solution is built using Clean Architecture principles with strong focus on:
 - GitHub Actions CI pipeline
 - Unit tested business logic
 - Scheduling rule context for extensible rule evaluation
+- Configurable assignment limit
+- Shared assignment limit across schedule generation, simulation, and assignment analysis
 
 ---
 
@@ -201,6 +203,8 @@ Contains:
 - Danish assignment failure explanations
 - shift simulation panel
 - candidate scoring display
+- configurable assignment limit control
+- shared assignment limit for scheduling, simulation, and assignment analysis
 
 ---
 
@@ -225,6 +229,22 @@ Current rules include:
 - `HighLoadRule`
 
 Rules are injected through dependency injection and evaluated during schedule generation.
+
+---
+
+# Configurable Assignment Limit
+
+The dashboard includes a shared assignment limit setting.
+
+This setting controls how many shifts each employee may be assigned during scheduling.
+
+The same limit is used by:
+
+- schedule generation
+- shift simulation
+- shift assignment analysis
+
+This keeps planning, simulation, and explanation logic aligned in the frontend.
 
 ---
 
@@ -925,7 +945,7 @@ curl http://localhost:5026/api/employees/{id}/load-details
 Or inspect assignment analysis for a specific shift:
 
 ```bash
-curl http://localhost:5026/api/shifts/{id}/assignment-analysis
+curl "http://localhost:5026/api/shifts/{id}/assignment-analysis?maxAssignmentsPerEmployee=5"
 ```
 
 ---
@@ -993,6 +1013,8 @@ Start API
 Start frontend
 ↓
 Click "Nulstil demo-data"
+↓
+Set max shifts per employee
 ↓
 Review dashboard status
 ↓
