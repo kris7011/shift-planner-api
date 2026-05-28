@@ -6,6 +6,7 @@ using ShiftPlanner.Application.Scheduling.Overview;
 using ShiftPlanner.Application.Scheduling.Simulation;
 using ShiftPlanner.Application.Demo;
 using ShiftPlanner.Application.Scheduling.Analysis;
+using ShiftPlanner.Application.Employees.Preferences;
 
 namespace ShiftPlanner.Application;
 
@@ -19,6 +20,7 @@ public static class DependencyInjection
         services.AddScoped<EmployeeLoadAnalysisService>();
         services.AddScoped<EmployeeLoadOverviewService>();
         services.AddScoped<EmployeeLoadDetailsService>();
+        services.AddScoped<EmployeePreferenceScoreService>();
         services.AddScoped<IScheduleGeneratorService, ScheduleGeneratorService>();
         services.AddScoped<ISchedulingRule, MaxAssignmentsRule>();
         services.AddScoped<ISchedulingRule, SameDayShiftRule>();
