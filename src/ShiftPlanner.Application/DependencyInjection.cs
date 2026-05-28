@@ -21,6 +21,7 @@ public static class DependencyInjection
         services.AddScoped<EmployeeLoadOverviewService>();
         services.AddScoped<EmployeeLoadDetailsService>();
         services.AddScoped<EmployeePreferenceScoreService>();
+        services.AddScoped<EmployeePreferenceProfileProvider>();
         services.AddScoped<IScheduleGeneratorService, ScheduleGeneratorService>();
         services.AddScoped<ISchedulingRule, MaxAssignmentsRule>();
         services.AddScoped<ISchedulingRule, SameDayShiftRule>();
