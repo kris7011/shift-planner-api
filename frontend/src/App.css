@@ -1200,3 +1200,27 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 }
+
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 190px;
+  color: #172033;
+  font-weight: 700;
+}
+
+.settings-field span {
+  color: #526173;
+  font-size: 13px;
+}
+
+.settings-field select {
+  border: 1px solid #dbe3ef;
+  border-radius: 12px;
+  padding: 11px 12px;
+  background: white;
+  color: #172033;
+  font: inherit;
+  font-weight: 700;
+}

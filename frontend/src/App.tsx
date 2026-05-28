@@ -267,6 +267,8 @@ function App() {
   const [shiftAnalysisErrorMessage, setShiftAnalysisErrorMessage] =
     useState<string | null>(null);
 
+  const [maxAssignmentsPerEmployee, setMaxAssignmentsPerEmployee] = useState(5);
+
   async function loadOverview() {
     try {
       setIsLoading(true);
@@ -349,7 +351,7 @@ function App() {
       setStatusMessage(null);
 
       const result = await generateSchedule({
-        maxAssignmentsPerEmployee: 5,
+        maxAssignmentsPerEmployee,
       });
 
       setGenerationResult(result);
@@ -417,6 +419,23 @@ function App() {
         </div>
 
         <div className="hero-actions">
+          <label className="settings-field">
+            <span>Maks vagter pr. medarbejder</span>
+
+            <select
+              value={maxAssignmentsPerEmployee}
+              onChange={(event) =>
+                setMaxAssignmentsPerEmployee(Number(event.target.value))
+              }
+            >
+              <option value={3}>3</option>
+              <option value={4}>4</option>
+              <option value={5}>5</option>
+              <option value={6}>6</option>
+              <option value={7}>7</option>
+            </select>
+          </label>
+
           <button onClick={loadOverview}>Opdater data</button>
 
           <button
