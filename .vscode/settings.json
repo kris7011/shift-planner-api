@@ -1,5 +1,6 @@
 {
     "cSpell.words": [
+        "aftenvagter",
         "Aktuel",
         "aktuelle",
         "aktuelt",
@@ -23,6 +24,7 @@
         "dækning",
         "Dækningsgrad",
         "dagvagt",
+        "dagvagter",
         "Delvist",
         "direkte",
         "efter",
@@ -32,6 +34,7 @@
         "flere",
         "fordi",
         "Foreslået",
+        "foretrækker",
         "Fredag",
         "gemmes",
         "Generér",
@@ -41,6 +44,7 @@
         "generering",
         "Gennemsnitlig",
         "grænse",
+        "helst",
         "hente",
         "Henter",
         "hjemmet",
@@ -70,6 +74,7 @@
         "Lørdag",
         "lscache",
         "maksimale",
+        "maksimum",
         "Mandag",
         "Manglende",
         "medarbejderbelastning",
@@ -79,6 +84,7 @@
         "Mulig",
         "nået",
         "nattevagt",
+        "nattevagter",
         "nødvendig",
         "nødvendige",
         "Nulstil",
@@ -86,6 +92,8 @@
         "Nulstiller",
         "nulstillet",
         "Onsdag",
+        "ønskede",
+        "ønsker",
         "Opdater",
         "opmærksomhed",
         "oprettet",
@@ -96,6 +104,7 @@
         "planlægningsreglerne",
         "planlægningsrisiko",
         "Prøv",
+        "rådighedsvagter",
         "Registrerede",
         "Resultat",
         "risikoindikatorer",
@@ -129,6 +138,7 @@
         "valgte",
         "vurderede",
         "vurderer",
-        "vurderinger"
+        "vurderinger",
+        "weekendvagter"
     ]
 }
