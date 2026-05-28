@@ -1,10 +1,14 @@
-import { useState } from "react";
 import {
     simulateSchedule,
     type ScheduleRiskLevel,
     type ShiftType,
     type SimulateScheduleResponse,
 } from "../api/scheduleSimulationApi";
+import { useState } from "react";
+
+type SimulationPanelProps = {
+    maxAssignmentsPerEmployee: number;
+};
 
 function translateRiskLevel(riskLevel: ScheduleRiskLevel) {
     switch (riskLevel) {
@@ -104,12 +108,13 @@ function translateImpactSummary(summary: string) {
     return summary;
 }
 
-export function SimulationPanel() {
+export function SimulationPanel({
+    maxAssignmentsPerEmployee,
+}: SimulationPanelProps) {
     const [date, setDate] = useState("2026-05-15");
     const [shiftType, setShiftType] = useState<ShiftType>("Day");
     const [requiredSkill, setRequiredSkill] = useState("UL");
     const [requiredStaff, setRequiredStaff] = useState(1);
-    const [maxAssignmentsPerEmployee, setMaxAssignmentsPerEmployee] = useState(5);
 
     const [result, setResult] = useState<SimulateScheduleResponse | null>(null);
     const [isSimulating, setIsSimulating] = useState(false);
@@ -145,6 +150,10 @@ export function SimulationPanel() {
                     <h2>Simulér vagt</h2>
                     <p>
                         Test om en tænkt vagt kan dækkes, før den gemmes i vagtplanen.
+                    </p>
+                    <p className="simulation-helper-text">
+                        Simulationen bruger den valgte grænse på{" "}
+                        {maxAssignmentsPerEmployee} maks vagter pr. medarbejder.
                     </p>
                 </div>
             </div>
@@ -191,18 +200,6 @@ export function SimulationPanel() {
                     />
                 </label>
 
-                <label>
-                    Maks vagter pr. medarbejder
-                    <input
-                        min="1"
-                        type="number"
-                        value={maxAssignmentsPerEmployee}
-                        onChange={(event) =>
-                            setMaxAssignmentsPerEmployee(Number(event.target.value))
-                        }
-                    />
-                </label>
-
                 <button disabled={isSimulating} type="submit">
                     {isSimulating ? "Simulerer..." : "Simulér vagt"}
                 </button>
@@ -216,7 +213,9 @@ export function SimulationPanel() {
                         <div>
                             <span>Resultat</span>
                             <strong>
-                                {result.canBeCovered ? "Vagten kan dækkes" : "Vagten kan ikke dækkes"}
+                                {result.canBeCovered
+                                    ? "Vagten kan dækkes"
+                                    : "Vagten kan ikke dækkes"}
                             </strong>
                         </div>
 
@@ -268,7 +267,10 @@ export function SimulationPanel() {
                     <div className="list">
                         {result.candidateResults
                             .toSorted((firstCandidate, secondCandidate) => {
-                                if (firstCandidate.canBeAssigned !== secondCandidate.canBeAssigned) {
+                                if (
+                                    firstCandidate.canBeAssigned !==
+                                    secondCandidate.canBeAssigned
+                                ) {
                                     return firstCandidate.canBeAssigned ? -1 : 1;
                                 }
 
@@ -282,7 +284,9 @@ export function SimulationPanel() {
                                         <p>
                                             {candidate.canBeAssigned
                                                 ? "Kan tage vagten."
-                                                : candidate.reasons.map(translateFailureReason).join(" ")}
+                                                : candidate.reasons
+                                                    .map(translateFailureReason)
+                                                    .join(" ")}
                                         </p>
                                     </div>
 

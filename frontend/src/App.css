@@ -1224,3 +1224,9 @@ button:disabled {
   font: inherit;
   font-weight: 700;
 }
+
+.simulation-helper-text {
+  margin: 0.5rem 0 1rem;
+  color: #526173;
+  font-weight: 700;
+}
