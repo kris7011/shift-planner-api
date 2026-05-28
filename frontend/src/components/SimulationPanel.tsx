@@ -88,6 +88,62 @@ function translateFailureReason(reason: string) {
         return `Mangler krævet kompetence ${skill}.`;
     }
 
+    if (reason.includes("Employee prefers Night shifts.")) {
+        return "Medarbejderen foretrækker nattevagter.";
+    }
+
+    if (reason.includes("Employee prefers Day shifts.")) {
+        return "Medarbejderen foretrækker dagvagter.";
+    }
+
+    if (reason.includes("Employee prefers Evening shifts.")) {
+        return "Medarbejderen foretrækker aftenvagter.";
+    }
+
+    if (reason.includes("Employee prefers OnCall shifts.")) {
+        return "Medarbejderen foretrækker rådighedsvagter.";
+    }
+
+    if (reason.includes("Employee dislikes Night shifts.")) {
+        return "Medarbejderen ønsker helst ikke nattevagter.";
+    }
+
+    if (reason.includes("Employee dislikes Day shifts.")) {
+        return "Medarbejderen ønsker helst ikke dagvagter.";
+    }
+
+    if (reason.includes("Employee dislikes Evening shifts.")) {
+        return "Medarbejderen ønsker helst ikke aftenvagter.";
+    }
+
+    if (reason.includes("Employee dislikes OnCall shifts.")) {
+        return "Medarbejderen ønsker helst ikke rådighedsvagter.";
+    }
+
+    if (reason.includes("Employee prefers weekend shifts.")) {
+        return "Medarbejderen foretrækker weekendvagter.";
+    }
+
+    if (reason.includes("Employee prefers to avoid weekend shifts.")) {
+        return "Medarbejderen ønsker helst at undgå weekendvagter.";
+    }
+
+    if (reason.includes("Employee has reached preferred maximum night shifts")) {
+        const count = reason.match(/\((\d+)\)/)?.[1];
+
+        return count
+            ? `Medarbejderen har nået sit ønskede maksimum for nattevagter (${count}).`
+            : "Medarbejderen har nået sit ønskede maksimum for nattevagter.";
+    }
+
+    if (reason.includes("Employee has reached preferred maximum evening shifts")) {
+        const count = reason.match(/\((\d+)\)/)?.[1];
+
+        return count
+            ? `Medarbejderen har nået sit ønskede maksimum for aftenvagter (${count}).`
+            : "Medarbejderen har nået sit ønskede maksimum for aftenvagter.";
+    }
+
     return reason;
 }
 
