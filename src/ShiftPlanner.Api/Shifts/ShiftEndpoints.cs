@@ -52,6 +52,7 @@ public static class ShiftEndpoints
 
         app.MapGet("/api/shifts/{id:guid}/assignment-analysis", async (
             Guid id,
+            int? maxAssignmentsPerEmployee,
             IShiftRepository shiftRepository,
             IEmployeeRepository employeeRepository,
             ShiftAssignmentAnalysisService shiftAssignmentAnalysisService) =>
@@ -73,7 +74,7 @@ public static class ShiftEndpoints
                 shift,
                 employees.ToList(),
                 shifts.ToList(),
-                maxAssignmentsPerEmployee: 5);
+                maxAssignmentsPerEmployee: maxAssignmentsPerEmployee ?? 5);
 
             return Results.Ok(analysis);
         });
