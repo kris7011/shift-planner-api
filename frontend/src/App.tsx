@@ -928,7 +928,7 @@ function App() {
           )}
         </article>
 
-        <SimulationPanel />
+        <SimulationPanel maxAssignmentsPerEmployee={maxAssignmentsPerEmployee} />
 
       </section>
     </main>
