@@ -1,3 +1,4 @@
+using ShiftPlanner.Application.Employees.Preferences;
 using ShiftPlanner.Application.Scheduling.Overview;
 using ShiftPlanner.Domain.Employees;
 using ShiftPlanner.Domain.Shifts;
@@ -7,10 +8,17 @@ namespace ShiftPlanner.Application.Scheduling.Simulation;
 public class ScheduleSimulationService : IScheduleSimulationService
 {
     private readonly IScheduleGeneratorService _scheduleGeneratorService;
+    private readonly EmployeePreferenceProfileProvider _preferenceProfileProvider;
+    private readonly EmployeePreferenceScoreService _preferenceScoreService;
 
-    public ScheduleSimulationService(IScheduleGeneratorService scheduleGeneratorService)
+    public ScheduleSimulationService(
+        IScheduleGeneratorService scheduleGeneratorService,
+        EmployeePreferenceProfileProvider preferenceProfileProvider,
+        EmployeePreferenceScoreService preferenceScoreService)
     {
         _scheduleGeneratorService = scheduleGeneratorService;
+        _preferenceProfileProvider = preferenceProfileProvider;
+        _preferenceScoreService = preferenceScoreService;
     }
 
     public SimulateScheduleResponse Simulate(
@@ -50,7 +58,9 @@ public class ScheduleSimulationService : IScheduleSimulationService
 
         var candidateResults = CreateCandidateResults(
             employees,
-            assignmentResult);
+            assignmentResult,
+            simulatedShift,
+            existingShifts);
 
         return new SimulateScheduleResponse
         {
@@ -133,9 +143,11 @@ public class ScheduleSimulationService : IScheduleSimulationService
         return indicators;
     }
 
-    private static List<SimulationCandidateResult> CreateCandidateResults(
-    List<Employee> employees,
-    ScheduleAssignmentResult assignmentResult)
+    private List<SimulationCandidateResult> CreateCandidateResults(
+        List<Employee> employees,
+        ScheduleAssignmentResult assignmentResult,
+        Shift simulatedShift,
+        List<Shift> existingShifts)
     {
         return employees
             .Select(employee =>
@@ -147,17 +159,36 @@ public class ScheduleSimulationService : IScheduleSimulationService
 
                 var canBeAssigned = assignmentResult.EmployeeId == employee.Id;
 
+                var employeeShifts = existingShifts
+                    .Where(existingShift => existingShift.EmployeeId == employee.Id)
+                    .ToList();
+
+                var preferenceProfile = _preferenceProfileProvider.GetProfile(employee);
+
+                var preferenceScore = _preferenceScoreService.CalculateScoreAdjustment(
+                    preferenceProfile,
+                    simulatedShift,
+                    employeeShifts);
+
+                var baseScore = canBeAssigned ? 100 : 0;
+                var finalScore = baseScore + preferenceScore.ScoreAdjustment;
+
+                var reasons = canBeAssigned
+                    ? new List<string>()
+                    : employeeReasons;
+
+                reasons.AddRange(preferenceScore.Reasons);
+
                 return new SimulationCandidateResult
                 {
                     EmployeeId = employee.Id,
                     EmployeeName = employee.Name,
                     CanBeAssigned = canBeAssigned,
-                    Score = canBeAssigned ? 100 : 0,
-                    Reasons = canBeAssigned
-                        ? []
-                        : employeeReasons
+                    Score = finalScore,
+                    Reasons = reasons
                 };
             })
+            .OrderByDescending(candidate => candidate.Score)
             .ToList();
     }
 }
