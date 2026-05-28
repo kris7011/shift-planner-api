@@ -19,10 +19,11 @@ export type ShiftAssignmentAnalysisResponse = {
 const API_BASE_URL = "http://localhost:5026";
 
 export async function getShiftAssignmentAnalysis(
-    shiftId: string
+    shiftId: string,
+    maxAssignmentsPerEmployee: number
 ): Promise<ShiftAssignmentAnalysisResponse> {
     const response = await fetch(
-        `${API_BASE_URL}/api/shifts/${shiftId}/assignment-analysis`
+        `${API_BASE_URL}/api/shifts/${shiftId}/assignment-analysis?maxAssignmentsPerEmployee=${maxAssignmentsPerEmployee}`
     );
 
     if (!response.ok) {

@@ -310,7 +310,10 @@ function App() {
       setIsLoadingShiftAnalysis(true);
       setShiftAnalysisErrorMessage(null);
 
-      const analysis = await getShiftAssignmentAnalysis(shiftId);
+      const analysis = await getShiftAssignmentAnalysis(
+        shiftId,
+        maxAssignmentsPerEmployee
+      );
 
       setSelectedShiftAssignmentAnalysis(analysis);
     } catch {
