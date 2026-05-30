@@ -1230,3 +1230,63 @@ button:disabled {
   color: #526173;
   font-weight: 700;
 }
+
+.employee-preference-message {
+  margin-top: 1rem;
+  color: #526173;
+  font-weight: 700;
+}
+
+.employee-preference-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.employee-preference-card {
+  border: 1px solid #edf2f7;
+  border-radius: 16px;
+  padding: 18px;
+  background: #ffffff;
+}
+
+.employee-preference-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.employee-preference-card-header strong {
+  color: #111827;
+  font-size: 18px;
+}
+
+.employee-preference-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid #edf2f7;
+  padding: 12px 0;
+}
+
+.employee-preference-row:first-of-type {
+  border-top: 0;
+}
+
+.employee-preference-row span {
+  color: #526173;
+  font-weight: 700;
+}
+
+.employee-preference-row strong {
+  color: #172033;
+  text-align: right;
+}
+
+@media (max-width: 900px) {
+  .employee-preference-grid {
+    grid-template-columns: 1fr;
+  }
+}

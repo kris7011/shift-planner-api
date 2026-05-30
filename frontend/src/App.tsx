@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import {
+  getEmployeePreferenceProfiles,
+  type EmployeePreferenceProfileOverviewItem
+} from "./api/employeePreferenceProfilesApi";
+import {
   getShiftAssignmentAnalysis,
   type ShiftAssignmentAnalysisResponse
 } from "./api/shiftAssignmentAnalysisApi";
@@ -218,6 +222,29 @@ function translateLoadStatus(status: string) {
   }
 }
 
+function translatePreferenceShiftTypes(shiftTypes: string[]) {
+  if (shiftTypes.length === 0) {
+    return "Ingen";
+  }
+
+  return shiftTypes.map(translateShiftType).join(", ");
+}
+
+function describeWeekendPreference(
+  prefersWeekends: boolean,
+  avoidsWeekends: boolean
+) {
+  if (prefersWeekends) {
+    return "Foretrækker weekend";
+  }
+
+  if (avoidsWeekends) {
+    return "Undgår helst weekend";
+  }
+
+  return "Neutral";
+}
+
 function App() {
   const [overview, setOverview] = useState<ScheduleOverviewResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -269,6 +296,21 @@ function App() {
 
   const [maxAssignmentsPerEmployee, setMaxAssignmentsPerEmployee] = useState(5);
 
+  const [
+    employeePreferenceProfiles,
+    setEmployeePreferenceProfiles
+  ] = useState<EmployeePreferenceProfileOverviewItem[]>([]);
+
+  const [
+    isLoadingEmployeePreferenceProfiles,
+    setIsLoadingEmployeePreferenceProfiles
+  ] = useState(false);
+
+  const [
+    employeePreferenceProfilesErrorMessage,
+    setEmployeePreferenceProfilesErrorMessage
+  ] = useState<string | null>(null);
+
   async function loadOverview() {
     try {
       setIsLoading(true);
@@ -285,6 +327,23 @@ function App() {
       setErrorMessage("Kunne ikke hente vagtplanens overblik fra API'et.");
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function loadEmployeePreferenceProfiles() {
+    try {
+      setIsLoadingEmployeePreferenceProfiles(true);
+      setEmployeePreferenceProfilesErrorMessage(null);
+
+      const profiles = await getEmployeePreferenceProfiles();
+
+      setEmployeePreferenceProfiles(profiles);
+    } catch {
+      setEmployeePreferenceProfilesErrorMessage(
+        "Kunne ikke hente medarbejderpræferencer."
+      );
+    } finally {
+      setIsLoadingEmployeePreferenceProfiles(false);
     }
   }
 
@@ -382,6 +441,7 @@ function App() {
 
   useEffect(() => {
     loadOverview();
+    loadEmployeePreferenceProfiles();
   }, []);
 
   if (isLoading) {
@@ -927,6 +987,74 @@ function App() {
             </div>
           )}
         </article>
+
+        <section className="panel full-width-panel">
+          <div className="section-header">
+            <h2>Medarbejderpræferencer</h2>
+            <p>
+              Demo-profiler som viser, hvordan individuelle præferencer kan påvirke
+              kandidat-score i simulationen.
+            </p>
+          </div>
+
+          {isLoadingEmployeePreferenceProfiles && (
+            <p className="employee-preference-message">
+              Henter medarbejderpræferencer...
+            </p>
+          )}
+
+          {employeePreferenceProfilesErrorMessage && (
+            <p className="error-text">{employeePreferenceProfilesErrorMessage}</p>
+          )}
+
+          <div className="employee-preference-grid">
+            {employeePreferenceProfiles.map((profile) => (
+              <article
+                className="employee-preference-card"
+                key={profile.employeeId}
+              >
+                <div className="employee-preference-card-header">
+                  <strong>{profile.employeeName}</strong>
+                  <span className="badge low">Demo-profil</span>
+                </div>
+
+                <div className="employee-preference-row">
+                  <span>Foretrækker</span>
+                  <strong>
+                    {translatePreferenceShiftTypes(profile.preferredShiftTypes)}
+                  </strong>
+                </div>
+
+                <div className="employee-preference-row">
+                  <span>Undgår helst</span>
+                  <strong>
+                    {translatePreferenceShiftTypes(profile.dislikedShiftTypes)}
+                  </strong>
+                </div>
+
+                <div className="employee-preference-row">
+                  <span>Maks nattevagter</span>
+                  <strong>{profile.maxNightShifts ?? "Ikke sat"}</strong>
+                </div>
+
+                <div className="employee-preference-row">
+                  <span>Maks aftenvagter</span>
+                  <strong>{profile.maxEveningShifts ?? "Ikke sat"}</strong>
+                </div>
+
+                <div className="employee-preference-row">
+                  <span>Weekend</span>
+                  <strong>
+                    {describeWeekendPreference(
+                      profile.prefersWeekends,
+                      profile.avoidsWeekends
+                    )}
+                  </strong>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
 
         <SimulationPanel maxAssignmentsPerEmployee={maxAssignmentsPerEmployee} />
 
