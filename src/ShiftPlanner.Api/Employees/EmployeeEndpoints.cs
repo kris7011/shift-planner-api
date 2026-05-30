@@ -1,4 +1,5 @@
 using ShiftPlanner.Application.Employees;
+using ShiftPlanner.Application.Employees.Preferences;
 using ShiftPlanner.Application.Shifts;
 using ShiftPlanner.Domain.Employees;
 
@@ -64,6 +65,17 @@ public static class EmployeeEndpoints
             var overview = employeeLoadOverviewService.CreateOverview(
                 employees.ToList(),
                 shifts.ToList());
+
+            return Results.Ok(overview);
+        });
+
+        app.MapGet("/api/employees/preference-profiles", async (
+            IEmployeeRepository employeeRepository,
+            EmployeePreferenceProfileOverviewService overviewService) =>
+        {
+            var employees = await employeeRepository.GetAllAsync();
+
+            var overview = overviewService.CreateOverview(employees.ToList());
 
             return Results.Ok(overview);
         });
