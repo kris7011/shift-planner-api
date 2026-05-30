@@ -1,6 +1,8 @@
 # ShiftPlanner API
 
-A backend-focused workforce planning and scheduling system built with C# and .NET.
+A simplified portfolio version of a workforce planning and scheduling system built with C# and .NET.
+
+This repository demonstrates backend architecture, scheduling logic, testable business rules, API design, and frontend dashboard implementation using demo data.
 
 The project simulates healthcare-oriented workforce scheduling by combining:
 
@@ -13,6 +15,8 @@ The project simulates healthcare-oriented workforce scheduling by combining:
 - schedule overview insights
 - employee load overview
 - employee load details
+- employee preference profiles
+- preference-based candidate scoring
 - shift assignment analysis
 - skill gap identification
 - what-if schedule simulation
@@ -25,6 +29,9 @@ The solution is built using Clean Architecture principles with strong focus on:
 - testable business logic
 - scalable backend architecture
 - explainable scheduling pipelines
+- frontend decision support
+
+> This is a public portfolio version. It uses simplified demo logic and demo data to show technical implementation, architecture, testing, and UI capabilities.
 
 ---
 
@@ -53,6 +60,13 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Clickable employee workload rows
 - Selected employee row highlighting
 - Danish workload status labels
+- Employee preference profile model
+- Employee preference profile provider
+- Employee preference profile overview endpoint
+- Employee preference scoring
+- Preference-based simulation candidate scoring
+- Employee preference profiles in frontend dashboard
+- Danish preference reason explanations in simulation
 - Schedule overview endpoint
 - Skill gap overview for unassigned shifts
 - Skill capacity overview for department competencies
@@ -69,6 +83,8 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Simulation impact indicators for dashboard-ready what-if warnings
 - Simulation candidate results with employee-specific assignment explanations
 - Simulation candidate scoring
+- Configurable assignment limit
+- Shared assignment limit across schedule generation, simulation, and assignment analysis
 - Demo seed and reset endpoints for quick local testing
 - React frontend dashboard
 - Danish frontend UI
@@ -82,8 +98,6 @@ The solution is built using Clean Architecture principles with strong focus on:
 - GitHub Actions CI pipeline
 - Unit tested business logic
 - Scheduling rule context for extensible rule evaluation
-- Configurable assignment limit
-- Shared assignment limit across schedule generation, simulation, and assignment analysis
 
 ---
 
@@ -133,6 +147,7 @@ Contains:
 - enums
 - business rules
 - core scheduling concepts
+- employee preference profile model
 
 The Domain layer has no external dependencies.
 
@@ -150,6 +165,8 @@ Contains:
 - workload calculation services
 - employee load overview services
 - employee load details services
+- employee preference scoring services
+- employee preference profile overview services
 - overload detection services
 - orchestration logic
 - demo data seeding logic
@@ -197,12 +214,14 @@ Contains:
 - selected employee highlight
 - employee workload detail panel
 - shift-level load score explanation
+- employee preference profile cards
 - clickable unassigned shift cards
 - unassigned shift explanation panel
 - candidate-level assignment analysis
 - Danish assignment failure explanations
 - shift simulation panel
-- candidate scoring display
+- preference-based candidate scoring display
+- Danish preference reason explanations
 - configurable assignment limit control
 - shared assignment limit for scheduling, simulation, and assignment analysis
 
@@ -266,7 +285,7 @@ This creates a foundation for:
 
 - scheduling analytics
 - audit logging
-- explainable AI scheduling
+- explainable scheduling
 - frontend decision visibility
 - manager tooling
 
@@ -322,6 +341,50 @@ In the frontend, employee rows in the workload table are clickable. When a row i
 
 ---
 
+# Employee Preference Profiles
+
+The employee preference profile feature demonstrates how individual employee preferences can influence candidate scoring.
+
+A preference profile can include:
+
+- preferred shift types
+- disliked shift types
+- maximum preferred night shifts
+- maximum preferred evening shifts
+- weekend preference
+- weekend avoidance
+
+Example demo profiles:
+
+```text
+Henrik
+- Prefers Night shifts
+- Maximum preferred night shifts: 3
+
+Mette
+- Dislikes Night shifts
+- Maximum preferred night shifts: 1
+
+Peter
+- Prefers to avoid weekend shifts
+```
+
+Preference profiles are currently demo-based and read-only.
+
+They are used to adjust candidate scores in schedule simulation without acting as hard blocking rules.
+
+Example:
+
+```text
+Henrik prefers Night shifts.
+↓
+Henrik receives a positive score adjustment when a Night shift is simulated.
+```
+
+This keeps the system explainable while showing how individual preferences can support better workforce planning.
+
+---
+
 # Shift Assignment Analysis
 
 The shift assignment analysis feature explains why a shift can or cannot be covered.
@@ -350,6 +413,33 @@ In the frontend, unassigned shift cards are clickable. When a card is selected, 
 
 ---
 
+# Schedule Simulation
+
+The schedule simulation feature allows a potential shift to be tested before it is saved.
+
+It evaluates:
+
+- employee skills
+- scheduling rules
+- current assignments
+- assignment limits
+- employee preferences
+- candidate scores
+
+The simulation result includes:
+
+- whether the shift can be covered
+- risk level
+- suggested employee
+- impact summary
+- impact indicators
+- candidate-level scores
+- employee-specific reasons
+
+This makes it possible to test what-if scenarios without changing the actual schedule.
+
+---
+
 # Demo Data
 
 The demo dataset is designed to show a realistic healthcare-oriented scheduling scenario.
@@ -363,8 +453,9 @@ It includes:
 - assigned and unassigned shifts
 - CT, MRI, XR, and Night competencies
 - deliberate skill gaps for UL and Intervention
+- demo preference profiles for selected employees
 
-The deliberate skill gaps make it possible to demonstrate:
+The deliberate skill gaps and preference profiles make it possible to demonstrate:
 
 - uncovered required skills
 - capacity risk
@@ -372,6 +463,7 @@ The deliberate skill gaps make it possible to demonstrate:
 - shift assignment analysis
 - schedule simulation
 - candidate scoring
+- preference-based candidate scoring
 - employee workload distribution
 - employee load details
 - leadership-oriented decision support
@@ -454,6 +546,7 @@ Deletes all employees and shifts, then creates fresh demo data.
 POST /api/employees
 GET /api/employees
 GET /api/employees/load-overview
+GET /api/employees/preference-profiles
 GET /api/employees/{id}/load
 GET /api/employees/{id}/overload-status
 GET /api/employees/{id}/load-details
@@ -539,6 +632,55 @@ The response explains which assigned shifts contribute to the employee's total w
 
 ---
 
+## Employee Preference Profiles
+
+```http
+GET /api/employees/preference-profiles
+```
+
+Returns demo preference profiles for all employees.
+
+The response is ordered by employee name.
+
+### Example Response
+
+```json
+[
+  {
+    "employeeId": "guid",
+    "employeeName": "Henrik",
+    "preferredShiftTypes": ["Night"],
+    "dislikedShiftTypes": [],
+    "maxNightShifts": 3,
+    "maxEveningShifts": null,
+    "prefersWeekends": false,
+    "avoidsWeekends": false
+  },
+  {
+    "employeeId": "guid",
+    "employeeName": "Mette",
+    "preferredShiftTypes": [],
+    "dislikedShiftTypes": ["Night"],
+    "maxNightShifts": 1,
+    "maxEveningShifts": null,
+    "prefersWeekends": false,
+    "avoidsWeekends": false
+  },
+  {
+    "employeeId": "guid",
+    "employeeName": "Peter",
+    "preferredShiftTypes": [],
+    "dislikedShiftTypes": [],
+    "maxNightShifts": null,
+    "maxEveningShifts": null,
+    "prefersWeekends": false,
+    "avoidsWeekends": true
+  }
+]
+```
+
+---
+
 ## Shifts
 
 ```http
@@ -574,6 +716,7 @@ Generates schedule assignments based on:
 - workload balancing
 - scheduling rules
 - overload prevention
+- assignment limit
 
 ### Example Request
 
@@ -748,6 +891,12 @@ Returns an assignment analysis for a specific shift.
 
 The analysis explains whether the shift can be covered and why each employee can or cannot be assigned.
 
+The endpoint also supports assignment limit configuration:
+
+```http
+GET /api/shifts/{id}/assignment-analysis?maxAssignmentsPerEmployee=5
+```
+
 ### Example Response
 
 ```json
@@ -842,12 +991,12 @@ This is useful for what-if planning, capacity evaluation, and leadership decisio
 ```json
 {
   "canBeCovered": true,
-  "requiredSkill": "CT",
+  "requiredSkill": "Night",
   "riskLevel": "Low",
   "suggestedEmployeeId": "guid",
-  "suggestedEmployeeName": "Lars",
+  "suggestedEmployeeName": "Henrik",
   "failureReasons": [],
-  "impactSummary": "This shift can be covered by Lars with low scheduling risk.",
+  "impactSummary": "This shift can be covered by Henrik with low scheduling risk.",
   "impactIndicators": [
     {
       "type": "Coverage",
@@ -858,7 +1007,16 @@ This is useful for what-if planning, capacity evaluation, and leadership decisio
   "candidateResults": [
     {
       "employeeId": "guid",
-      "employeeName": "Lars",
+      "employeeName": "Henrik",
+      "canBeAssigned": true,
+      "score": 115,
+      "reasons": [
+        "Employee prefers Night shifts."
+      ]
+    },
+    {
+      "employeeId": "guid",
+      "employeeName": "Anna",
       "canBeAssigned": true,
       "score": 100,
       "reasons": []
@@ -923,6 +1081,7 @@ This creates:
 - weekday and weekend shifts
 - assigned and unassigned shifts
 - deliberate skill gaps for UL and Intervention
+- demo preference profiles for selected employees
 
 Then open the schedule overview:
 
@@ -934,6 +1093,12 @@ You can also inspect the employee load overview:
 
 ```bash
 curl http://localhost:5026/api/employees/load-overview
+```
+
+Or inspect employee preference profiles:
+
+```bash
+curl http://localhost:5026/api/employees/preference-profiles
 ```
 
 Or inspect load details for a specific employee:
@@ -976,7 +1141,7 @@ on every push to GitHub.
 
 # Test Status
 
-The solution currently includes 49 unit tests covering:
+The solution currently includes 59 unit tests covering:
 
 - Shift staffing rules
 - Skill validation
@@ -984,6 +1149,10 @@ The solution currently includes 49 unit tests covering:
 - Employee load aggregation
 - Employee load overview logic
 - Employee load details logic
+- Employee preference scoring logic
+- Employee preference profile provider logic
+- Employee preference profile overview logic
+- Preference-based simulation candidate scoring
 - Shift assignment analysis logic
 - Overload detection
 - Schedule generation
@@ -1028,6 +1197,8 @@ Click an employee row
 ↓
 Review employee load details
 ↓
+Review employee preference profiles
+↓
 Click "Generér vagtplan"
 ↓
 Review assigned and unassigned shifts
@@ -1038,7 +1209,7 @@ Review assignment analysis and candidate blocking reasons
 ↓
 Simulate a new shift
 ↓
-Review suggested employee and candidate scores
+Review suggested employee, preference reasons, and candidate scores
 ```
 
 ---
@@ -1059,6 +1230,24 @@ Candidate selection
 Assignment persistence
 ↓
 Updated database state
+```
+
+---
+
+# Example Preference Scoring Flow
+
+```text
+Employee
+↓
+Demo preference profile provider
+↓
+Preference scoring service
+↓
+Score adjustment and preference reasons
+↓
+Simulation candidate score
+↓
+Frontend explanation
 ```
 
 ---
@@ -1084,6 +1273,8 @@ Employee workload overview
 ↓
 Employee workload details
 ↓
+Employee preference profiles
+↓
 Shift assignment analysis
 ↓
 Leadership overview response
@@ -1101,6 +1292,8 @@ Simulation endpoint
 Scheduling engine
 ↓
 Rule evaluation
+↓
+Preference scoring
 ↓
 Coverage decision
 ↓
@@ -1135,22 +1328,49 @@ Return seed result
 
 ---
 
+# Public Portfolio Scope
+
+This repository is intended as a public portfolio project.
+
+It demonstrates:
+
+- Clean Architecture
+- API design
+- testable business logic
+- scheduling rules
+- explainable decisions
+- frontend dashboard design
+- TypeScript API clients
+- automated tests
+- CI pipeline
+
+It intentionally uses simplified demo logic and demo data.
+
+Advanced product logic, commercial algorithms, real-world configuration, and AI-driven analysis are outside the scope of this public version.
+
+---
+
 # Future Improvements
 
-- Weekly scheduling windows
-- Fairness balancing across departments
-- Employee preference profiles
-- Rest-time validation rules
-- Configurable scheduling policies
-- Weighted rule priorities
-- Scheduling analytics
-- Audit logging
-- CSV import/export
-- Authentication and authorization
+Public portfolio improvements could include:
+
 - Docker support
-- AI-assisted scheduling recommendations
-- More advanced recommendation scoring
-- Real historical workload analysis
+- improved OpenAPI documentation
+- better frontend component structure
+- screenshot-based README section
+- deployment instructions
+- authentication demonstration
+- CSV import/export demo
+
+Product-oriented improvements should be developed separately in a private repository, for example:
+
+- advanced workload modelling
+- individualized reference profiles
+- absence pattern analysis
+- AI-assisted leadership summaries
+- department-specific configuration
+- real schedule import mapping
+- commercial SaaS features
 
 ---
 
@@ -1165,6 +1385,8 @@ This project is designed as a backend and frontend portfolio project focused on:
 - extensible scheduling architecture
 - explainable scheduling decisions
 - employee workload visibility
+- employee preference visibility
+- preference-based candidate scoring
 - shift-level workload explanation
 - shift assignment explanation
 - leadership-oriented workforce planning insights
