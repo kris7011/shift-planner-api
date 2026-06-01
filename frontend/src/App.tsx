@@ -284,6 +284,10 @@ const dashboardPages: {
     }
   ];
 
+function getActivePageContent(activePage: DashboardPage) {
+  return dashboardPages.find((page) => page.key === activePage);
+}
+
 function App() {
   const [activePage, setActivePage] = useState<DashboardPage>("overview");
   const [overview, setOverview] = useState<ScheduleOverviewResponse | null>(null);
@@ -508,6 +512,7 @@ function App() {
   }
 
   const dashboardStatus = getDashboardStatus(overview);
+  const activePageContent = getActivePageContent(activePage);
 
   return (
     <main className="page">
@@ -576,6 +581,16 @@ function App() {
           </button>
         ))}
       </nav>
+
+      {activePageContent && (
+        <section className="active-page-header">
+          <div>
+            <span>Aktiv visning</span>
+            <h2>{activePageContent.label}</h2>
+            <p>{activePageContent.description}</p>
+          </div>
+        </section>
+      )}
 
       {statusMessage && <p className="status-message">{statusMessage}</p>}
 

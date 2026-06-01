@@ -1350,3 +1350,34 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 }
+
+.active-page-header {
+  margin-bottom: 24px;
+  border: 1px solid #dbe3ef;
+  border-radius: 20px;
+  padding: 22px 24px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+}
+
+.active-page-header span {
+  display: block;
+  margin-bottom: 8px;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.active-page-header h2 {
+  margin: 0;
+  color: #172033;
+  font-size: 30px;
+}
+
+.active-page-header p {
+  margin: 8px 0 0;
+  color: #526173;
+  line-height: 1.5;
+}
