@@ -245,7 +245,47 @@ function describeWeekendPreference(
   return "Neutral";
 }
 
+type DashboardPage =
+  | "overview"
+  | "schedule"
+  | "employees"
+  | "unassigned"
+  | "simulation";
+
+const dashboardPages: {
+  key: DashboardPage;
+  label: string;
+  description: string;
+}[] = [
+    {
+      key: "overview",
+      label: "Overblik",
+      description: "Status, risici og nøgletal"
+    },
+    {
+      key: "schedule",
+      label: "Ugeplan",
+      description: "Vagter fordelt på ugen"
+    },
+    {
+      key: "employees",
+      label: "Medarbejdere",
+      description: "Belastning og præferencer"
+    },
+    {
+      key: "unassigned",
+      label: "Ubesatte vagter",
+      description: "Forklaring og kandidater"
+    },
+    {
+      key: "simulation",
+      label: "Simulation",
+      description: "Test en tænkt vagt"
+    }
+  ];
+
 function App() {
+  const [activePage, setActivePage] = useState<DashboardPage>("overview");
   const [overview, setOverview] = useState<ScheduleOverviewResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -518,6 +558,24 @@ function App() {
           </button>
         </div>
       </header>
+
+      <nav className="dashboard-navigation" aria-label="Dashboard navigation">
+        {dashboardPages.map((page) => (
+          <button
+            className={
+              activePage === page.key
+                ? "dashboard-navigation-item active"
+                : "dashboard-navigation-item"
+            }
+            key={page.key}
+            onClick={() => setActivePage(page.key)}
+            type="button"
+          >
+            <span>{page.label}</span>
+            <small>{page.description}</small>
+          </button>
+        ))}
+      </nav>
 
       {statusMessage && <p className="status-message">{statusMessage}</p>}
 
