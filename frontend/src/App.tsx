@@ -1062,73 +1062,75 @@ function App() {
           </article>
         )}
 
-        <section className="panel full-width-panel">
-          <div className="section-header">
-            <h2>Medarbejderpræferencer</h2>
-            <p>
-              Demo-profiler som viser, hvordan individuelle præferencer kan påvirke
-              kandidat-score i simulationen.
-            </p>
-          </div>
+        {activePage === "employees" && (
+          <section className="panel full-width-panel">
+            <div className="section-header">
+              <h2>Medarbejderpræferencer</h2>
+              <p>
+                Demo-profiler som viser, hvordan individuelle præferencer kan påvirke
+                kandidat-score i simulationen.
+              </p>
+            </div>
 
-          {isLoadingEmployeePreferenceProfiles && (
-            <p className="employee-preference-message">
-              Henter medarbejderpræferencer...
-            </p>
-          )}
+            {isLoadingEmployeePreferenceProfiles && (
+              <p className="employee-preference-message">
+                Henter medarbejderpræferencer...
+              </p>
+            )}
 
-          {employeePreferenceProfilesErrorMessage && (
-            <p className="error-text">{employeePreferenceProfilesErrorMessage}</p>
-          )}
+            {employeePreferenceProfilesErrorMessage && (
+              <p className="error-text">{employeePreferenceProfilesErrorMessage}</p>
+            )}
 
-          <div className="employee-preference-grid">
-            {employeePreferenceProfiles.map((profile) => (
-              <article
-                className="employee-preference-card"
-                key={profile.employeeId}
-              >
-                <div className="employee-preference-card-header">
-                  <strong>{profile.employeeName}</strong>
-                  <span className="badge low">Demo-profil</span>
-                </div>
+            <div className="employee-preference-grid">
+              {employeePreferenceProfiles.map((profile) => (
+                <article
+                  className="employee-preference-card"
+                  key={profile.employeeId}
+                >
+                  <div className="employee-preference-card-header">
+                    <strong>{profile.employeeName}</strong>
+                    <span className="badge low">Demo-profil</span>
+                  </div>
 
-                <div className="employee-preference-row">
-                  <span>Foretrækker</span>
-                  <strong>
-                    {translatePreferenceShiftTypes(profile.preferredShiftTypes)}
-                  </strong>
-                </div>
+                  <div className="employee-preference-row">
+                    <span>Foretrækker</span>
+                    <strong>
+                      {translatePreferenceShiftTypes(profile.preferredShiftTypes)}
+                    </strong>
+                  </div>
 
-                <div className="employee-preference-row">
-                  <span>Undgår helst</span>
-                  <strong>
-                    {translatePreferenceShiftTypes(profile.dislikedShiftTypes)}
-                  </strong>
-                </div>
+                  <div className="employee-preference-row">
+                    <span>Undgår helst</span>
+                    <strong>
+                      {translatePreferenceShiftTypes(profile.dislikedShiftTypes)}
+                    </strong>
+                  </div>
 
-                <div className="employee-preference-row">
-                  <span>Maks nattevagter</span>
-                  <strong>{profile.maxNightShifts ?? "Ikke sat"}</strong>
-                </div>
+                  <div className="employee-preference-row">
+                    <span>Maks nattevagter</span>
+                    <strong>{profile.maxNightShifts ?? "Ikke sat"}</strong>
+                  </div>
 
-                <div className="employee-preference-row">
-                  <span>Maks aftenvagter</span>
-                  <strong>{profile.maxEveningShifts ?? "Ikke sat"}</strong>
-                </div>
+                  <div className="employee-preference-row">
+                    <span>Maks aftenvagter</span>
+                    <strong>{profile.maxEveningShifts ?? "Ikke sat"}</strong>
+                  </div>
 
-                <div className="employee-preference-row">
-                  <span>Weekend</span>
-                  <strong>
-                    {describeWeekendPreference(
-                      profile.prefersWeekends,
-                      profile.avoidsWeekends
-                    )}
-                  </strong>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
+                  <div className="employee-preference-row">
+                    <span>Weekend</span>
+                    <strong>
+                      {describeWeekendPreference(
+                        profile.prefersWeekends,
+                        profile.avoidsWeekends
+                      )}
+                    </strong>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
 
         {activePage === "simulation" && (
           <SimulationPanel maxAssignmentsPerEmployee={maxAssignmentsPerEmployee} />
