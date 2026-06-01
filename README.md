@@ -36,6 +36,14 @@ The solution is built using Clean Architecture principles with strong focus on:
 
 ---
 
+# Portfolio Highlights
+
+- Built with .NET 9, Clean Architecture, EF Core, SQLite, React, and TypeScript
+- Includes rule-based schedule generation, workload scoring, preference scoring, and what-if simulation
+- Provides explainable scheduling decisions and candidate-level failure reasons
+- Includes a Danish multi-view dashboard for overview, weekly schedule, employees, unassigned shifts, and simulation
+- Covered by 59 unit tests and a GitHub Actions CI pipeline
+
 # Features
 
 * Employee persistence with EF Core and SQLite
