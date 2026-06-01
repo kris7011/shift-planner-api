@@ -306,6 +306,46 @@ The simulation page shows:
 
 ---
 
+# Screenshots
+
+## Overview Status
+
+![Overview status](docs/images/overview-status.png)
+
+## Risk Indicators
+
+![Risk indicators](docs/images/overview-risk.png)
+
+## Capacity and Skill Overview
+
+![Capacity and skill overview](docs/images/overview-other.png)
+
+## Weekly Schedule
+
+![Weekly schedule](docs/images/weekly-schedule.png)
+
+## Employee Workload
+
+![Employee workload](docs/images/employees-load.png)
+
+## Employee Preferences
+
+![Employee preferences](docs/images/employees-preferences.png)
+
+## Unassigned Shift Analysis
+
+![Unassigned shift analysis](docs/images/unassigned-analysis.png)
+
+## Simulation
+
+![Simulation](docs/images/simulation.png)
+
+## Simulation Candidates
+
+![Simulation candidates](docs/images/simulation-candidates.png)
+
+---
+
 # Scheduling Engine
 
 The scheduling engine uses a rule-based architecture where each scheduling rule is isolated into its own class.
