@@ -579,7 +579,7 @@ function App() {
 
       {statusMessage && <p className="status-message">{statusMessage}</p>}
 
-      {generationResult && (
+      {activePage === "schedule" && generationResult && (
         <section className="generation-result-panel">
           <div className="generation-result-header">
             <div>
@@ -656,395 +656,411 @@ function App() {
         </section>
       )}
 
-      <section className={`status-banner ${dashboardStatus.className}`}>
-        <div>
-          <span>Aktuel status</span>
-          <strong>{dashboardStatus.title}</strong>
-          <p>{dashboardStatus.description}</p>
-        </div>
+      {activePage === "overview" && (
+        <>
+          <section className={`status-banner ${dashboardStatus.className}`}>
+            <div>
+              <span>Aktuel status</span>
+              <strong>{dashboardStatus.title}</strong>
+              <p>{dashboardStatus.description}</p>
+            </div>
 
-        <div className="status-banner-metrics">
-          <span>{overview.coverageRate}% dækket</span>
-          <span>{overview.unassignedShifts} ubesatte vagter</span>
-          <span>
-            {overview.capacitySummary.criticalSkillGaps} kritiske kompetencegab
-          </span>
-        </div>
-      </section>
+            <div className="status-banner-metrics">
+              <span>{overview.coverageRate}% dækket</span>
+              <span>{overview.unassignedShifts} ubesatte vagter</span>
+              <span>
+                {overview.capacitySummary.criticalSkillGaps} kritiske kompetencegab
+              </span>
+            </div>
+          </section>
 
-      <section className="summary-grid">
-        <article className="summary-card">
-          <span>Dækningsgrad</span>
-          <strong>{overview.coverageRate}%</strong>
-        </article>
+          <section className="summary-grid">
+            <article className="summary-card">
+              <span>Dækningsgrad</span>
+              <strong>{overview.coverageRate}%</strong>
+            </article>
 
-        <article className="summary-card">
-          <span>Medarbejdere</span>
-          <strong>{overview.employeeCount}</strong>
-        </article>
+            <article className="summary-card">
+              <span>Medarbejdere</span>
+              <strong>{overview.employeeCount}</strong>
+            </article>
 
-        <article className="summary-card">
-          <span>Tildelte vagter</span>
-          <strong>{overview.assignedShifts}</strong>
-        </article>
+            <article className="summary-card">
+              <span>Tildelte vagter</span>
+              <strong>{overview.assignedShifts}</strong>
+            </article>
 
-        <article className="summary-card warning">
-          <span>Ubesatte vagter</span>
-          <strong>{overview.unassignedShifts}</strong>
-        </article>
-      </section>
+            <article className="summary-card warning">
+              <span>Ubesatte vagter</span>
+              <strong>{overview.unassignedShifts}</strong>
+            </article>
+          </section>
+        </>
+      )}
 
       <section className="content-grid">
-        <article className="panel">
-          <h2>Kapacitetsoversigt</h2>
+        {activePage === "overview" && (
+          <>
+            <article className="panel">
+              <h2>Kapacitetsoversigt</h2>
 
-          <div className="metric-row">
-            <span>Registrerede kompetencer</span>
-            <strong>{overview.capacitySummary.totalSkills}</strong>
-          </div>
-
-          <div className="metric-row">
-            <span>Manglende krævede kompetencer</span>
-            <strong>{overview.capacitySummary.missingRequiredSkills}</strong>
-          </div>
-
-          <div className="metric-row">
-            <span>Kritiske kompetencegab</span>
-            <strong>{overview.capacitySummary.criticalSkillGaps}</strong>
-          </div>
-        </article>
-
-        <article className="panel">
-          <h2>Risikoindikatorer</h2>
-
-          {overview.riskIndicators.length === 0 ? (
-            <p>Der er ingen aktuelle risikoindikatorer.</p>
-          ) : (
-            <div className="list">
-              {overview.riskIndicators.map((indicator, index) => (
-                <div className="list-item" key={`${indicator.type}-${index}`}>
-                  <div>
-                    <strong>{translateRiskType(indicator.type)}</strong>
-                    <p>{translateRiskMessage(indicator.message)}</p>
-                  </div>
-
-                  <span className={`badge ${indicator.severity.toLowerCase()}`}>
-                    {translateRiskLevel(indicator.severity)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </article>
-
-        <article className="panel">
-          <h2>Manglende kompetencer</h2>
-
-          {overview.uncoveredRequiredSkills.length === 0 ? (
-            <p>Alle krævede kompetencer er dækket.</p>
-          ) : (
-            <div className="list">
-              {overview.uncoveredRequiredSkills.map((skill) => (
-                <div className="list-item" key={skill.skill}>
-                  <div>
-                    <strong>{skill.skill}</strong>
-                    <p>
-                      Kræves af {skill.requiredByUnassignedShifts} ubesat vagt.
-                    </p>
-                  </div>
-
-                  <span className="badge high">
-                    {skill.availableEmployees} tilgængelige
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </article>
-
-        <article className="panel">
-          <h2>Kompetencekapacitet</h2>
-
-          <div className="list">
-            {overview.skillCapacity.map((skill) => (
-              <div className="list-item" key={skill.skill}>
-                <strong>{skill.skill}</strong>
-                <span>{skill.employeeCount} medarbejder(e)</span>
-              </div>
-            ))}
-          </div>
-        </article>
-
-        <WeeklyScheduleTable refreshKey={scheduleRefreshKey} />
-
-        <article className="panel full-width-panel">
-          <div className="panel-header">
-            <div>
-              <h2>Belastning pr. medarbejder</h2>
-              <p>
-                Overblik over samlet belastningsscore, kompetencer og aktuel
-                belastningsstatus.
-              </p>
-
-              <div className="employee-load-summary">
-                <div className="employee-load-summary-card">
-                  <span>Høj belastning</span>
-                  <strong>{highLoadEmployeeCount}</strong>
-                </div>
-
-                <div className="employee-load-summary-card">
-                  <span>Mellem belastning</span>
-                  <strong>{mediumLoadEmployeeCount}</strong>
-                </div>
-
-                <div className="employee-load-summary-card">
-                  <span>Lav belastning</span>
-                  <strong>{lowLoadEmployeeCount}</strong>
-                </div>
-
-                <div className="employee-load-summary-card">
-                  <span>Gennemsnitlig score</span>
-                  <strong>{averageLoadScore.toFixed(1).replace(".", ",")}</strong>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {employeeLoadOverview.length === 0 ? (
-            <p>Der er ingen medarbejderbelastning at vise.</p>
-          ) : (
-            <div className="employee-load-table-wrapper">
-              <table className="employee-load-table">
-                <thead>
-                  <tr>
-                    <th>Medarbejder</th>
-                    <th>Kompetencer</th>
-                    <th>Belastningsscore</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {employeeLoadOverview.map((employee) => (
-                    <tr
-                      className={`clickable-row ${selectedEmployeeLoadDetails?.employeeId === employee.employeeId
-                        ? "selected-row"
-                        : ""
-                        }`}
-                      key={employee.employeeId}
-                      onClick={() => handleEmployeeLoadClick(employee.employeeId)}
-                    >
-                      <td>
-                        <strong>{employee.employeeName}</strong>
-                      </td>
-
-                      <td>
-                        <div className="skill-chip-list">
-                          {employee.skills.map((skill) => (
-                            <span className="skill-chip" key={`${employee.employeeId}-${skill}`}>
-                              {skill}
-                            </span>
-                          ))}
-                        </div>
-                      </td>
-
-                      <td>
-                        <strong>{employee.totalLoad}</strong>
-                      </td>
-
-                      <td>
-                        <span className={`badge ${employee.loadStatus.toLowerCase()}`}>
-                          {translateLoadStatus(employee.loadStatus)}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {isLoadingEmployeeDetails && (
-            <p className="employee-load-details-message">
-              Henter belastningsdetaljer...
-            </p>
-          )}
-
-          {employeeDetailsErrorMessage && (
-            <p className="error-text">{employeeDetailsErrorMessage}</p>
-          )}
-
-          {selectedEmployeeLoadDetails && (
-            <div className="employee-load-details-panel">
-              <div className="employee-load-details-header">
-                <div>
-                  <span>Valgt medarbejder</span>
-                  <h3>{selectedEmployeeLoadDetails.employeeName}</h3>
-                  <p>
-                    Samlet belastningsscore:{" "}
-                    <strong>{selectedEmployeeLoadDetails.totalLoad}</strong>
-                  </p>
-                </div>
-
-                <span
-                  className={`badge ${selectedEmployeeLoadDetails.loadStatus.toLowerCase()}`}
-                >
-                  {translateLoadStatus(selectedEmployeeLoadDetails.loadStatus)}
-                </span>
+              <div className="metric-row">
+                <span>Registrerede kompetencer</span>
+                <strong>{overview.capacitySummary.totalSkills}</strong>
               </div>
 
-              {selectedEmployeeLoadDetails.assignedShifts.length === 0 ? (
-                <p>Medarbejderen har ingen tildelte vagter i den aktuelle plan.</p>
+              <div className="metric-row">
+                <span>Manglende krævede kompetencer</span>
+                <strong>{overview.capacitySummary.missingRequiredSkills}</strong>
+              </div>
+
+              <div className="metric-row">
+                <span>Kritiske kompetencegab</span>
+                <strong>{overview.capacitySummary.criticalSkillGaps}</strong>
+              </div>
+            </article>
+
+            <article className="panel">
+              <h2>Risikoindikatorer</h2>
+
+              {overview.riskIndicators.length === 0 ? (
+                <p>Der er ingen aktuelle risikoindikatorer.</p>
               ) : (
-                <div className="employee-load-details-list">
-                  {selectedEmployeeLoadDetails.assignedShifts.map((shift) => (
-                    <div className="employee-load-details-item" key={shift.shiftId}>
+                <div className="list">
+                  {overview.riskIndicators.map((indicator, index) => (
+                    <div className="list-item" key={`${indicator.type}-${index}`}>
                       <div>
-                        <strong>{shift.date}</strong>
-                        <p>
-                          {translateShiftType(shift.shiftType)} · {shift.requiredSkill}
-                        </p>
+                        <strong>{translateRiskType(indicator.type)}</strong>
+                        <p>{translateRiskMessage(indicator.message)}</p>
                       </div>
 
-                      <span>Score {shift.loadScore}</span>
+                      <span className={`badge ${indicator.severity.toLowerCase()}`}>
+                        {translateRiskLevel(indicator.severity)}
+                      </span>
                     </div>
                   ))}
                 </div>
               )}
-            </div>
-          )}
-        </article>
+            </article>
 
-        <article className="panel full-width-panel">
-          <h2>Ubesatte vagter</h2>
+            <article className="panel">
+              <h2>Manglende kompetencer</h2>
 
-          {overview.unassignedShiftDetails.length === 0 ? (
-            <p>Der er ingen ubesatte vagter.</p>
-          ) : (
-            <div className="unassigned-shift-list">
-              {overview.unassignedShiftDetails.map((shift) => (
-                <div
-                  className={`unassigned-shift-card clickable-card ${selectedShiftAssignmentAnalysis?.shiftId === shift.shiftId
-                    ? "selected-card"
-                    : ""
-                    }`}
-                  key={shift.shiftId}
-                  onClick={() => handleUnassignedShiftClick(shift.shiftId)}
-                >
-                  <div className="unassigned-shift-header">
-                    <div>
-                      <strong>{formatDate(shift.date)}</strong>
-                      <p>
-                        {translateShiftType(shift.shiftType)} · Kræver{" "}
-                        {shift.requiredSkill}
-                      </p>
-                    </div>
-
-                    <span className="badge high">Ubesat</span>
-                  </div>
-
-                  {shift.failureReasons.length > 0 && (
-                    <div className="failure-reasons">
-                      <span>Årsager</span>
-
-                      <ul>
-                        {shift.failureReasons.slice(0, 3).map((reason, index) => (
-                          <li key={`${shift.shiftId}-${index}`}>
-                            {translateFailureReason(reason)}
-                          </li>
-                        ))}
-                      </ul>
-
-                      {shift.failureReasons.length > 3 && (
-                        <p className="more-reasons">
-                          + {shift.failureReasons.length - 3} flere årsager
+              {overview.uncoveredRequiredSkills.length === 0 ? (
+                <p>Alle krævede kompetencer er dækket.</p>
+              ) : (
+                <div className="list">
+                  {overview.uncoveredRequiredSkills.map((skill) => (
+                    <div className="list-item" key={skill.skill}>
+                      <div>
+                        <strong>{skill.skill}</strong>
+                        <p>
+                          Kræves af {skill.requiredByUnassignedShifts} ubesat vagt.
                         </p>
-                      )}
+                      </div>
+
+                      <span className="badge high">
+                        {skill.availableEmployees} tilgængelige
+                      </span>
                     </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {isLoadingShiftAnalysis && (
-            <p className="shift-analysis-message">
-              Henter forklaring for ubesat vagt...
-            </p>
-          )}
-
-          {shiftAnalysisErrorMessage && (
-            <p className="error-text">{shiftAnalysisErrorMessage}</p>
-          )}
-
-          {selectedShiftAssignmentAnalysis && (
-            <div className="shift-analysis-panel">
-              <div className="shift-analysis-header">
-                <div>
-                  <span>Valgt ubesat vagt</span>
-                  <h3>
-                    {translateShiftType(selectedShiftAssignmentAnalysis.shiftType)} ·{" "}
-                    {selectedShiftAssignmentAnalysis.requiredSkill}
-                  </h3>
-                  <p>{selectedShiftAssignmentAnalysis.date}</p>
-                </div>
-
-                <span
-                  className={`badge ${selectedShiftAssignmentAnalysis.canBeCovered ? "low" : "high"
-                    }`}
-                >
-                  {selectedShiftAssignmentAnalysis.canBeCovered
-                    ? "Kan dækkes"
-                    : "Kan ikke dækkes"}
-                </span>
-              </div>
-
-              <div className="shift-analysis-summary">
-                <strong>Overordnet forklaring</strong>
-
-                <ul>
-                  {selectedShiftAssignmentAnalysis.summaryReasons.map((reason) => (
-                    <li key={reason}>{translateAssignmentReason(reason)}</li>
                   ))}
-                </ul>
-              </div>
+                </div>
+              )}
+            </article>
 
-              <div className="shift-analysis-candidates">
-                <h4>Kandidater</h4>
+            <article className="panel">
+              <h2>Kompetencekapacitet</h2>
 
-                {selectedShiftAssignmentAnalysis.candidateResults.map((candidate) => (
-                  <div
-                    className="shift-analysis-candidate"
-                    key={candidate.employeeId}
-                  >
-                    <div>
-                      <strong>{candidate.employeeName}</strong>
-
-                      {candidate.reasons.length === 0 ? (
-                        <p>Kan tage vagten.</p>
-                      ) : (
-                        <ul>
-                          {candidate.reasons.map((reason) => (
-                            <li key={`${candidate.employeeId}-${reason}`}>
-                              {translateAssignmentReason(reason)}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-
-                    <span
-                      className={`badge ${candidate.canBeAssigned ? "low" : "high"
-                        }`}
-                    >
-                      {candidate.canBeAssigned ? "Mulig" : "Blokeret"}
-                    </span>
+              <div className="list">
+                {overview.skillCapacity.map((skill) => (
+                  <div className="list-item" key={skill.skill}>
+                    <strong>{skill.skill}</strong>
+                    <span>{skill.employeeCount} medarbejder(e)</span>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-        </article>
+            </article>
+          </>
+        )}
+
+        {activePage === "schedule" && (
+          <WeeklyScheduleTable refreshKey={scheduleRefreshKey} />
+        )}
+
+        {activePage === "employees" && (
+          <>
+            <article className="panel full-width-panel">
+              <div className="panel-header">
+                <div>
+                  <h2>Belastning pr. medarbejder</h2>
+                  <p>
+                    Overblik over samlet belastningsscore, kompetencer og aktuel
+                    belastningsstatus.
+                  </p>
+
+                  <div className="employee-load-summary">
+                    <div className="employee-load-summary-card">
+                      <span>Høj belastning</span>
+                      <strong>{highLoadEmployeeCount}</strong>
+                    </div>
+
+                    <div className="employee-load-summary-card">
+                      <span>Mellem belastning</span>
+                      <strong>{mediumLoadEmployeeCount}</strong>
+                    </div>
+
+                    <div className="employee-load-summary-card">
+                      <span>Lav belastning</span>
+                      <strong>{lowLoadEmployeeCount}</strong>
+                    </div>
+
+                    <div className="employee-load-summary-card">
+                      <span>Gennemsnitlig score</span>
+                      <strong>{averageLoadScore.toFixed(1).replace(".", ",")}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {employeeLoadOverview.length === 0 ? (
+                <p>Der er ingen medarbejderbelastning at vise.</p>
+              ) : (
+                <div className="employee-load-table-wrapper">
+                  <table className="employee-load-table">
+                    <thead>
+                      <tr>
+                        <th>Medarbejder</th>
+                        <th>Kompetencer</th>
+                        <th>Belastningsscore</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {employeeLoadOverview.map((employee) => (
+                        <tr
+                          className={`clickable-row ${selectedEmployeeLoadDetails?.employeeId === employee.employeeId
+                            ? "selected-row"
+                            : ""
+                            }`}
+                          key={employee.employeeId}
+                          onClick={() => handleEmployeeLoadClick(employee.employeeId)}
+                        >
+                          <td>
+                            <strong>{employee.employeeName}</strong>
+                          </td>
+
+                          <td>
+                            <div className="skill-chip-list">
+                              {employee.skills.map((skill) => (
+                                <span className="skill-chip" key={`${employee.employeeId}-${skill}`}>
+                                  {skill}
+                                </span>
+                              ))}
+                            </div>
+                          </td>
+
+                          <td>
+                            <strong>{employee.totalLoad}</strong>
+                          </td>
+
+                          <td>
+                            <span className={`badge ${employee.loadStatus.toLowerCase()}`}>
+                              {translateLoadStatus(employee.loadStatus)}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {isLoadingEmployeeDetails && (
+                <p className="employee-load-details-message">
+                  Henter belastningsdetaljer...
+                </p>
+              )}
+
+              {employeeDetailsErrorMessage && (
+                <p className="error-text">{employeeDetailsErrorMessage}</p>
+              )}
+
+              {selectedEmployeeLoadDetails && (
+                <div className="employee-load-details-panel">
+                  <div className="employee-load-details-header">
+                    <div>
+                      <span>Valgt medarbejder</span>
+                      <h3>{selectedEmployeeLoadDetails.employeeName}</h3>
+                      <p>
+                        Samlet belastningsscore:{" "}
+                        <strong>{selectedEmployeeLoadDetails.totalLoad}</strong>
+                      </p>
+                    </div>
+
+                    <span
+                      className={`badge ${selectedEmployeeLoadDetails.loadStatus.toLowerCase()}`}
+                    >
+                      {translateLoadStatus(selectedEmployeeLoadDetails.loadStatus)}
+                    </span>
+                  </div>
+
+                  {selectedEmployeeLoadDetails.assignedShifts.length === 0 ? (
+                    <p>Medarbejderen har ingen tildelte vagter i den aktuelle plan.</p>
+                  ) : (
+                    <div className="employee-load-details-list">
+                      {selectedEmployeeLoadDetails.assignedShifts.map((shift) => (
+                        <div className="employee-load-details-item" key={shift.shiftId}>
+                          <div>
+                            <strong>{shift.date}</strong>
+                            <p>
+                              {translateShiftType(shift.shiftType)} · {shift.requiredSkill}
+                            </p>
+                          </div>
+
+                          <span>Score {shift.loadScore}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </article>
+          </>
+        )}
+
+        {activePage === "unassigned" && (
+          <article className="panel full-width-panel">
+            <h2>Ubesatte vagter</h2>
+
+            {overview.unassignedShiftDetails.length === 0 ? (
+              <p>Der er ingen ubesatte vagter.</p>
+            ) : (
+              <div className="unassigned-shift-list">
+                {overview.unassignedShiftDetails.map((shift) => (
+                  <div
+                    className={`unassigned-shift-card clickable-card ${selectedShiftAssignmentAnalysis?.shiftId === shift.shiftId
+                      ? "selected-card"
+                      : ""
+                      }`}
+                    key={shift.shiftId}
+                    onClick={() => handleUnassignedShiftClick(shift.shiftId)}
+                  >
+                    <div className="unassigned-shift-header">
+                      <div>
+                        <strong>{formatDate(shift.date)}</strong>
+                        <p>
+                          {translateShiftType(shift.shiftType)} · Kræver{" "}
+                          {shift.requiredSkill}
+                        </p>
+                      </div>
+
+                      <span className="badge high">Ubesat</span>
+                    </div>
+
+                    {shift.failureReasons.length > 0 && (
+                      <div className="failure-reasons">
+                        <span>Årsager</span>
+
+                        <ul>
+                          {shift.failureReasons.slice(0, 3).map((reason, index) => (
+                            <li key={`${shift.shiftId}-${index}`}>
+                              {translateFailureReason(reason)}
+                            </li>
+                          ))}
+                        </ul>
+
+                        {shift.failureReasons.length > 3 && (
+                          <p className="more-reasons">
+                            + {shift.failureReasons.length - 3} flere årsager
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {isLoadingShiftAnalysis && (
+              <p className="shift-analysis-message">
+                Henter forklaring for ubesat vagt...
+              </p>
+            )}
+
+            {shiftAnalysisErrorMessage && (
+              <p className="error-text">{shiftAnalysisErrorMessage}</p>
+            )}
+
+            {selectedShiftAssignmentAnalysis && (
+              <div className="shift-analysis-panel">
+                <div className="shift-analysis-header">
+                  <div>
+                    <span>Valgt ubesat vagt</span>
+                    <h3>
+                      {translateShiftType(selectedShiftAssignmentAnalysis.shiftType)} ·{" "}
+                      {selectedShiftAssignmentAnalysis.requiredSkill}
+                    </h3>
+                    <p>{selectedShiftAssignmentAnalysis.date}</p>
+                  </div>
+
+                  <span
+                    className={`badge ${selectedShiftAssignmentAnalysis.canBeCovered ? "low" : "high"
+                      }`}
+                  >
+                    {selectedShiftAssignmentAnalysis.canBeCovered
+                      ? "Kan dækkes"
+                      : "Kan ikke dækkes"}
+                  </span>
+                </div>
+
+                <div className="shift-analysis-summary">
+                  <strong>Overordnet forklaring</strong>
+
+                  <ul>
+                    {selectedShiftAssignmentAnalysis.summaryReasons.map((reason) => (
+                      <li key={reason}>{translateAssignmentReason(reason)}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="shift-analysis-candidates">
+                  <h4>Kandidater</h4>
+
+                  {selectedShiftAssignmentAnalysis.candidateResults.map((candidate) => (
+                    <div
+                      className="shift-analysis-candidate"
+                      key={candidate.employeeId}
+                    >
+                      <div>
+                        <strong>{candidate.employeeName}</strong>
+
+                        {candidate.reasons.length === 0 ? (
+                          <p>Kan tage vagten.</p>
+                        ) : (
+                          <ul>
+                            {candidate.reasons.map((reason) => (
+                              <li key={`${candidate.employeeId}-${reason}`}>
+                                {translateAssignmentReason(reason)}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+
+                      <span
+                        className={`badge ${candidate.canBeAssigned ? "low" : "high"
+                          }`}
+                      >
+                        {candidate.canBeAssigned ? "Mulig" : "Blokeret"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </article>
+        )}
 
         <section className="panel full-width-panel">
           <div className="section-header">
@@ -1114,7 +1130,9 @@ function App() {
           </div>
         </section>
 
-        <SimulationPanel maxAssignmentsPerEmployee={maxAssignmentsPerEmployee} />
+        {activePage === "simulation" && (
+          <SimulationPanel maxAssignmentsPerEmployee={maxAssignmentsPerEmployee} />
+        )}
 
       </section>
     </main>
