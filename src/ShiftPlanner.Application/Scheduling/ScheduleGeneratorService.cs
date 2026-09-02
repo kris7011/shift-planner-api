@@ -8,7 +8,6 @@ namespace ShiftPlanner.Application.Scheduling;
 public class ScheduleGeneratorService : IScheduleGeneratorService
 {
     private readonly IEmployeeLoadService _employeeLoadService;
-
     private readonly IEnumerable<ISchedulingRule> _rules;
 
     public ScheduleGeneratorService(
@@ -20,10 +19,10 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
     }
 
     public List<ScheduleAssignmentResult> Generate(
-    List<Employee> employees,
-    List<Shift> openShifts,
-    List<Shift> existingShifts,
-    int maxAssignmentsPerEmployee)
+        List<Employee> employees,
+        List<Shift> openShifts,
+        List<Shift> existingShifts,
+        int maxAssignmentsPerEmployee)
     {
         var results = new List<ScheduleAssignmentResult>();
         var plannedShifts = new List<Shift>(existingShifts);
@@ -35,54 +34,6 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
                 shift,
                 plannedShifts,
                 maxAssignmentsPerEmployee);
-
-            foreach (var employee in employees)
-            {
-                var evaluation = new CandidateEvaluation
-                {
-                    Employee = employee,
-                    CanAssign = true
-                };
-
-                if (!employee.HasSkill(shift.RequiredSkill))
-                {
-                    evaluation.CanAssign = false;
-                    evaluation.FailureReasons.Add(
-                        $"{employee.Name}: Missing required skill '{shift.RequiredSkill}'.");
-
-                    evaluations.Add(evaluation);
-
-                    continue;
-                }
-
-                var context = new SchedulingRuleContext
-                {
-                    Employee = employee,
-                    Shift = shift,
-                    PlannedShifts = plannedShifts,
-                    MaxAssignmentsPerEmployee = maxAssignmentsPerEmployee
-                };
-
-                var ruleResults = _rules
-                    .Select(rule => rule.Evaluate(context))
-                    .ToList();
-
-                var failedRules = ruleResults
-                    .Where(result => !result.Success)
-                    .ToList();
-
-                if (failedRules.Count > 0)
-                {
-                    evaluation.CanAssign = false;
-
-                    evaluation.FailureReasons.AddRange(
-                        failedRules
-                            .Where(result => !string.IsNullOrWhiteSpace(result.FailureReason))
-                            .Select(result => $"{employee.Name}: {result.FailureReason}"));
-                }
-
-                evaluations.Add(evaluation);
-            }
 
             var matchingEmployee = SelectBestCandidate(
                 evaluations,
@@ -104,10 +55,10 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
     }
 
     private List<CandidateEvaluation> EvaluateCandidates(
-    List<Employee> employees,
-    Shift shift,
-    List<Shift> plannedShifts,
-    int maxAssignmentsPerEmployee)
+        List<Employee> employees,
+        Shift shift,
+        List<Shift> plannedShifts,
+        int maxAssignmentsPerEmployee)
     {
         var evaluations = new List<CandidateEvaluation>();
 
@@ -126,7 +77,6 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
                     $"{employee.Name}: Missing required skill '{shift.RequiredSkill}'.");
 
                 evaluations.Add(evaluation);
-
                 continue;
             }
 
@@ -152,8 +102,10 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
 
                 evaluation.FailureReasons.AddRange(
                     failedRules
-                        .Where(result => !string.IsNullOrWhiteSpace(result.FailureReason))
-                        .Select(result => $"{employee.Name}: {result.FailureReason}"));
+                        .Where(result =>
+                            !string.IsNullOrWhiteSpace(result.FailureReason))
+                        .Select(result =>
+                            $"{employee.Name}: {result.FailureReason}"));
             }
 
             evaluations.Add(evaluation);
@@ -163,8 +115,8 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
     }
 
     private Employee? SelectBestCandidate(
-    List<CandidateEvaluation> evaluations,
-    List<Shift> plannedShifts)
+        List<CandidateEvaluation> evaluations,
+        List<Shift> plannedShifts)
     {
         return evaluations
             .Where(evaluation => evaluation.CanAssign)
@@ -172,7 +124,7 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
             .OrderBy(employee =>
             {
                 var employeeShifts = plannedShifts
-                    .Where(existingShift => existingShift.EmployeeId == employee.Id)
+                    .Where(shift => shift.EmployeeId == employee.Id)
                     .ToList();
 
                 return _employeeLoadService.CalculateLoad(employeeShifts);
@@ -181,9 +133,9 @@ public class ScheduleGeneratorService : IScheduleGeneratorService
     }
 
     private static ScheduleAssignmentResult CreateAssignmentResult(
-    Shift shift,
-    Employee? matchingEmployee,
-    List<CandidateEvaluation> evaluations)
+        Shift shift,
+        Employee? matchingEmployee,
+        List<CandidateEvaluation> evaluations)
     {
         var failureReasons = evaluations
             .Where(evaluation => !evaluation.CanAssign)
