@@ -1191,6 +1191,16 @@ The frontend is available at:
 http://localhost:5173
 ```
 
+The API base URL defaults to `http://localhost:5026`. To point the frontend at another API, copy `frontend/.env.example` to `frontend/.env.local` and set `VITE_API_BASE_URL`.
+
+Run the frontend checks:
+
+```bash
+npm run lint
+npm test
+npm run build
+```
+
 ---
 
 # Seed Demo Data
@@ -1268,6 +1278,7 @@ Frontend job:
 
 * installs dependencies with `npm ci`
 * runs ESLint (`npm run lint`)
+* runs the Vitest + React Testing Library tests (`npm test`)
 * builds the production bundle (`npm run build`, including TypeScript type checking)
 
 ---
@@ -1304,6 +1315,19 @@ The solution currently includes 59 unit tests covering:
 * Simulation candidate result logic
 * Simulation candidate scoring logic
 * Demo data seeding and reset support
+
+## Frontend tests
+
+The React dashboard has component tests with Vitest, React Testing Library and jsdom. `fetch` is stubbed with fixtures captured from the real API after `POST /api/demo/reset`, so no backend is needed.
+
+They cover:
+
+* Schedule overview rendering and Danish translation of risk indicators (including culture-independent coverage rates)
+* Error page and retry when the API is unavailable
+* Keeping the dashboard visible while refreshing after schedule generation
+* Reloading employee preference profiles after a demo reset
+* Weekly schedule placement per weekday, assigned/unassigned counts and filters
+* Keeping the weekly schedule visible during refresh, plus error and retry
 
 ---
 

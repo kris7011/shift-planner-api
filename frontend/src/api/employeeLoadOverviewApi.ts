@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "./config";
+
 export type EmployeeLoadOverviewItem = {
     employeeId: string;
     employeeName: string;
@@ -6,8 +8,6 @@ export type EmployeeLoadOverviewItem = {
     loadStatus: string;
     isHighRisk: boolean;
 };
-
-const API_BASE_URL = "http://localhost:5026";
 
 export async function getEmployeeLoadOverview(): Promise<EmployeeLoadOverviewItem[]> {
     const response = await fetch(`${API_BASE_URL}/api/employees/load-overview`);

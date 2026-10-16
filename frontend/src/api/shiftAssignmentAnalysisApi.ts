@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "./config";
+
 export type ShiftAssignmentCandidateResult = {
     employeeId: string;
     employeeName: string;
@@ -15,8 +17,6 @@ export type ShiftAssignmentAnalysisResponse = {
     summaryReasons: string[];
     candidateResults: ShiftAssignmentCandidateResult[];
 };
-
-const API_BASE_URL = "http://localhost:5026";
 
 export async function getShiftAssignmentAnalysis(
     shiftId: string,
