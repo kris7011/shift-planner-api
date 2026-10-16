@@ -4,6 +4,14 @@ namespace ShiftPlanner.Domain.Shifts;
 
 public class Shift
 {
+    /// <summary>
+    /// The scheduling model staffs each shift with exactly one employee: a persisted shift has a
+    /// single <see cref="EmployeeId"/>, schedule generation assigns one employee per open shift and
+    /// coverage counts a shift as covered when it has an employee. A need for several employees is
+    /// modelled as several shifts.
+    /// </summary>
+    public const int SupportedRequiredStaff = 1;
+
     public Guid Id { get; private set; }
     public Guid? EmployeeId { get; private set; }
     public DateOnly Date { get; private set; }
@@ -54,6 +62,11 @@ public class Shift
     Guid? employeeId)
     {
         return new Shift(id, date, shiftType, requiredSkill, requiredStaff, employeeId);
+    }
+
+    public static bool IsSupportedRequiredStaff(int requiredStaff)
+    {
+        return requiredStaff == SupportedRequiredStaff;
     }
 
     public bool IsFullyStaffed()

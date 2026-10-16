@@ -4,6 +4,8 @@ using ShiftPlanner.Application.Scheduling.Models;
 using ShiftPlanner.Application.Scheduling.Overview;
 using ShiftPlanner.Application.Scheduling.Simulation;
 using ShiftPlanner.Application.Shifts;
+using ShiftPlanner.Api.Shifts;
+using ShiftPlanner.Domain.Shifts;
 
 namespace ShiftPlanner.Api.Scheduling;
 
@@ -133,9 +135,9 @@ public static class SchedulingEndpoints
                 return Results.BadRequest(new { error = "RequiredSkill is required." });
             }
 
-            if (request.RequiredStaff <= 0)
+            if (!Shift.IsSupportedRequiredStaff(request.RequiredStaff))
             {
-                return Results.BadRequest(new { error = "RequiredStaff must be greater than 0." });
+                return Results.BadRequest(new { error = ShiftStaffingErrors.UnsupportedRequiredStaff });
             }
 
             if (request.MaxAssignmentsPerEmployee <= 0)

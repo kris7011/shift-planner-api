@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using ShiftPlanner.Api.Shifts;
 
 namespace ShiftPlanner.Api.IntegrationTests;
 
@@ -123,7 +124,8 @@ public sealed class DemoAndScheduleEndpointTests : ApiTestBase
 
     [Theory]
     [InlineData("", 1, 5, "RequiredSkill is required.")]
-    [InlineData("CT", 0, 5, "RequiredStaff must be greater than 0.")]
+    [InlineData("CT", 0, 5, ShiftStaffingErrors.UnsupportedRequiredStaff)]
+    [InlineData("CT", 2, 5, ShiftStaffingErrors.UnsupportedRequiredStaff)]
     [InlineData("CT", 1, 0, "MaxAssignmentsPerEmployee must be greater than 0.")]
     public async Task Simulate_ReturnsBadRequestWithError_WhenRequestIsInvalid(
         string requiredSkill,
