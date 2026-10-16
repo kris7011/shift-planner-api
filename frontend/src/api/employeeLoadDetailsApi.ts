@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "./config";
+
 export type EmployeeAssignedShiftLoadItem = {
     shiftId: string;
     date: string;
@@ -15,8 +17,6 @@ export type EmployeeLoadDetailsResponse = {
     isHighRisk: boolean;
     assignedShifts: EmployeeAssignedShiftLoadItem[];
 };
-
-const API_BASE_URL = "http://localhost:5026";
 
 export async function getEmployeeLoadDetails(
     employeeId: string

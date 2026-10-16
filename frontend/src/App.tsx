@@ -59,10 +59,12 @@ function translateRiskType(type: string) {
 
 function translateRiskMessage(message: string) {
   if (message.startsWith("Schedule coverage is")) {
+    // The API formats the rate with the server culture ("78,57%" or "78.57%"),
+    // so only the sentence-ending period may be removed.
     const percentage = message
       .replace("Schedule coverage is", "")
-      .replace(".", "")
-      .trim();
+      .trim()
+      .replace(/\.$/, "");
 
     return `Vagtplanens dækningsgrad er ${percentage}.`;
   }

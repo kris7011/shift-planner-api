@@ -1,0 +1,114 @@
+[
+  {
+    "id": "3105c80e-4f29-4b1b-b472-a51569292643",
+    "employeeId": "4d929b19-7a96-4fc7-a9dd-75fa989acdc3",
+    "date": "2026-05-11",
+    "shiftType": "Day",
+    "requiredSkill": "CT",
+    "requiredStaff": 1
+  },
+  {
+    "id": "0a5664ed-d58f-4a51-baf8-a506f9c0e490",
+    "employeeId": "312f340c-8955-45c5-bb58-a81ea4c16409",
+    "date": "2026-05-11",
+    "shiftType": "Evening",
+    "requiredSkill": "MRI",
+    "requiredStaff": 1
+  },
+  {
+    "id": "9e1a4f4a-0204-471f-9e4b-2c1aaeea7e27",
+    "employeeId": "a1ebbb78-c7d1-49c9-9d55-0e28b3364f7f",
+    "date": "2026-05-12",
+    "shiftType": "Night",
+    "requiredSkill": "Night",
+    "requiredStaff": 1
+  },
+  {
+    "id": "f02474ea-9dba-40f0-af72-fc8dbaa12c0b",
+    "employeeId": "8745e44e-70c6-41e1-9a06-81a0d69a5c6c",
+    "date": "2026-05-12",
+    "shiftType": "Day",
+    "requiredSkill": "XR",
+    "requiredStaff": 1
+  },
+  {
+    "id": "7b7cfa03-deee-4c7a-acd6-716ba059dc7f",
+    "employeeId": null,
+    "date": "2026-05-13",
+    "shiftType": "Day",
+    "requiredSkill": "CT",
+    "requiredStaff": 1
+  },
+  {
+    "id": "733c4a0a-db62-4960-b66a-f238c1266575",
+    "employeeId": null,
+    "date": "2026-05-13",
+    "shiftType": "Evening",
+    "requiredSkill": "MRI",
+    "requiredStaff": 1
+  },
+  {
+    "id": "8cecf40b-cbc8-48dc-9448-281f85a4a39b",
+    "employeeId": null,
+    "date": "2026-05-14",
+    "shiftType": "Night",
+    "requiredSkill": "Night",
+    "requiredStaff": 1
+  },
+  {
+    "id": "2efad4f3-f629-4c96-a4a9-77a946979c6b",
+    "employeeId": null,
+    "date": "2026-05-14",
+    "shiftType": "Day",
+    "requiredSkill": "XR",
+    "requiredStaff": 1
+  },
+  {
+    "id": "ce5649f6-da84-4588-a033-e7123cbd1153",
+    "employeeId": null,
+    "date": "2026-05-15",
+    "shiftType": "Day",
+    "requiredSkill": "UL",
+    "requiredStaff": 1
+  },
+  {
+    "id": "57a0f822-1470-46c0-9725-e9c426ca2457",
+    "employeeId": null,
+    "date": "2026-05-15",
+    "shiftType": "Evening",
+    "requiredSkill": "Intervention",
+    "requiredStaff": 1
+  },
+  {
+    "id": "d2714adf-3fcd-4fc5-b861-a067ada96281",
+    "employeeId": null,
+    "date": "2026-05-16",
+    "shiftType": "Day",
+    "requiredSkill": "CT",
+    "requiredStaff": 1
+  },
+  {
+    "id": "7a88dafa-8b10-4a02-96cb-53c5aef2a755",
+    "employeeId": null,
+    "date": "2026-05-16",
+    "shiftType": "Night",
+    "requiredSkill": "Night",
+    "requiredStaff": 1
+  },
+  {
+    "id": "8995a793-ad88-4396-8414-ae233f32334a",
+    "employeeId": null,
+    "date": "2026-05-17",
+    "shiftType": "Day",
+    "requiredSkill": "XR",
+    "requiredStaff": 1
+  },
+  {
+    "id": "48a89f5e-3dd5-4968-b8ef-ad3b1f7ab191",
+    "employeeId": null,
+    "date": "2026-05-17",
+    "shiftType": "Night",
+    "requiredSkill": "Night",
+    "requiredStaff": 1
+  }
+]

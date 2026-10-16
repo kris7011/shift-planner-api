@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "./config";
+
 export type ScheduleRiskLevel = "Low" | "Medium" | "High";
 
 export type ShiftType = "Day" | "Evening" | "Night" | "OnCall";
@@ -46,8 +48,6 @@ export type ScheduleOverviewResponse = {
     skillCapacity: SkillCapacity[];
     unassignedShiftDetails: UnassignedShiftDetail[];
 };
-
-const API_BASE_URL = "http://localhost:5026";
 
 export async function getScheduleOverview(): Promise<ScheduleOverviewResponse> {
     const response = await fetch(`${API_BASE_URL}/api/schedule/overview`);

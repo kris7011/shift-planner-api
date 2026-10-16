@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "./config";
+
 export type ScheduleRiskLevel = "Low" | "Medium" | "High";
 
 export type ShiftType = "Day" | "Evening" | "Night" | "OnCall";
@@ -35,8 +37,6 @@ export type SimulateScheduleResponse = {
     impactIndicators: SimulationImpactIndicator[];
     candidateResults: SimulationCandidateResult[];
 };
-
-const API_BASE_URL = "http://localhost:5026";
 
 export async function simulateSchedule(
     request: SimulateScheduleRequest,
