@@ -51,29 +51,41 @@ export function WeeklyScheduleTable({ refreshKey }: WeeklyScheduleTableProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [scheduleFilter, setScheduleFilter] = useState<ScheduleFilter>("all");
-
-    async function loadScheduleData() {
-        try {
-            setIsLoading(true);
-            setErrorMessage(null);
-
-            const [employeeData, shiftData] = await Promise.all([
-                getEmployees(),
-                getShifts(),
-            ]);
-
-            setEmployees(employeeData);
-            setShifts(shiftData);
-        } catch {
-            setErrorMessage("Kunne ikke hente vagtplanens skemadata.");
-        } finally {
-            setIsLoading(false);
-        }
-    }
+    const [retryCount, setRetryCount] = useState(0);
 
     useEffect(() => {
-        loadScheduleData();
-    }, [refreshKey]);
+        let ignore = false;
+
+        // State is only set once data arrives, so the current week stays visible while refreshing.
+        Promise.all([getEmployees(), getShifts()])
+            .then(([employeeData, shiftData]) => {
+                if (!ignore) {
+                    setEmployees(employeeData);
+                    setShifts(shiftData);
+                    setErrorMessage(null);
+                }
+            })
+            .catch(() => {
+                if (!ignore) {
+                    setErrorMessage("Kunne ikke hente vagtplanens skemadata.");
+                }
+            })
+            .finally(() => {
+                if (!ignore) {
+                    setIsLoading(false);
+                }
+            });
+
+        return () => {
+            ignore = true;
+        };
+    }, [refreshKey, retryCount]);
+
+    function retryLoadScheduleData() {
+        setIsLoading(true);
+        setErrorMessage(null);
+        setRetryCount((current) => current + 1);
+    }
 
     const employeeNameById = useMemo(() => {
         return new Map(employees.map((employee) => [employee.id, employee.name]));
@@ -117,7 +129,7 @@ export function WeeklyScheduleTable({ refreshKey }: WeeklyScheduleTableProps) {
             <article className="panel full-width-panel">
                 <h2>Ugeplan</h2>
                 <p className="error-text">{errorMessage}</p>
-                <button onClick={loadScheduleData}>Prøv igen</button>
+                <button onClick={retryLoadScheduleData}>Prøv igen</button>
             </article>
         );
     }
