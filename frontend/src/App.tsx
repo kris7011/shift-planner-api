@@ -288,6 +288,12 @@ function getActivePageContent(activePage: DashboardPage) {
   return dashboardPages.find((page) => page.key === activePage);
 }
 
+type OverviewData = [ScheduleOverviewResponse, EmployeeLoadOverviewItem[]];
+
+function fetchOverviewData(): Promise<OverviewData> {
+  return Promise.all([getScheduleOverview(), getEmployeeLoadOverview()]);
+}
+
 function App() {
   const [activePage, setActivePage] = useState<DashboardPage>("overview");
   const [overview, setOverview] = useState<ScheduleOverviewResponse | null>(null);
@@ -348,25 +354,52 @@ function App() {
   const [
     isLoadingEmployeePreferenceProfiles,
     setIsLoadingEmployeePreferenceProfiles
-  ] = useState(false);
+  ] = useState(true);
 
   const [
     employeePreferenceProfilesErrorMessage,
     setEmployeePreferenceProfilesErrorMessage
   ] = useState<string | null>(null);
 
+  function applyOverviewData([overviewData, employeeLoadData]: OverviewData) {
+    setOverview(overviewData);
+    setEmployeeLoadOverview(employeeLoadData);
+  }
+
+  async function fetchOverview() {
+    applyOverviewData(await fetchOverviewData());
+  }
+
+  function applyEmployeePreferenceProfiles(
+    profiles: EmployeePreferenceProfileOverviewItem[]
+  ) {
+    setEmployeePreferenceProfiles(profiles);
+    setEmployeePreferenceProfilesErrorMessage(null);
+  }
+
+  function handleEmployeePreferenceProfilesError() {
+    setEmployeePreferenceProfilesErrorMessage(
+      "Kunne ikke hente medarbejderpræferencer."
+    );
+  }
+
+  async function fetchEmployeePreferenceProfiles() {
+    try {
+      applyEmployeePreferenceProfiles(await getEmployeePreferenceProfiles());
+    } catch {
+      handleEmployeePreferenceProfilesError();
+    } finally {
+      setIsLoadingEmployeePreferenceProfiles(false);
+    }
+  }
+
+  // Full reload with loading state, used by the "Prøv igen" and "Opdater data" buttons.
   async function loadOverview() {
     try {
       setIsLoading(true);
       setErrorMessage(null);
 
-      const [overviewData, employeeLoadData] = await Promise.all([
-        getScheduleOverview(),
-        getEmployeeLoadOverview(),
-      ]);
-
-      setOverview(overviewData);
-      setEmployeeLoadOverview(employeeLoadData);
+      await fetchOverview();
     } catch {
       setErrorMessage("Kunne ikke hente vagtplanens overblik fra API'et.");
     } finally {
@@ -374,21 +407,15 @@ function App() {
     }
   }
 
-  async function loadEmployeePreferenceProfiles() {
+  // Refresh after generating or resetting without replacing the dashboard with the loading state.
+  async function refreshAfterDataChange() {
     try {
-      setIsLoadingEmployeePreferenceProfiles(true);
-      setEmployeePreferenceProfilesErrorMessage(null);
-
-      const profiles = await getEmployeePreferenceProfiles();
-
-      setEmployeePreferenceProfiles(profiles);
+      await fetchOverview();
     } catch {
-      setEmployeePreferenceProfilesErrorMessage(
-        "Kunne ikke hente medarbejderpræferencer."
-      );
-    } finally {
-      setIsLoadingEmployeePreferenceProfiles(false);
+      setErrorMessage("Kunne ikke hente vagtplanens overblik fra API'et.");
     }
+
+    setScheduleRefreshKey((current) => current + 1);
   }
 
   async function handleEmployeeLoadClick(employeeId: string) {
@@ -441,8 +468,11 @@ function App() {
         `Demo-data blev nulstillet. ${result.employeeCount} medarbejdere og ${result.shiftCount} vagter blev oprettet.`,
       );
 
-      await loadOverview();
-      setScheduleRefreshKey((current) => current + 1);
+      // Reset creates new employees, so preference profiles must be reloaded as well.
+      await Promise.all([
+        refreshAfterDataChange(),
+        fetchEmployeePreferenceProfiles(),
+      ]);
     } catch {
       setErrorMessage("Kunne ikke nulstille demo-data. Kontroller at API'et kører.");
     } finally {
@@ -474,8 +504,7 @@ function App() {
         `Vagtplanen blev genereret. ${assignedCount} vagt(er) blev tildelt, og ${unassignedCount} vagt(er) kunne ikke tildeles.`,
       );
 
-      await loadOverview();
-      setScheduleRefreshKey((current) => current + 1);
+      await refreshAfterDataChange();
     } catch {
       setErrorMessage("Kunne ikke generere vagtplanen. Kontroller at API'et kører.");
     } finally {
@@ -484,8 +513,22 @@ function App() {
   }
 
   useEffect(() => {
-    loadOverview();
-    loadEmployeePreferenceProfiles();
+    // Initial load. The loading flags start as true, so state is only set once data arrives.
+    fetchOverviewData()
+      .then(applyOverviewData)
+      .catch(() => {
+        setErrorMessage("Kunne ikke hente vagtplanens overblik fra API'et.");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+
+    getEmployeePreferenceProfiles()
+      .then(applyEmployeePreferenceProfiles)
+      .catch(handleEmployeePreferenceProfilesError)
+      .finally(() => {
+        setIsLoadingEmployeePreferenceProfiles(false);
+      });
   }, []);
 
   if (isLoading) {
