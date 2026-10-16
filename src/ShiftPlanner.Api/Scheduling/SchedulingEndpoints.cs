@@ -19,8 +19,10 @@ public static class SchedulingEndpoints
         {
             if (request.MaxAssignmentsPerEmployee <= 0)
             {
-                return Results.BadRequest(
-                    "MaxAssignmentsPerEmployee must be greater than 0.");
+                return Results.BadRequest(new
+                {
+                    error = "MaxAssignmentsPerEmployee must be greater than 0."
+                });
             }
 
             var employees = await employeeRepository.GetAllAsync();
@@ -128,17 +130,17 @@ public static class SchedulingEndpoints
         {
             if (string.IsNullOrWhiteSpace(request.RequiredSkill))
             {
-                return Results.BadRequest("RequiredSkill is required.");
+                return Results.BadRequest(new { error = "RequiredSkill is required." });
             }
 
             if (request.RequiredStaff <= 0)
             {
-                return Results.BadRequest("RequiredStaff must be greater than 0.");
+                return Results.BadRequest(new { error = "RequiredStaff must be greater than 0." });
             }
 
             if (request.MaxAssignmentsPerEmployee <= 0)
             {
-                return Results.BadRequest("MaxAssignmentsPerEmployee must be greater than 0.");
+                return Results.BadRequest(new { error = "MaxAssignmentsPerEmployee must be greater than 0." });
             }
 
             var employees = await employeeRepository.GetAllAsync();
