@@ -42,7 +42,7 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Includes rule-based schedule generation, workload scoring, preference scoring, and what-if simulation
 - Provides explainable scheduling decisions and candidate-level failure reasons
 - Includes a Danish multi-view dashboard for overview, weekly schedule, employees, unassigned shifts, and simulation
-- Covered by 59 unit tests and a GitHub Actions CI pipeline
+- Covered by 59 unit tests, 20 API integration tests and a GitHub Actions CI pipeline
 
 # Features
 
@@ -190,7 +190,7 @@ Contains:
 Contains:
 
 * Entity Framework Core persistence
-* SQLite database access
+* SQLite database access (connection string `ConnectionStrings:ShiftPlanner`, defaults to `Data Source=shiftplanner.db`)
 * repository implementations
 
 ---
@@ -1267,6 +1267,22 @@ on every push to GitHub.
 ---
 
 # Test Status
+
+## API integration tests
+
+`tests/ShiftPlanner.Api.IntegrationTests` contains 20 tests that host the real API with `WebApplicationFactory` against an isolated in-memory SQLite database. EF Core migrations run on startup exactly as in the application. The tests cover:
+
+* Demo reset and seed behaviour
+* Schedule overview skill gaps for the demo data
+* Schedule generation persisting assignments, with failure reasons for unassigned shifts
+* Simulation for coverable and uncoverable shifts (nothing is persisted)
+* Assignment analysis and load details, including 404 responses
+* Employee creation (201 and `Location` header) and validation errors
+* Consistent `{ "error": "..." }` bodies for 400 responses
+* Load analysis returning 400 (not 500) when an employee lacks the required skill
+* Enum serialization as strings (the contract the frontend relies on)
+
+## Unit tests
 
 The solution currently includes 59 unit tests covering:
 

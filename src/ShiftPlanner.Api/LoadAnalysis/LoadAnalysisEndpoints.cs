@@ -30,6 +30,14 @@ public static class LoadAnalysisEndpoints
 
                     if (shiftRequest.AssignEmployee)
                     {
+                        if (!shift.CanAssign(employee))
+                        {
+                            return Results.BadRequest(new
+                            {
+                                error = $"Employee does not have the required skill '{shiftRequest.RequiredSkill}' for the shift on {shiftRequest.Date:yyyy-MM-dd}."
+                            });
+                        }
+
                         shift.AssignEmployee(employee);
                     }
 
