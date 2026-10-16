@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "./config";
+
 export type ShiftType = "Day" | "Evening" | "Night" | "OnCall";
 
 export type Employee = {
@@ -14,8 +16,6 @@ export type Shift = {
     requiredSkill: string;
     requiredStaff: number;
 };
-
-const API_BASE_URL = "http://localhost:5026";
 
 export async function getEmployees(): Promise<Employee[]> {
     const response = await fetch(`${API_BASE_URL}/api/employees`);

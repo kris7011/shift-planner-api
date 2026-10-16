@@ -38,7 +38,7 @@ jobs:
         run: dotnet test --no-build --verbosity normal
 
   frontend:
-    name: Frontend (React lint and build)
+    name: Frontend (React lint, test and build)
     runs-on: ubuntu-latest
 
     defaults:
@@ -61,6 +61,9 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+      - name: Test
+        run: npm test
 
       - name: Build
         run: npm run build

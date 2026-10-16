@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "./config";
+
 export type ScheduleAssignmentResult = {
     shiftId: string;
     employeeId: string | null;
@@ -17,8 +19,6 @@ export type GenerateScheduleResponse = {
     shiftCount: number;
     assignments: ScheduleAssignmentResult[];
 };
-
-const API_BASE_URL = "http://localhost:5026";
 
 export async function generateSchedule(
     request: GenerateScheduleRequest,

@@ -1,0 +1,156 @@
+{
+  "totalShifts": 14,
+  "assignedShifts": 11,
+  "unassignedShifts": 3,
+  "coverageRate": 78.57,
+  "employeeCount": 10,
+  "highRiskEmployeeCount": 0,
+  "unassignedShiftDetails": [
+    {
+      "shiftId": "ce5649f6-da84-4588-a033-e7123cbd1153",
+      "date": "2026-05-15",
+      "shiftType": "Day",
+      "requiredSkill": "UL",
+      "failureReasons": [
+        "Kris: Missing required skill 'UL'.",
+        "Mette: Missing required skill 'UL'.",
+        "Henrik: Missing required skill 'UL'.",
+        "Sofie: Missing required skill 'UL'.",
+        "Lars: Missing required skill 'UL'.",
+        "Anna: Missing required skill 'UL'.",
+        "Jonas: Missing required skill 'UL'.",
+        "Maria: Missing required skill 'UL'.",
+        "Peter: Missing required skill 'UL'.",
+        "Line: Missing required skill 'UL'."
+      ]
+    },
+    {
+      "shiftId": "57a0f822-1470-46c0-9725-e9c426ca2457",
+      "date": "2026-05-15",
+      "shiftType": "Evening",
+      "requiredSkill": "Intervention",
+      "failureReasons": [
+        "Kris: Missing required skill 'Intervention'.",
+        "Mette: Missing required skill 'Intervention'.",
+        "Henrik: Missing required skill 'Intervention'.",
+        "Sofie: Missing required skill 'Intervention'.",
+        "Lars: Missing required skill 'Intervention'.",
+        "Anna: Missing required skill 'Intervention'.",
+        "Jonas: Missing required skill 'Intervention'.",
+        "Maria: Missing required skill 'Intervention'.",
+        "Peter: Missing required skill 'Intervention'.",
+        "Line: Missing required skill 'Intervention'."
+      ]
+    },
+    {
+      "shiftId": "48a89f5e-3dd5-4968-b8ef-ad3b1f7ab191",
+      "date": "2026-05-17",
+      "shiftType": "Night",
+      "requiredSkill": "Night",
+      "failureReasons": [
+        "Kris: Missing required skill 'Night'.",
+        "Mette: Missing required skill 'Night'.",
+        "Henrik: Employee projected workload would be too high.",
+        "Sofie: Employee projected workload would be too high.",
+        "Lars: Missing required skill 'Night'.",
+        "Anna: Missing required skill 'Night'.",
+        "Jonas: Missing required skill 'Night'.",
+        "Maria: Employee projected workload would be too high.",
+        "Peter: Missing required skill 'Night'.",
+        "Line: Missing required skill 'Night'."
+      ]
+    }
+  ],
+  "skillGaps": [
+    {
+      "requiredSkill": "Intervention",
+      "unassignedShiftCount": 1
+    },
+    {
+      "requiredSkill": "Night",
+      "unassignedShiftCount": 1
+    },
+    {
+      "requiredSkill": "UL",
+      "unassignedShiftCount": 1
+    }
+  ],
+  "riskSummary": {
+    "coverageRisk": "Medium",
+    "unassignedShiftCount": 3,
+    "skillGapCount": 3,
+    "highRiskEmployeeCount": 0
+  },
+  "riskIndicators": [
+    {
+      "type": "Coverage",
+      "severity": "Medium",
+      "message": "Schedule coverage is 78.57%."
+    },
+    {
+      "type": "UnassignedShifts",
+      "severity": "Medium",
+      "message": "3 shift(s) are currently unassigned."
+    },
+    {
+      "type": "SkillGap",
+      "severity": "Medium",
+      "message": "1 unassigned shift(s) require Intervention."
+    },
+    {
+      "type": "SkillGap",
+      "severity": "Medium",
+      "message": "1 unassigned shift(s) require Night."
+    },
+    {
+      "type": "SkillGap",
+      "severity": "Medium",
+      "message": "1 unassigned shift(s) require UL."
+    },
+    {
+      "type": "Capacity",
+      "severity": "High",
+      "message": "Intervention is required by 1 unassigned shift(s), but no employees have this skill."
+    },
+    {
+      "type": "Capacity",
+      "severity": "High",
+      "message": "UL is required by 1 unassigned shift(s), but no employees have this skill."
+    }
+  ],
+  "skillCapacity": [
+    {
+      "skill": "CT",
+      "employeeCount": 5
+    },
+    {
+      "skill": "MRI",
+      "employeeCount": 4
+    },
+    {
+      "skill": "Night",
+      "employeeCount": 3
+    },
+    {
+      "skill": "XR",
+      "employeeCount": 5
+    }
+  ],
+  "uncoveredRequiredSkills": [
+    {
+      "skill": "Intervention",
+      "requiredByUnassignedShifts": 1,
+      "availableEmployees": 0
+    },
+    {
+      "skill": "UL",
+      "requiredByUnassignedShifts": 1,
+      "availableEmployees": 0
+    }
+  ],
+  "capacitySummary": {
+    "totalSkills": 4,
+    "missingRequiredSkills": 2,
+    "criticalSkillGaps": 2
+  }
+}

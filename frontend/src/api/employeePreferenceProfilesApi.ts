@@ -1,4 +1,5 @@
 import type { ShiftType } from "./scheduleSimulationApi";
+import { API_BASE_URL } from "./config";
 
 export type EmployeePreferenceProfileOverviewItem = {
     employeeId: string;
@@ -10,8 +11,6 @@ export type EmployeePreferenceProfileOverviewItem = {
     prefersWeekends: boolean;
     avoidsWeekends: boolean;
 };
-
-const API_BASE_URL = "http://localhost:5026";
 
 export async function getEmployeePreferenceProfiles(): Promise<
     EmployeePreferenceProfileOverviewItem[]
