@@ -1256,13 +1256,19 @@ Swagger provides interactive API documentation and endpoint testing.
 
 # CI Pipeline
 
-The repository includes a GitHub Actions pipeline that automatically:
+The repository includes a GitHub Actions pipeline (`.github/workflows/dotnet.yml`) that runs on every push to `main` and on every pull request.
+
+Backend job:
 
 * restores dependencies
 * builds the solution
 * runs all unit tests
 
-on every push to GitHub.
+Frontend job:
+
+* installs dependencies with `npm ci`
+* runs ESLint (`npm run lint`)
+* builds the production bundle (`npm run build`, including TypeScript type checking)
 
 ---
 
