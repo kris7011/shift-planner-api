@@ -1,3 +1,4 @@
+using ShiftPlanner.Api.Shifts;
 using ShiftPlanner.Application.Employees;
 using ShiftPlanner.Domain.Employees;
 using ShiftPlanner.Domain.Shifts;
@@ -22,6 +23,14 @@ public static class LoadAnalysisEndpoints
 
                 foreach (var shiftRequest in request.Shifts)
                 {
+                    if (!Shift.IsSupportedRequiredStaff(shiftRequest.RequiredStaff))
+                    {
+                        return Results.BadRequest(new
+                        {
+                            error = ShiftStaffingErrors.UnsupportedRequiredStaff
+                        });
+                    }
+
                     var shift = new Shift(
                         shiftRequest.Date,
                         shiftRequest.ShiftType,

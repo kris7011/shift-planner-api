@@ -684,6 +684,13 @@ button:disabled {
   align-self: end;
 }
 
+.simulation-staffing-note {
+  align-self: end;
+  margin: 0;
+  color: #526173;
+  font-size: 0.9rem;
+}
+
 .simulation-result {
   margin-top: 24px;
   padding-top: 20px;
@@ -840,7 +847,7 @@ button:disabled {
 
 .employee-load-summary-card span {
   display: block;
-  color: #64748b;
+  color: #526173;
   font-size: 0.82rem;
   font-weight: 700;
   text-transform: uppercase;

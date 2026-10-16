@@ -66,4 +66,14 @@ public class ShiftTests
 
         Assert.Throws<InvalidOperationException>(() => shift.AssignEmployee(employee));
     }
+
+    [Theory]
+    [InlineData(1, true)]
+    [InlineData(0, false)]
+    [InlineData(2, false)]
+    [InlineData(-1, false)]
+    public void IsSupportedRequiredStaff_OnlyAcceptsOneEmployeePerShift(int requiredStaff, bool expected)
+    {
+        Assert.Equal(expected, Shift.IsSupportedRequiredStaff(requiredStaff));
+    }
 }
