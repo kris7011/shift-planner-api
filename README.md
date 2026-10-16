@@ -378,6 +378,21 @@ Rules are injected through dependency injection and evaluated during schedule ge
 
 ---
 
+# Staffing Model: One Employee per Shift
+
+Each shift is staffed by exactly one employee:
+
+* a persisted shift has a single `EmployeeId`
+* schedule generation assigns one employee to each open shift
+* coverage counts a shift as covered when it has an employee
+* simulation suggests one employee for the simulated shift
+
+A need for several employees at the same time is modelled as several shifts.
+
+The API therefore only accepts `requiredStaff: 1` (or an omitted value, which defaults to 1) on `POST /api/shifts`, `POST /api/schedule/simulate` and `POST /api/load-analysis`. Other values return `400 Bad Request` instead of being silently stored as 1.
+
+---
+
 # Configurable Assignment Limit
 
 The dashboard includes a shared assignment limit setting.

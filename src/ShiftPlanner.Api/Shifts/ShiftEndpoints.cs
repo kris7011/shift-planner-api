@@ -13,6 +13,14 @@ public static class ShiftEndpoints
             CreateShiftRequest request,
             IShiftRepository repository) =>
         {
+            if (!Shift.IsSupportedRequiredStaff(request.RequiredStaff))
+            {
+                return Results.BadRequest(new
+                {
+                    error = ShiftStaffingErrors.UnsupportedRequiredStaff
+                });
+            }
+
             var shift = new Shift(
                 request.Date,
                 request.ShiftType,
@@ -87,6 +95,12 @@ public record CreateShiftRequest(
     DateOnly Date,
     ShiftType ShiftType,
     string RequiredSkill,
-    int RequiredStaff,
-    Guid? EmployeeId
+    int RequiredStaff = Shift.SupportedRequiredStaff,
+    Guid? EmployeeId = null
 );
+
+public static class ShiftStaffingErrors
+{
+    public const string UnsupportedRequiredStaff =
+        "RequiredStaff must be 1. Each shift is staffed by one employee; create one shift per required employee.";
+}

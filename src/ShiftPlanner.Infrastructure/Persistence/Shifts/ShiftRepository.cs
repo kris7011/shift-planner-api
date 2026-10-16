@@ -43,7 +43,7 @@ public class ShiftRepository : IShiftRepository
             entity.Date,
             entity.ShiftType,
             entity.RequiredSkill,
-            requiredStaff: 1,
+            requiredStaff: Shift.SupportedRequiredStaff,
             employeeId: entity.EmployeeId == Guid.Empty ? null : entity.EmployeeId
         ))
         .ToList();
@@ -62,7 +62,7 @@ public class ShiftRepository : IShiftRepository
                 entity.Date,
                 entity.ShiftType,
                 entity.RequiredSkill,
-                requiredStaff: 1,
+                requiredStaff: Shift.SupportedRequiredStaff,
                 employeeId: entity.EmployeeId == Guid.Empty ? null : entity.EmployeeId))
             .ToList();
     }

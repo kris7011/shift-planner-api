@@ -170,7 +170,6 @@ export function SimulationPanel({
     const [date, setDate] = useState("2026-05-15");
     const [shiftType, setShiftType] = useState<ShiftType>("Day");
     const [requiredSkill, setRequiredSkill] = useState("UL");
-    const [requiredStaff, setRequiredStaff] = useState(1);
 
     const [result, setResult] = useState<SimulateScheduleResponse | null>(null);
     const [isSimulating, setIsSimulating] = useState(false);
@@ -187,7 +186,8 @@ export function SimulationPanel({
                 date,
                 shiftType,
                 requiredSkill,
-                requiredStaff,
+                // The scheduling model staffs each shift with exactly one employee.
+                requiredStaff: 1,
                 maxAssignmentsPerEmployee,
             });
 
@@ -246,15 +246,9 @@ export function SimulationPanel({
                     />
                 </label>
 
-                <label>
-                    Krævet bemanding
-                    <input
-                        min="1"
-                        type="number"
-                        value={requiredStaff}
-                        onChange={(event) => setRequiredStaff(Number(event.target.value))}
-                    />
-                </label>
+                <p className="simulation-staffing-note">
+                    Bemanding: 1 medarbejder pr. vagt. Simulér flere vagter, hvis der skal bruges flere medarbejdere.
+                </p>
 
                 <button disabled={isSimulating} type="submit">
                     {isSimulating ? "Simulerer..." : "Simulér vagt"}
