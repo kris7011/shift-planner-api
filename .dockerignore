@@ -8,3 +8,6 @@ obj/
 *.db-shm
 *.db-wal
 *.lscache
+# The image only contains the API; the React frontend is built and served separately.
+frontend/
+docs/

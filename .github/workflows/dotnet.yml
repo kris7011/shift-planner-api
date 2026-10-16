@@ -26,7 +26,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 9.0.x
+          global-json-file: global.json
 
       - name: Restore dependencies
         run: dotnet restore
@@ -67,3 +67,35 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  docker:
+    name: Docker image (build and smoke test)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Build image
+        run: docker build --tag shiftplanner-api:ci .
+
+      - name: Start container
+        run: docker run --detach --name shiftplanner-api --publish 8080:8080 shiftplanner-api:ci
+
+      - name: Smoke test API, migrations and demo data
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl --silent --fail http://localhost:8080/health; then
+              break
+            fi
+            sleep 1
+          done
+
+          curl --silent --fail http://localhost:8080/health
+          curl --silent --fail --request POST http://localhost:8080/api/demo/reset
+          curl --silent --fail http://localhost:8080/api/schedule/overview > overview.json
+          python3 -c "import json; overview = json.load(open('overview.json')); assert overview['totalShifts'] == 14, overview"
+
+      - name: Show container logs
+        if: always()
+        run: docker logs shiftplanner-api
