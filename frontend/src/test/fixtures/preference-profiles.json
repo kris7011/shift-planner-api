@@ -1,0 +1,106 @@
+[
+  {
+    "employeeId": "a0518392-3c90-49ad-894b-366e92d95b0e",
+    "employeeName": "Anna",
+    "preferredShiftTypes": [],
+    "dislikedShiftTypes": [],
+    "maxNightShifts": null,
+    "maxEveningShifts": null,
+    "prefersWeekends": false,
+    "avoidsWeekends": false
+  },
+  {
+    "employeeId": "a1ebbb78-c7d1-49c9-9d55-0e28b3364f7f",
+    "employeeName": "Henrik",
+    "preferredShiftTypes": [
+      "Night"
+    ],
+    "dislikedShiftTypes": [],
+    "maxNightShifts": 3,
+    "maxEveningShifts": null,
+    "prefersWeekends": false,
+    "avoidsWeekends": false
+  },
+  {
+    "employeeId": "add63646-029b-4e20-8b54-56fcf901eb65",
+    "employeeName": "Jonas",
+    "preferredShiftTypes": [],
+    "dislikedShiftTypes": [],
+    "maxNightShifts": null,
+    "maxEveningShifts": null,
+    "prefersWeekends": false,
+    "avoidsWeekends": false
+  },
+  {
+    "employeeId": "4d929b19-7a96-4fc7-a9dd-75fa989acdc3",
+    "employeeName": "Kris",
+    "preferredShiftTypes": [],
+    "dislikedShiftTypes": [],
+    "maxNightShifts": null,
+    "maxEveningShifts": null,
+    "prefersWeekends": false,
+    "avoidsWeekends": false
+  },
+  {
+    "employeeId": "1c5cf4bf-7ff8-4374-b2ea-6c4e95d5306b",
+    "employeeName": "Lars",
+    "preferredShiftTypes": [],
+    "dislikedShiftTypes": [],
+    "maxNightShifts": null,
+    "maxEveningShifts": null,
+    "prefersWeekends": false,
+    "avoidsWeekends": false
+  },
+  {
+    "employeeId": "89613300-1b09-4a82-a38a-3099125ef018",
+    "employeeName": "Line",
+    "preferredShiftTypes": [],
+    "dislikedShiftTypes": [],
+    "maxNightShifts": null,
+    "maxEveningShifts": null,
+    "prefersWeekends": false,
+    "avoidsWeekends": false
+  },
+  {
+    "employeeId": "6a224f4d-aa65-460f-b921-d2ce3ac57e22",
+    "employeeName": "Maria",
+    "preferredShiftTypes": [],
+    "dislikedShiftTypes": [],
+    "maxNightShifts": null,
+    "maxEveningShifts": null,
+    "prefersWeekends": false,
+    "avoidsWeekends": false
+  },
+  {
+    "employeeId": "312f340c-8955-45c5-bb58-a81ea4c16409",
+    "employeeName": "Mette",
+    "preferredShiftTypes": [],
+    "dislikedShiftTypes": [
+      "Night"
+    ],
+    "maxNightShifts": 1,
+    "maxEveningShifts": null,
+    "prefersWeekends": false,
+    "avoidsWeekends": false
+  },
+  {
+    "employeeId": "fa030bc3-f6dd-4d0b-a354-3d85e0d1b761",
+    "employeeName": "Peter",
+    "preferredShiftTypes": [],
+    "dislikedShiftTypes": [],
+    "maxNightShifts": null,
+    "maxEveningShifts": null,
+    "prefersWeekends": false,
+    "avoidsWeekends": true
+  },
+  {
+    "employeeId": "8745e44e-70c6-41e1-9a06-81a0d69a5c6c",
+    "employeeName": "Sofie",
+    "preferredShiftTypes": [],
+    "dislikedShiftTypes": [],
+    "maxNightShifts": null,
+    "maxEveningShifts": null,
+    "prefersWeekends": false,
+    "avoidsWeekends": false
+  }
+]
