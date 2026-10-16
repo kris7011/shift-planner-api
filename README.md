@@ -38,7 +38,7 @@ The solution is built using Clean Architecture principles with strong focus on:
 
 # Portfolio Highlights
 
-- Built with .NET 9, Clean Architecture, EF Core, SQLite, React, and TypeScript
+- Built with .NET 10 (LTS), Clean Architecture, EF Core, SQLite, React, and TypeScript
 - Includes rule-based schedule generation, workload scoring, preference scoring, and what-if simulation
 - Provides explainable scheduling decisions and candidate-level failure reasons
 - Includes a Danish multi-view dashboard for overview, weekly schedule, employees, unassigned shifts, and simulation
@@ -116,7 +116,7 @@ The solution is built using Clean Architecture principles with strong focus on:
 # Technologies
 
 * C#
-* .NET 9
+* .NET 10 (LTS)
 * ASP.NET Core Web API
 * Entity Framework Core
 * SQLite
@@ -1189,6 +1189,17 @@ dotnet test
 dotnet run --project src/ShiftPlanner.Api
 ```
 
+The .NET 10 SDK version is pinned in `global.json`.
+
+## Run the API with Docker
+
+```bash
+docker build -t shiftplanner-api .
+docker run --rm -p 8080:8080 shiftplanner-api
+```
+
+The API is then available at `http://localhost:8080` (for example `http://localhost:8080/health`). The SQLite database lives inside the container and is reset when the container is removed.
+
 ---
 
 # Running the Frontend
@@ -1295,6 +1306,12 @@ Frontend job:
 * runs ESLint (`npm run lint`)
 * runs the Vitest + React Testing Library tests (`npm test`)
 * builds the production bundle (`npm run build`, including TypeScript type checking)
+
+Docker job:
+
+* builds the API image from the `Dockerfile`
+* starts the container and checks `/health`
+* resets demo data (which applies EF Core migrations inside the container) and verifies the schedule overview
 
 ---
 
@@ -1548,7 +1565,6 @@ Advanced product logic, commercial algorithms, real-world configuration, and AI-
 
 Public portfolio improvements could include:
 
-* Docker support
 * improved OpenAPI documentation
 * better frontend component structure
 * screenshot-based README section
