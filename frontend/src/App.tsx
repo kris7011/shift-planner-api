@@ -27,6 +27,7 @@ import {
   type GenerateScheduleResponse,
 } from "./api/scheduleGenerationApi";
 import { SimulationPanel } from "./components/SimulationPanel";
+import { ShiftImportPanel } from "./components/ShiftImportPanel";
 import { WeeklyScheduleTable } from "./components/WeeklyScheduleTable";
 
 function translateRiskLevel(riskLevel: ScheduleRiskLevel) {
@@ -252,7 +253,8 @@ type DashboardPage =
   | "schedule"
   | "employees"
   | "unassigned"
-  | "simulation";
+  | "simulation"
+  | "import";
 
 const dashboardPages: {
   key: DashboardPage;
@@ -283,6 +285,11 @@ const dashboardPages: {
       key: "simulation",
       label: "Simulation",
       description: "Test en tænkt vagt"
+    },
+    {
+      key: "import",
+      label: "Import og eksport",
+      description: "Vagter som CSV-fil"
     }
   ];
 
@@ -1194,6 +1201,15 @@ function App() {
 
         {activePage === "simulation" && (
           <SimulationPanel maxAssignmentsPerEmployee={maxAssignmentsPerEmployee} />
+        )}
+
+        {activePage === "import" && (
+          <ShiftImportPanel
+            // The week the weekly schedule shows (see WeeklyScheduleTable).
+            defaultExportWeek="2026-05-11"
+            maxAssignmentsPerEmployee={maxAssignmentsPerEmployee}
+            onImported={refreshAfterDataChange}
+          />
         )}
 
       </section>

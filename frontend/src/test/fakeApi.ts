@@ -43,7 +43,7 @@ export function stubApi(routes: Route[] = []) {
   const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = new URL(input.toString());
     const method = init?.method ?? "GET";
-    const body = init?.body ? JSON.parse(init.body.toString()) : undefined;
+    const body = init?.body ? parseBody(init.body.toString()) : undefined;
 
     for (const route of routes) {
       const response = route(method, url.pathname, body);
@@ -62,6 +62,15 @@ export function stubApi(routes: Route[] = []) {
   vi.stubGlobal("fetch", fetchMock);
 
   return fetchMock;
+}
+
+// JSON bodies are parsed; other bodies (such as an uploaded CSV file) are passed on as text.
+function parseBody(body: string): unknown {
+  try {
+    return JSON.parse(body);
+  } catch {
+    return body;
+  }
 }
 
 export function deferred<T>() {

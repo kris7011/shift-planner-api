@@ -1388,3 +1388,178 @@ button:disabled {
   color: #526173;
   line-height: 1.5;
 }
+.import-panel {
+  grid-column: 1 / -1;
+  /* Lets the preview table scroll inside the panel instead of widening the page. */
+  min-width: 0;
+}
+
+.import-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: end;
+  margin-top: 18px;
+}
+
+.import-form label {
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #172033;
+  font-weight: 700;
+}
+
+.import-form input {
+  max-width: 100%;
+  border: 1px solid #dbe3ef;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: white;
+  color: #172033;
+  font: inherit;
+}
+
+.button-link {
+  display: inline-block;
+  border-radius: 12px;
+  padding: 12px 18px;
+  background: #2563eb;
+  color: white;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.button-link:hover {
+  background: #1d4ed8;
+}
+
+.import-file-errors {
+  margin-top: 18px;
+  border: 1px solid #fecaca;
+  border-radius: 14px;
+  padding: 12px 16px;
+  background: #fef2f2;
+  color: #991b1b;
+  text-align: left;
+}
+
+.import-file-errors ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+.import-preview {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #edf2f7;
+}
+
+.import-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+  color: #526173;
+}
+
+.import-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 18px;
+}
+
+.import-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.import-table caption {
+  margin-bottom: 8px;
+  color: #526173;
+  text-align: left;
+}
+
+.import-table th,
+.import-table td {
+  border-bottom: 1px solid #edf2f7;
+  padding: 10px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.import-table th {
+  color: #526173;
+  font-weight: 700;
+}
+
+.import-row-invalid {
+  background: #fff7f7;
+}
+
+.import-issues {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-size: 0.88rem;
+}
+
+.import-issue-error {
+  color: #b91c1c;
+}
+
+.import-issue-warning {
+  color: #b45309;
+}
+
+.import-export {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #edf2f7;
+}
+
+.import-export h3 {
+  margin: 0 0 6px;
+  color: #172033;
+}
+
+.import-table .import-date {
+  white-space: nowrap;
+}
+
+/* On phones each row becomes a labelled card, so no column is hidden off-screen. */
+@media (max-width: 560px) {
+  .import-table thead {
+    display: none;
+  }
+
+  .import-table tr {
+    display: block;
+    border-bottom: 1px solid #dbe3ef;
+    padding: 8px 0;
+  }
+
+  .import-table td {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 8px;
+    border-bottom: 0;
+    padding: 4px 8px;
+  }
+
+  .import-table td::before {
+    content: attr(data-label);
+    color: #526173;
+    font-weight: 700;
+  }
+
+  .import-table td .badge {
+    justify-self: start;
+  }
+
+  .import-table td .import-issues {
+    grid-column: 1 / -1;
+  }
+}
