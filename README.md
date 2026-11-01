@@ -41,8 +41,10 @@ The solution is built using Clean Architecture principles with strong focus on:
 - Built with .NET 10 (LTS), Clean Architecture, EF Core, SQLite, React, and TypeScript
 - Includes rule-based schedule generation, workload scoring, preference scoring, and what-if simulation
 - Provides explainable scheduling decisions and candidate-level failure reasons
-- Includes a Danish multi-view dashboard for overview, weekly schedule, employees, unassigned shifts, and simulation
-- Covered by 59 unit tests, 20 API integration tests and a GitHub Actions CI pipeline
+- Includes a Danish multi-view dashboard for overview, weekly schedule, employees, unassigned shifts, simulation, and CSV import/export
+- Imports shifts from CSV with a row-by-row preview, the same scheduling rules as generation, and an explicit confirmation before anything is saved
+- Covered by 101 unit tests, 46 API integration tests, 13 frontend component tests and a GitHub Actions CI pipeline
+- Developer walkthrough of the architecture and the CSV import design: [docs/PROJECT_WALKTHROUGH.md](docs/PROJECT_WALKTHROUGH.md)
 
 # Features
 
@@ -110,6 +112,11 @@ The solution is built using Clean Architecture principles with strong focus on:
 * GitHub Actions CI pipeline
 * Unit tested business logic
 * Scheduling rule context for extensible rule evaluation
+* CSV import of shifts with a preview before anything is saved
+* Row-level import validation (dates, shift types, skills, employees, duplicates) reusing the scheduling rules
+* Explicit, one-time confirmation of an import, re-validated against the current schedule
+* Protection against importing the same file twice
+* Weekly schedule export as CSV in the import format
 
 ---
 
@@ -351,6 +358,20 @@ The simulation page shows:
 ## Simulation Candidates
 
 ![Simulation candidates](docs/images/simulation-candidates.png)
+
+## CSV Import Preview
+
+Every row is checked before anything is saved; saving is blocked while any row has an error ([sample file](docs/samples/shift-import-with-errors.csv)).
+
+![CSV import preview with row errors](docs/images/import-preview-errors.png)
+
+A valid file ([sample file](docs/samples/shift-import-week-21.csv)) can be confirmed:
+
+![CSV import preview ready to confirm](docs/images/import-preview-valid.png)
+
+Importing the same file again is refused:
+
+![CSV import of an already imported file](docs/images/import-duplicate-file.png)
 
 ---
 
@@ -1167,6 +1188,55 @@ This is useful for what-if planning, capacity evaluation, and leadership decisio
 }
 ```
 
+## CSV Import and Export
+
+The import is two steps: a **preview** that validates and stores the file as a pending import without creating shifts, and an explicit **confirmation** that creates them.
+
+```http
+POST /api/shift-imports/preview?fileName=week-21.csv&maxAssignmentsPerEmployee=5
+Content-Type: text/csv
+
+date,shiftType,requiredSkill,employee
+2026-05-18,Day,CT,Kris
+2026-05-18,Night,MRI,
+```
+
+```http
+POST /api/shift-imports/{importId}/confirm
+GET  /api/schedule/export?weekStart=2026-05-18
+```
+
+### File format
+
+* Columns `date` (`yyyy-MM-dd`), `shiftType` (`Day`, `Evening`, `Night`, `OnCall`), `requiredSkill` and optional `employee` (empty = open shift). Column order and header case are free; comma or semicolon delimiters, quoted values and a UTF-8 byte order mark are accepted.
+* One row creates one shift, matching the domain rule that a shift is staffed by one employee.
+* At most 1,000 rows and 256 KB per file.
+
+### Validation per row
+
+| Check | Result |
+| --- | --- |
+| Date, shift type, required skill present and well-formed | Error |
+| Value starting with `=`, `+`, `-` or `@` (spreadsheet formula) | Error |
+| Employee unknown or name ambiguous; employee lacks the skill | Error |
+| Same assignment twice in the file, or already in the schedule | Error (`DuplicateRow` points to the first row) |
+| `MaxAssignmentsRule`, `SameDayShiftRule`, `NightToDayRule`, `HighLoadRule` | Error — the rules registered for schedule generation, evaluated against the saved schedule plus the earlier rows of the file |
+| Same open shift repeated, or already in the schedule | Warning — allowed, because several open shifts are how several employees are requested |
+| Skill that no employee has | Warning — the shift stays open |
+
+The preview response lists every row with its errors and warnings, totals, and `canConfirm`. A file whose structure cannot be read (empty, missing or unknown columns, too many rows, unterminated quote) returns `400` with `fileErrors` and is not stored.
+
+### Confirmation
+
+* Re-validates the stored file against the schedule **as it is now**. If anything changed so that a row is no longer valid, it returns `409` with a fresh preview and saves nothing.
+* All shifts are created in one transaction together with marking the import confirmed: all or nothing.
+* An import can be confirmed once; a second confirmation returns `409`. The status change is a conditional update, so two simultaneous confirmations cannot both write.
+* A file with the same content (line endings and byte order mark ignored) can only be confirmed once; a unique database index on confirmed content hashes enforces this even across simultaneous requests. `POST /api/demo/reset` clears the import history together with the shifts.
+
+### Export
+
+`GET /api/schedule/export?weekStart=<any date>` returns the Monday-to-Sunday week containing that date as `shift-schedule-<monday>.csv`, in the import format (sorted by date, shift type, skill and employee, with a UTF-8 byte order mark for spreadsheet programs). Values that a spreadsheet would run as a formula are prefixed with `'`. An exported week can be imported again.
+
 ---
 
 # Running the Project
@@ -1319,7 +1389,7 @@ Docker job:
 
 ## API integration tests
 
-`tests/ShiftPlanner.Api.IntegrationTests` contains 20 tests that host the real API with `WebApplicationFactory` against an isolated in-memory SQLite database. EF Core migrations run on startup exactly as in the application. The tests cover:
+`tests/ShiftPlanner.Api.IntegrationTests` contains 46 tests that host the real API with `WebApplicationFactory` against an isolated in-memory SQLite database. EF Core migrations run on startup exactly as in the application. The tests cover:
 
 * Demo reset and seed behaviour
 * Schedule overview skill gaps for the demo data
@@ -1330,10 +1400,12 @@ Docker job:
 * Consistent `{ "error": "..." }` bodies for 400 responses
 * Load analysis returning 400 (not 500) when an employee lacks the required skill
 * Enum serialization as strings (the contract the frontend relies on)
+* CSV import: preview saves nothing; confirmation creates the shifts once; per-row errors block confirmation; duplicate rows, assignments already in the schedule and a file imported twice; re-validation when the schedule changed after the preview; the scheduling rules of generation; unreadable and oversized files; the repository's one-time confirmation and unique-content guards; demo reset clearing import history
+* CSV export: the week, its file name and format, and importing an exported demo week into an empty schedule
 
 ## Unit tests
 
-The solution currently includes 59 unit tests covering:
+The solution currently includes 101 unit tests covering:
 
 * Shift staffing rules
 * Skill validation
@@ -1363,6 +1435,9 @@ The solution currently includes 59 unit tests covering:
 * Simulation candidate result logic
 * Simulation candidate scoring logic
 * Demo data seeding and reset support
+* CSV parsing (quoting, delimiters, byte order mark, header and size errors)
+* Import row validation with the real scheduling rules
+* Weekly CSV export, formula neutralisation and round trip through the import
 
 ## Frontend tests
 
@@ -1376,6 +1451,7 @@ They cover:
 * Reloading employee preference profiles after a demo reset
 * Weekly schedule placement per weekday, assigned/unassigned counts and filters
 * Keeping the weekly schedule visible during refresh, plus error and retry
+* CSV import: preview before saving, Danish row errors and warnings, blocked confirmation, unreadable files, a schedule that changed before confirming, and the export link
 
 ---
 
@@ -1421,6 +1497,14 @@ Open "Simulation"
 Simulate a new shift
 ↓
 Review suggested employee, preference reasons, and candidate scores
+↓
+Open "Import og eksport"
+↓
+Preview docs/samples/shift-import-with-errors.csv and review the row errors
+↓
+Preview docs/samples/shift-import-week-21.csv and confirm the 11 shifts
+↓
+Download the CSV of the week with the imported shifts
 ```
 
 ---
@@ -1570,7 +1654,6 @@ Public portfolio improvements could include:
 * screenshot-based README section
 * deployment instructions
 * authentication demonstration
-* CSV import/export demo
 
 Product-oriented improvements should be developed separately in a private repository, for example:
 
