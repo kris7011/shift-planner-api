@@ -1,0 +1,12 @@
+date,shiftType,requiredSkill,employee
+2026-05-18,Day,CT,Kris
+2026-05-18,Evening,MRI,Mette
+2026-05-18,Night,Night,Maria
+2026-05-19,Day,XR,Anna
+2026-05-19,Evening,CT,Jonas
+2026-05-19,Night,Night,Sofie
+2026-05-20,Day,MRI,Line
+2026-05-20,Day,MRI,
+2026-05-20,Evening,CT,Lars
+2026-05-21,Day,CT,Peter
+2026-05-21,OnCall,CT,

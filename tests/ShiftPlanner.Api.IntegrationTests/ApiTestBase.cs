@@ -17,6 +17,8 @@ public abstract class ApiTestBase : IDisposable
 
     protected HttpClient Client { get; }
 
+    protected IServiceProvider Services => _factory.Services;
+
     public void Dispose()
     {
         Client.Dispose();

@@ -6,6 +6,8 @@ using ShiftPlanner.Infrastructure.Persistence.Employees;
 using ShiftPlanner.Application.Shifts;
 using ShiftPlanner.Infrastructure.Persistence;
 using ShiftPlanner.Infrastructure.Persistence.Shifts;
+using ShiftPlanner.Application.Imports;
+using ShiftPlanner.Infrastructure.Persistence.Imports;
 
 namespace ShiftPlanner.Infrastructure;
 
@@ -28,6 +30,7 @@ public static class DependencyInjection
 
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IShiftRepository, ShiftRepository>();
+        services.AddScoped<IShiftImportRepository, ShiftImportRepository>();
         services.AddScoped<IEmployeeLoadStatusService, EmployeeLoadStatusService>();
 
 

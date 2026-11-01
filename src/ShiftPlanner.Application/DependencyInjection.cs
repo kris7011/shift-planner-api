@@ -7,6 +7,8 @@ using ShiftPlanner.Application.Scheduling.Simulation;
 using ShiftPlanner.Application.Demo;
 using ShiftPlanner.Application.Scheduling.Analysis;
 using ShiftPlanner.Application.Employees.Preferences;
+using ShiftPlanner.Application.Imports;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace ShiftPlanner.Application;
 
@@ -32,6 +34,10 @@ public static class DependencyInjection
         services.AddScoped<IScheduleSimulationService, ScheduleSimulationService>();
         services.AddScoped<ShiftAssignmentAnalysisService>();
         services.AddScoped<IDemoDataService, DemoDataService>();
+        services.AddScoped<ShiftImportValidator>();
+        services.AddScoped<IShiftImportService, ShiftImportService>();
+        services.AddScoped<WeeklyScheduleCsvExporter>();
+        services.TryAddSingleton(TimeProvider.System);
 
         return services;
     }
