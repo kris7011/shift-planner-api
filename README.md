@@ -1,5 +1,7 @@
 # ShiftPlanner API
 
+**Start here for recruiters and technical interviewers:** [Screenshots, a short technical tour and a free local demo](docs/REVIEWER_GUIDE.md). No hosting, login or external database is needed for the standard demo.
+
 A simplified portfolio version of a workforce planning and scheduling system built with C# and .NET.
 
 This repository demonstrates backend architecture, scheduling logic, testable business rules, API design, and frontend dashboard implementation using demo data.
