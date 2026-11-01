@@ -8,6 +8,7 @@ using ShiftPlanner.Api.Scheduling;
 using ShiftPlanner.Application;
 using ShiftPlanner.Infrastructure;
 using ShiftPlanner.Api.Demo;
+using ShiftPlanner.Api.Imports;
 using Microsoft.EntityFrameworkCore;
 using ShiftPlanner.Infrastructure.Persistence;
 
@@ -58,6 +59,7 @@ app.MapEmployeeEndpoints();
 app.MapShiftEndpoints();
 app.MapSchedulingEndpoints();
 app.MapDemoEndpoints();
+app.MapShiftImportEndpoints();
 
 app.Run();
 

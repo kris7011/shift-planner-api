@@ -15,16 +15,7 @@ public class ShiftRepository : IShiftRepository
 
     public async Task<Shift> CreateAsync(Shift shift)
     {
-        var entity = new ShiftEntity
-        {
-            Id = shift.Id,
-            EmployeeId = shift.EmployeeId ?? Guid.Empty,
-            Date = shift.Date,
-            ShiftType = shift.ShiftType,
-            RequiredSkill = shift.RequiredSkill
-        };
-
-        _dbContext.Shifts.Add(entity);
+        _dbContext.Shifts.Add(ShiftEntity.FromDomain(shift));
 
         await _dbContext.SaveChangesAsync();
 
